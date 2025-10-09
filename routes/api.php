@@ -11,3 +11,5 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/user/register', [AuthController :: class , 'userRegistration'] );
 Route::post('/user/login', [AuthController :: class , 'userLogin'] );
+Route::post('/trainer/register', [AuthController :: class , 'trainerRegister'] );
+Route::post('/trainer/login', [AuthController :: class , 'trainerLogin'] );

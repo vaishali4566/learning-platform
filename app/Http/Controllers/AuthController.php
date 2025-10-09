@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Trainer;
+
 
 class AuthController extends Controller
 {
@@ -89,18 +91,7 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
-    public function fetchAllUser(Request $request)
-    {
-        // Fetch all users from the 'users' table
-        $users = User::all();
 
-        // Return JSON response
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Fetched all users successfully',
-            'users' => $users
-        ], 200);
-    }
 
     public function updateUser(Request $request)
     {
@@ -110,16 +101,84 @@ class AuthController extends Controller
     //Trainer authentications
     public function trainerRegister(Request $request)
     {
-        return "Trainer registered successfully (dummy response).";
+        // 1️⃣ Validate input
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|unique:trainers,email',
+            'password' => 'required|string|min:6|confirmed', // expects password_confirmation
+            'bio' => 'nullable|string',
+            'city' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // optional image
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // 2️⃣ Handle profile image upload
+        $profileImagePath = null;
+        if ($request->hasFile('profile_image')) {
+            $profileImagePath = $request->file('profile_image')->store('trainer_profile_images', 'public');
+        }
+
+        // 3️⃣ Create trainer record
+        $trainer = Trainer::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'bio' => $request->bio,
+            'city' => $request->city,
+            'country' => $request->country,
+            'profile_image' => $profileImagePath,
+        ]);
+
+        // 4️⃣ Return success response
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Trainer registered successfully',
+            'trainer' => $trainer
+        ], 201);
     }
+
     public function trainerLogin(Request $request)
     {
-        return "Trainer logged in successfully (dummy response).";
+        // 1️⃣ Validate input
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // 2️⃣ Fetch trainer by email
+        $trainer = Trainer::where('email', $request->email)->first();
+
+        if (!$trainer) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Trainer not found'
+            ], 404);
+        }
+
+        // 3️⃣ Verify password
+        if (!Hash::check($request->password, $trainer->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Incorrect password'
+            ], 401);
+        }
+
+        // 4️⃣ Return success response
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Trainer logged in successfully',
+            'trainer' => $trainer
+        ], 200);
     }
-    public function fetchAllTrainers(Request $request)
-    {
-        return "Fetch all trainers successfully (dummy response).";
-    }
+
+    
     public function updateTrainer(Request $request)
     {
         return "Update trainer successfully (dummy response).";
