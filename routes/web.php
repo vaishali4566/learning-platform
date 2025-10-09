@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/user', [UserController :: class , 'sayHi'] );
-Route::get('/user/all', [UserController :: class , 'getAllUser'] );
+Route::get('/user/all', [AuthController::class, 'fetchAllUser']);
