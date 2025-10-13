@@ -9,3 +9,6 @@ Route::get('/', function () {
 
 Route::get('/user/all', [AdminController::class, 'fetchAllUsers']);
 Route::get('/trainer/all', [AdminController::class, 'fetchAllTrainers']);
+Route::get('/profile', function () {
+    return view('user.profile');
+});
