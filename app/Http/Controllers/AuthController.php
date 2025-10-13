@@ -8,58 +8,49 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Trainer;
 
-
 class AuthController extends Controller
 {
-    //
-    //User authentications
-    public function userLogin(Request $request)
-    {
-        // 1. Validate input
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+   public function userLogin(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
 
-        // 2. Fetch user by email
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User not found'
-            ], 404);
-        }
-
-        // 3. Verify password
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Incorrect password'
-            ], 401);
-        }
-
-        // 4. Successful login response
+    if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Login successful',
-            'user' => $user
-        ], 200);
+            'status' => 'error',
+            'message' => 'Invalid credentials',
+        ], 401);
     }
+
+    // ✅ Create token for API
+    $token = $user->createToken('user-token')->plainTextToken;
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Login successful',
+        'user' => $user,
+        'token' => $token,
+    ], 200);
+}
+
+
 
     public function userRegistration(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed', // expects password_confirmation field
+            'password' => 'required|string|min:6|confirmed',
             'bio' => 'nullable|string',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // optional image upload
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Return validation errors
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -67,13 +58,11 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Handle profile image upload if exists
         $profileImagePath = null;
         if ($request->hasFile('profile_image')) {
             $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
         }
 
-        // Create user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -84,7 +73,6 @@ class AuthController extends Controller
             'profile_image' => $profileImagePath,
         ]);
 
-        // Return success response
         return response()->json([
             'status' => 'success',
             'message' => 'User registered successfully',
@@ -92,24 +80,21 @@ class AuthController extends Controller
         ], 201);
     }
 
-
     public function updateUser(Request $request)
     {
         return "Update user successfully.";
     }
 
-    //Trainer authentications
     public function trainerRegister(Request $request)
     {
-        // 1️⃣ Validate input
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:trainers,email',
-            'password' => 'required|string|min:6|confirmed', // expects password_confirmation
+            'password' => 'required|string|min:6|confirmed',
             'bio' => 'nullable|string',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // optional image
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -119,13 +104,11 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // 2️⃣ Handle profile image upload
         $profileImagePath = null;
         if ($request->hasFile('profile_image')) {
             $profileImagePath = $request->file('profile_image')->store('trainer_profile_images', 'public');
         }
 
-        // 3️⃣ Create trainer record
         $trainer = Trainer::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -136,7 +119,6 @@ class AuthController extends Controller
             'profile_image' => $profileImagePath,
         ]);
 
-        // 4️⃣ Return success response
         return response()->json([
             'status' => 'success',
             'message' => 'Trainer registered successfully',
@@ -146,47 +128,48 @@ class AuthController extends Controller
 
     public function trainerLogin(Request $request)
     {
-        // 1️⃣ Validate input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        // 2️⃣ Fetch trainer by email
         $trainer = Trainer::where('email', $request->email)->first();
 
-        if (!$trainer) {
+        if (!$trainer || !Hash::check($request->password, $trainer->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Trainer not found'
-            ], 404);
-        }
-
-        // 3️⃣ Verify password
-        if (!Hash::check($request->password, $trainer->password)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Incorrect password'
+                'message' => 'Invalid credentials',
             ], 401);
         }
 
-        // 4️⃣ Return success response
+        $token = $trainer->createToken('trainer-token')->plainTextToken;
+
         return response()->json([
             'status' => 'success',
             'message' => 'Trainer logged in successfully',
-            'trainer' => $trainer
+            'trainer' => $trainer,
+            'token' => $token,
         ], 200);
     }
 
-    
     public function updateTrainer(Request $request)
     {
-        return "Update trainer successfully (dummy response).";
+        return "Update trainer successfully.";
     }
 
-    //common auth for both user and trainer
     public function resetPassword(Request $request)
     {
-        return "reset password success";
+        return "Reset password success.";
+    }
+
+    public function logout(Request $request)
+    {
+        // revoke all tokens
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out successfully',
+        ]);
     }
 }

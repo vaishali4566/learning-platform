@@ -8,13 +8,12 @@ use App\Models\Trainer;
 
 class AdminController extends Controller
 {
-    //
+        
     public function fetchAllUsers(Request $request)
     {
-        // Fetch all users from the 'users' table
+      
         $users = User::all();
 
-        // Return JSON response
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched all users successfully',
@@ -27,8 +26,9 @@ class AdminController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Fetched all trainers successfully',
+            'message' => 'Fetched all trainers successfully', 
             'trainers' => $trainers
         ], 200);
     }
+
 }
