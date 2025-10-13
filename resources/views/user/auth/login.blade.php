@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'User Login')
 
@@ -24,7 +24,7 @@
         @endif
 
         <!-- Use direct URL for action since route is not named -->
-        <form action="/login" method="POST" class="space-y-4">
+        <form action="{{ route('user.login.submit') }}" method="POST" class="space-y-4">
             @csrf
 
             <div>

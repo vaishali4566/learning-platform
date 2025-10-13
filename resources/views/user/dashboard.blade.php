@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'User Dashboard')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-green-700 p-4">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br p-4">
     <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8">
         <h1 class="text-4xl font-bold mb-4 text-gray-800 text-center">Welcome, {{ Auth::user()->name }}</h1>
 

@@ -73,8 +73,13 @@ class UserController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        if ($user->delete()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'Your account has been deleted.');
+            return redirect()->route('user.login')->with('success', 'Your account has been successfully deleted.');
+        }
+
+        return back()->with('error', 'There was an error deleting your account.');
     }
 }
