@@ -1,40 +1,64 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PaymentController;
 
-Route::get('/', function () {
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// 🏠 Home Page
+Route::view('/', 'welcome')->name('home');
+
+// --------------------------------------------------
+// 🧑 USER AUTH (Web)
+// --------------------------------------------------
+Route::prefix('user')->group(function () {
+    // Authentication (Login & Register)
+    Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
+    Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
+    Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
+    Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
+    Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+    // Dashboard (protected)
+    Route::middleware('auth')->group(function () {
+        Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
+        Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+        Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
+        Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
+    });
 });
 
-// USER WEB
-Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
-Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
-Route::post('/login', [AuthController::class, 'userLogin']);
-Route::post('/register', [AuthController::class, 'userRegister']);
-Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
-Route::get('/user/dashboard', function () {
-    return view('user.dashboard'); // create this Blade
-})->name('user.dashboard');
+// --------------------------------------------------
+// 🧑‍🏫 TRAINER AUTH (Web)
+// --------------------------------------------------
+Route::prefix('trainer')->group(function () {
+    Route::get('/login', [AuthController::class, 'showTrainerLoginForm'])->name('trainer.login');
+    Route::get('/register', [AuthController::class, 'showTrainerRegisterForm'])->name('trainer.register');
+    Route::post('/login', [AuthController::class, 'trainerLogin'])->name('trainer.login.submit');
+    Route::post('/register', [AuthController::class, 'trainerRegister'])->name('trainer.register.submit');
+    Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+});
 
-// TRAINER WEB
-Route::get('/trainer/login', [AuthController::class, 'showTrainerLoginForm'])->name('trainer.login');
-Route::get('/trainer/register', [AuthController::class, 'showTrainerRegisterForm'])->name('trainer.register');
-Route::post('/trainer/login', [AuthController::class, 'trainerLogin']);
-Route::post('/trainer/register', [AuthController::class, 'trainerRegister']);
-Route::post('/trainer/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+// --------------------------------------------------
+// ⚙️ ADMIN ROUTES
+// --------------------------------------------------
+Route::prefix('admin')->group(function () {
+    Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
+    Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
+});
 
-Route::get('/user/all', [AdminController::class, 'fetchAllUsers']);
-Route::get('/trainer/all', [AdminController::class, 'fetchAllTrainers']);
-
-//payment route
-Route::get('/payment' , [PaymentController :: class , "base"]);
-Route::controller(PaymentController::class)->group(function () {
-    Route::get('/stripe', 'stripe');
+// --------------------------------------------------
+// 💳 PAYMENT ROUTES
+// --------------------------------------------------
+Route::prefix('payment')->controller(PaymentController::class)->group(function () {
+    Route::get('/', 'base')->name('payment.base');
+    Route::get('/stripe', 'stripe')->name('payment.stripe');
     Route::post('/stripe', 'stripePost')->name('stripe.post');
-});
-Route::get('/profile', function () {
-    return view('user.profile');
 });
