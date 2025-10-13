@@ -5,37 +5,41 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Trainer;
 
 class AuthController extends Controller
 {
-   public function userLogin(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    public function userLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        // ✅ Create token for API
+        $token = $user->createToken('user-token')->plainTextToken;
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'Invalid credentials',
-        ], 401);
+            'status' => 'success',
+            'message' => 'Login successful',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
-
-    // ✅ Create token for API
-    $token = $user->createToken('user-token')->plainTextToken;
-
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Login successful',
-        'user' => $user,
-        'token' => $token,
-    ], 200);
-}
 
 
 
@@ -157,10 +161,7 @@ class AuthController extends Controller
         return "Update trainer successfully.";
     }
 
-    public function resetPassword(Request $request)
-    {
-        return "Reset password success.";
-    }
+  
 
     public function logout(Request $request)
     {
