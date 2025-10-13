@@ -12,7 +12,7 @@
         </p>
 
         <div class="flex justify-center gap-4 flex-wrap">
-            <a href="#" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
+            <a href="{{ route('user.profile') }}" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
                 My Profile
             </a>
             <a href="#" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
