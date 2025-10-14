@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CoursesController;
+use App\Http\Controllers\LessonsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
@@ -89,3 +91,14 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 
 
+
+
+Route::group(['prefix'=>'courses'], function(){
+    Route::get('/', [CoursesController::class, 'showCreateForm'])->name('courses.create');
+    Route::post('/', [CoursesController::class, 'create'])->name('courses.store');
+});
+
+Route::group(['prefix' => 'lessons'], function () {
+    Route::get('/', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
+    Route::post('/', [LessonsController::class, 'create'])->name('lessons.store');
+});
