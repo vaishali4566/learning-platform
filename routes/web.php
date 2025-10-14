@@ -20,18 +20,21 @@ Route::view('/', 'welcome')->name('home');
 // --------------------------------------------------
 Route::prefix('user')->group(function () {
     // Authentication (Login & Register)
-    Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
-    Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
-    Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
-    Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
-    Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+    Route::middleware(['guest:web'])->group(function () {
+        Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
+        Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
+        Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
+        Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
+        
+    });
 
     // Dashboard (protected)
-    Route::middleware('auth')->group(function () {
-        Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
+    Route::middleware('auth.user')->group(function () {
+        Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
         Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
         Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
+        Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
     });
 });
 
