@@ -50,12 +50,12 @@
             </div>
 
             <button type="submit"
-                class="w-full bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold py-3 rounded-lg mt-2">
+                class="w-full bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold py-3 rounded-lg mt-2 hover:opacity-90 transition">
                 Register
             </button>
 
             <p class="text-center text-gray-600 text-sm mt-3">
-                Already have an account? 
+                Already have an account?
                 <a href="{{ route('user.login') }}" class="text-blue-700 font-semibold hover:underline">Login</a>
             </p>
         </form>
