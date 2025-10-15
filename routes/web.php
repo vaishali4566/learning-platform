@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\TrainerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
+use App\Http\Controllers\Web\UserQuizController;
 
 // --------------------------------------------------
 // Root redirect
@@ -114,6 +115,13 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword
 
 // Submit new password
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+Route::prefix('user')->middleware(['authenticate.user:web'])->group(function() {
+    Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
+    Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
+    Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
+});
+
 
 
 
