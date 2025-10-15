@@ -16,9 +16,24 @@ class UserController extends Controller
      */
     public function profile()
     {
-        $user = Auth::user();
+        $user = Auth::guard('web')->user();
+
+        if (!$user) {
+            return redirect()->route('user.login')->with('error', 'Please login first.');
+        }
 
         return view('user.profile', compact('user'));
+    }
+
+
+    public function index()
+    {
+        if (!Auth::guard('web')->check()) {
+            return redirect()->route('user.login');
+        }
+
+        $user = Auth::guard('web')->user();
+        return view('user.dashboard', compact('user'));
     }
 
     /**

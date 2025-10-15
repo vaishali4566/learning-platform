@@ -5,36 +5,44 @@ use App\Http\Controllers\LessonsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\TrainerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
-// 🏠 Home Page
-Route::view('/', 'welcome')->name('home');
+// --------------------------------------------------
+// Root redirect
+// --------------------------------------------------
+Route::get('/', function () {
+    if (Auth::guard('web')->check()) {
+        return redirect()->route('user.dashboard');
+    } elseif (Auth::guard('trainer')->check()) {
+        return redirect()->route('trainer.dashboard');
+    }
+    return redirect()->route('user.login');
+});
 
 // --------------------------------------------------
 // 🧑 USER AUTH (Web)
 // --------------------------------------------------
 Route::prefix('user')->group(function () {
-    // Authentication (Login & Register)
-    Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
-    Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
-    Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
-    Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
-    Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
 
-    // Dashboard (protected)
-    Route::middleware('auth')->group(function () {
-        Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
+    // Guest routes
+    Route::middleware(['guest:web', 'prevent.back.history:web'])->group(function () {
+        Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
+        Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
+        Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
+        Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
+        Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    });
+
+    // Authenticated routes
+    Route::middleware(['authenticate.user:web', 'prevent.back.history:web'])->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('user.dashboard');
         Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
         Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
+        Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
     });
 });
 
@@ -42,11 +50,21 @@ Route::prefix('user')->group(function () {
 // 🧑‍🏫 TRAINER AUTH (Web)
 // --------------------------------------------------
 Route::prefix('trainer')->group(function () {
-    Route::get('/login', [AuthController::class, 'showTrainerLoginForm'])->name('trainer.login');
-    Route::get('/register', [AuthController::class, 'showTrainerRegisterForm'])->name('trainer.register');
-    Route::post('/login', [AuthController::class, 'trainerLogin'])->name('trainer.login.submit');
-    Route::post('/register', [AuthController::class, 'trainerRegister'])->name('trainer.register.submit');
-    Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+
+    // Guest routes
+    Route::middleware(['guest:trainer', 'prevent.trainer.back'])->group(function () {
+        Route::get('/login', [AuthController::class, 'showTrainerLoginForm'])->name('trainer.login');
+        Route::get('/register', [AuthController::class, 'showTrainerRegisterForm'])->name('trainer.register');
+        Route::post('/login', [AuthController::class, 'trainerLogin'])->name('trainer.login.submit');
+        Route::post('/register', [AuthController::class, 'trainerRegister'])->name('trainer.register.submit');
+    });
+
+    // Authenticated routes
+    Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
+        Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
+        Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
+        Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+    });
 });
 
 
@@ -85,9 +103,7 @@ Route::prefix('payment')->controller(PaymentController::class)->group(function (
 //////////////////////////
 
 // Show forgot password form
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('password.request');
+
 
 // Submit email to send reset link
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
