@@ -38,6 +38,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Create the user
@@ -46,6 +47,14 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            $path = $request->file('profile_image')->store('user_profile_images', 'public');
+            $user->profile_image = $path; // store path in DB
+            $user->save(); // <- important
+        }
+
 
         // Log in the user
         Auth::guard('web')->login($user);
@@ -114,6 +123,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:trainers,email',
             'password' => 'required|string|min:6|confirmed',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Create trainer
@@ -123,15 +133,24 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            $path = $request->file('profile_image')->store('trainer_profile_images', 'public');
+            $trainer->profile_image = $path; // save path in DB
+            $trainer->save();
+        }
+
         // Login the trainer
         Auth::guard('trainer')->login($trainer);
 
         // Return JSON response for AJAX
         return response()->json([
             'success' => true,
-            'redirect' => route('trainer.dashboard')
+            'redirect' => route('trainer.dashboard'),
+            'message' => 'Trainer registered successfully!'
         ]);
     }
+
 
 
     public function trainerLogin(Request $request)
