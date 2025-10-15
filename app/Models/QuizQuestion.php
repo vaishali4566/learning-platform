@@ -15,6 +15,14 @@ class QuizQuestion extends Model
         'quiz_id',
         'question_text',
         'marks',
+        'options',        // add this
+        'correct_option', // add this
+    ];
+
+    // Automatically cast JSON and integer
+    protected $casts = [
+        'options' => 'array',
+        'correct_option' => 'integer',
     ];
 
     public function quiz(): BelongsTo
@@ -22,6 +30,7 @@ class QuizQuestion extends Model
         return $this->belongsTo(Quiz::class);
     }
 
+    // Optional: you can keep answers() if you still use the quiz_answers table
     public function answers(): HasMany
     {
         return $this->hasMany(QuizAnswer::class);
