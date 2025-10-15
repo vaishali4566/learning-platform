@@ -86,13 +86,6 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 
 
-
-
-
-
-
-
-
 Route::group(['prefix'=>'courses'], function(){
     Route::get('/', [CoursesController::class, 'showCreateForm'])->name('courses.create');
     Route::post('/', [CoursesController::class, 'create'])->name('courses.store');

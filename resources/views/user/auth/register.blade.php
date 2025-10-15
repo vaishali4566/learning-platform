@@ -7,6 +7,7 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">User Registration</h2>
 
+        {{-- Show validation errors --}}
         @if ($errors->any())
             <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
                 <ul class="list-disc pl-5">
@@ -17,7 +18,8 @@
             </div>
         @endif
 
-        <form action="/register" method="POST" enctype="multipart/form-data" class="space-y-4">
+        {{-- Registration form --}}
+        <form action="{{ route('user.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
             <div>
@@ -55,12 +57,12 @@
             </div>
 
             <button type="submit"
-                class="w-full bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold py-3 rounded-lg mt-2">
+                class="w-full bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold py-3 rounded-lg mt-2 hover:opacity-90 transition">
                 Register
             </button>
 
             <p class="text-center text-gray-600 text-sm mt-3">
-                Already have an account? 
+                Already have an account?
                 <a href="{{ route('user.login') }}" class="text-blue-700 font-semibold hover:underline">Login</a>
             </p>
         </form>
