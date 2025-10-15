@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Trainer\QuizController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,20 @@ Route::prefix('trainer')->group(function () {
     Route::post('/login', [AuthController::class, 'trainerLogin'])->name('trainer.login.submit');
     Route::post('/register', [AuthController::class, 'trainerRegister'])->name('trainer.register.submit');
     Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+});
+
+
+Route::prefix('trainer')->name('trainer.')->group(function() {
+    Route::get('quizzes', [QuizController::class, 'index'])->name('quizzes.index');
+    Route::get('quizzes/create', [QuizController::class, 'create'])->name('quizzes.create');
+    Route::post('quizzes/store', [QuizController::class, 'store'])->name('quizzes.store');
+    Route::get('quizzes/{quiz}/edit', [QuizController::class, 'edit'])->name('quizzes.edit');
+    
+    // Add question to a quiz
+    Route::post('quizzes/{quiz}/questions/store', [QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
+    
+    // Finalize quiz (calculate total & passing marks)
+    Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('quizzes.finalize');
 });
 
 // --------------------------------------------------
