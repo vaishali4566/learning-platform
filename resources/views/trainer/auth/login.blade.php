@@ -7,31 +7,23 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Trainer Login</h2>
 
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="/trainer/login" method="POST" class="space-y-4">
+        <form id="trainer-login-form" action="{{ route('trainer.login.submit') }}" method="POST" class="space-y-4">
             @csrf
 
             <div>
                 <label for="email" class="block text-gray-700 font-semibold">Email</label>
-                <input type="email" name="email" id="email" required
+                <input type="email" name="email" id="email" 
                     class="w-full mt-1 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Enter your email" value="{{ old('email') }}">
+                <p class="text-red-600 text-sm mt-1 hidden" id="email-error"></p>
             </div>
 
             <div>
                 <label for="password" class="block text-gray-700 font-semibold">Password</label>
-                <input type="password" name="password" id="password" required
+                <input type="password" name="password" id="password"
                     class="w-full mt-1 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Enter your password">
+                <p class="text-red-600 text-sm mt-1 hidden" id="password-error"></p>
             </div>
 
             <button type="submit"
@@ -46,4 +38,45 @@
         </form>
     </div>
 </div>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#trainer-login-form').on('submit', function(e) {
+        e.preventDefault();
+
+        // Clear previous errors
+        $('#email-error').text('').hide();
+        $('#password-error').text('').hide();
+
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if(response.success) {
+                    window.location.href = response.redirect; // Redirect on successful login
+                }
+            },
+            error: function(xhr) {
+                if(xhr.status === 422) {
+                    // Validation errors
+                    let errors = xhr.responseJSON.errors;
+                    if(errors.email) {
+                        $('#email-error').text(errors.email[0]).show();
+                    }
+                    if(errors.password) {
+                        $('#password-error').text(errors.password[0]).show();
+                    }
+                } else {
+                    // Other errors
+                    alert('Something went wrong. Please try again.');
+                }
+            }
+        });
+    });
+});
+</script>
 @endsection

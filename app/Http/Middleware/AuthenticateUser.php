@@ -11,27 +11,26 @@ class AuthenticateUser
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next)
-    {
-        // Check if the user is authenticated via the 'web' guard
-        
-        if (!Auth::guard('web')->check()) {
-            
-            // If the request is for user routes, redirect to user login
-            if ($request->is('user/*')) {
-                dd("User authentication middleware");
-                return redirect()->route('user.login');
-            }
-            
-            // (Optional) If you have trainer routes too, handle them
-            if ($request->is('trainer/*')) {
-                return redirect()->route('trainer.login');
-            }
-        }
+    public function handle(Request $request, Closure $next, $guard = null)
+{
+    $guard = $guard ?? 'web';
 
-        // If authenticated, allow access
-        return $next($request);
+    // Debug
+    logger('AuthenticateUser Middleware', [
+        'guard' => $guard,
+        'url' => $request->url(),
+        'auth_web' => Auth::guard('web')->check(),
+        'auth_trainer' => Auth::guard('trainer')->check(),
+    ]);
+
+    if (!Auth::guard($guard)->check()) {
+        if ($guard === 'web') return redirect()->route('user.login');
+        if ($guard === 'trainer') return redirect()->route('trainer.login');
     }
+
+    return $next($request);
+}
+
 }
 
 

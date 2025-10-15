@@ -14,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'auth.user' => AuthenticateUser::class,
+            'authenticate.user' => AuthenticateUser::class,
+             'prevent.back.history' => \App\Http\Middleware\PreventBackHistory::class,
+             'prevent.trainer.back' => \App\Http\Middleware\PreventTrainerBackHistory::class,
+
         ]);
         //
     })

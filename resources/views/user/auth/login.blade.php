@@ -7,24 +7,7 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">User Login</h2>
 
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if(session('success'))
-            <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <!-- Use direct URL for action since route is not named -->
-        <form action="{{ route('user.login.submit') }}" method="POST" class="space-y-4">
+        <form id="login-form" action="{{ route('user.login.submit') }}" method="POST" class="space-y-4">
             @csrf
 
             <div>
@@ -34,10 +17,11 @@
                     name="email"
                     id="email"
                     value="{{ old('email') }}"
-                    required
                     class="w-full mt-1 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Enter your email"
                 >
+                <!-- Inline error -->
+                <p class="text-red-600 text-sm mt-1 hidden" id="email-error"></p>
             </div>
 
             <div>
@@ -46,10 +30,11 @@
                     type="password"
                     name="password"
                     id="password"
-                    required
                     class="w-full mt-1 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Enter your password"
                 >
+                <!-- Inline error -->
+                <p class="text-red-600 text-sm mt-1 hidden" id="password-error"></p>
             </div>
 
             <div class="flex justify-between items-center">
@@ -57,7 +42,7 @@
                     <input type="checkbox" name="remember" id="remember" class="mr-1">
                     <label for="remember" class="text-gray-600 text-sm">Remember me</label>
                 </div>
-                <a href="#" class="text-blue-700 hover:underline text-sm">Forgot password?</a>
+                <a href="{{route('password.request')}}" class="text-blue-700 hover:underline text-sm">Forgot password?</a>
             </div>
 
             <button
@@ -74,4 +59,47 @@
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#login-form').on('submit', function(e) {
+        e.preventDefault();
+
+        // Clear previous inline errors
+        $('#email-error').text('').hide();
+        $('#password-error').text('').hide();
+
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if(response.success) {
+                    window.location.href = response.redirect;
+                }
+            },
+            error: function(xhr) {
+                if(xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+
+                    // Show email error
+                    if(errors.email) {
+                        $('#email-error').text(errors.email[0]).show();
+                    }
+
+                    // Show password error
+                    if(errors.password) {
+                        $('#password-error').text(errors.password[0]).show();
+                    }
+                } else {
+                    // Generic error (show under password field)
+                    $('#password-error').text('Something went wrong. Please try again.').show();
+                }
+            }
+        });
+    });
+});
+</script>
 @endsection
