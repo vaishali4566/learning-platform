@@ -43,6 +43,7 @@
             fetch(`/courses/${courseId}/lessons`)
                 .then(res => res.json())
                 .then(lessons => {
+                    console.log("This is lessons", lessons);
                     if (!lessons.length) {
                         lessonTitle.textContent = "No lessons available.";
                         return;
@@ -57,7 +58,7 @@
                         btn.setAttribute('data-lesson-id', lesson.id);
 
                         btn.addEventListener('click', () => {
-                            loadLesson(lesson.id);
+                            loadLesson(lesson.id, lesson.title);
 
                             // Highlight active lesson
                             document.querySelectorAll('#lesson-list button').forEach(el => {
@@ -80,23 +81,39 @@
                     console.error(err);
                 });
 
-            function loadLesson(lessonId) {
+            function loadLesson(lessonId, title) {
                 if (lessonId === activeLessonId) return;
                 activeLessonId = lessonId;
 
-                lessonTitle.textContent = "Loading...";
+                lessonTitle.textContent = title;
                 lessonContent.innerHTML = "";
 
-                fetch(`/lessons/${lessonId}`)
-                    .then(res => res.json())
+                fetch(`/lessons/${lessonId}/stream`)
+                    .then(response => {
+                        const contentType = response.headers.get('Content-Type');
+                        if (contentType.includes('application/json')) {
+                            return response.json();
+                        } else {
+                            // It's a video
+                            lessonContent.innerHTML = `
+                        <video class="w-full max-w-3xl mx-auto rounded" controls autoplay>
+                            <source src="/lessons/${lessonId}/stream" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                        }
+                    })
                     .then(data => {
-                        lessonTitle.textContent = data.title || "Untitled Lesson";
-                        lessonContent.innerHTML = data.content || "<p>No content available.</p>";
+                        if (!data) return;
+
+                        if (data.content_type === 'text') {
+                            document.getElementById('lesson-content').innerHTML = `                        
+                        <p class="text-gray-700 leading-relaxed">${data.text_content}</p>
+                    `;
+                        }
                     })
                     .catch(err => {
-                        lessonTitle.textContent = "Error loading lesson.";
-                        lessonContent.innerHTML = "<p>There was a problem loading this lesson.</p>";
-                        console.error(err);
+                        lessonContent.innerHTML = `<p class="text-red-600">Error loading lesson content.</p>`;
                     });
             }
         });

@@ -136,6 +136,7 @@ Route::group(['prefix'=>'courses'], function(){
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
+    Route::get('/{courseId}/explore', [CoursesController::class, 'showExplorePage'])->name('courses.exploreNow');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
@@ -144,5 +145,5 @@ Route::group(['prefix' => 'lessons'], function () {
     Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
     Route::get('/view/{id}',[LessonsController::class, 'viewLesson'])->name('lesson.view');
     Route::get('all/{id}',[LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}',[LessonsController::class, 'stream']);   
+    Route::get('/{id}/stream',[LessonsController::class, 'stream']);   
 });

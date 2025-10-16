@@ -232,5 +232,5 @@ class LessonsController extends Controller
     {
         return view('lessons.videoStream');
     }
-
+        
 }
