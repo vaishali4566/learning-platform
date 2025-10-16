@@ -12,9 +12,11 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 
-// =========================================================
-// ======================= ROOT REDIRECT ==================
-// =========================================================
+/*
+|--------------------------------------------------------------------------
+| ROOT REDIRECT
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
         return redirect()->route('user.dashboard');
@@ -24,24 +26,27 @@ Route::get('/', function () {
     return redirect()->route('user.login');
 });
 
-// =========================================================
-// ======================= USER AUTH ======================
-// =========================================================
+/*
+|--------------------------------------------------------------------------
+| USER AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::prefix('user')->group(function () {
-
-    // Guest routes (login/register/forgot password)
+    // Guest routes
     Route::middleware(['guest:web', 'prevent.back.history:web'])->group(function () {
         Route::get('/login', [AuthController::class, 'showUserLoginForm'])->name('user.login');
         Route::get('/register', [AuthController::class, 'showUserRegisterForm'])->name('user.register');
         Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
         Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register.submit');
+
+        // Forgot & Reset Password
         Route::get('/forgot-password', [AuthController::class, 'showUserForgotPasswordForm'])->name('user.password.request');
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('user.password.email');
         Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('user.password.update');
     });
 
-    // Authenticated routes (dashboard/profile/logout)
+    // Authenticated routes
     Route::middleware(['authenticate.user:web', 'prevent.back.history:web'])->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.dashboard');
         Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
@@ -56,24 +61,27 @@ Route::prefix('user')->group(function () {
     });
 });
 
-// =========================================================
-// ===================== TRAINER AUTH =====================
-// =========================================================
+/*
+|--------------------------------------------------------------------------
+| TRAINER AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::prefix('trainer')->group(function () {
-
-    // Guest routes (login/register/forgot password)
+    // Guest routes
     Route::middleware(['guest:trainer', 'prevent.trainer.back'])->group(function () {
         Route::get('/login', [AuthController::class, 'showTrainerLoginForm'])->name('trainer.login');
         Route::get('/register', [AuthController::class, 'showTrainerRegisterForm'])->name('trainer.register');
         Route::post('/login', [AuthController::class, 'trainerLogin'])->name('trainer.login.submit');
         Route::post('/register', [AuthController::class, 'trainerRegister'])->name('trainer.register.submit');
+
+        // Forgot & Reset Password
         Route::get('/forgot-password', [AuthController::class, 'showTrainerForgotPasswordForm'])->name('trainer.password.request');
         Route::post('/forgot-password', [AuthController::class, 'forgotTrainerPassword'])->name('trainer.password.email');
         Route::get('/reset-password/{token}', [AuthController::class, 'showTrainerResetPasswordForm'])->name('trainer.password.reset');
         Route::post('/reset-password', [AuthController::class, 'resetTrainerPassword'])->name('trainer.password.update');
     });
 
-    // Authenticated routes (dashboard/profile/logout)
+    // Authenticated routes
     Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
         Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
         Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
@@ -91,69 +99,38 @@ Route::prefix('trainer')->group(function () {
     });
 });
 
-// =========================================================
-// ======================== ADMIN =========================
-// =========================================================
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->group(function () {
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
 });
 
-// =========================================================
-// ======================== PAYMENT =======================
-// =========================================================
+/*
+|--------------------------------------------------------------------------
+| PAYMENT ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::prefix('payment')->controller(PaymentController::class)->group(function () {
     Route::get('/', 'base')->name('payment.base');
     Route::get('/stripe', 'stripe')->name('payment.stripe');
     Route::post('/stripe', 'stripePost')->name('stripe.post');
 });
 
-// =========================================================
-// ======================= COURSES ========================
-// =========================================================
-Route::prefix('courses')->group(function () {
-    Route::get('/', [CoursesController::class, 'showCreateForm'])->name('courses.create');
-    Route::post('/', [CoursesController::class, 'create'])->name('courses.store');
-});
-
-// =========================================================
-// ======================= LESSONS ========================
-// =========================================================
-Route::prefix('lessons')->group(function () {
-    Route::get('/', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
-    Route::post('/', [LessonsController::class, 'create'])->name('lessons.store');
-//////////////////////////
-// FORGOT & RESET PASSWORD ROUTES
-//////////////////////////
-
-// Show forgot password form
-
-
-// Submit email to send reset link
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
-
-// Show reset password form (the link in email will use this route)
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])
-    ->name('password.reset');// important: this name must be "password.reset"
-
-// Submit new password
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
-
-Route::prefix('user')->middleware(['authenticate.user:web'])->group(function() {
-    Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
-    Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
-    Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
-});
-
-
-
-
-Route::group(['prefix'=>'courses'], function(){
+/*
+|--------------------------------------------------------------------------
+| COURSES ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::group(['prefix' => 'courses'], function () {
     Route::get('/courseform', [CoursesController::class, 'showCreateForm'])->name('courses.create');
     Route::post('/', [CoursesController::class, 'create']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/all',[CoursesController::class, 'getAllCourse']);
-    Route::get('/view/{id}',[CoursesController::class, 'showPage'])->name('courses.show');
+    Route::get('/all', [CoursesController::class, 'getAllCourse']);
+    Route::get('/view/{id}', [CoursesController::class, 'showPage'])->name('courses.show');
     Route::put('/{id}', [CoursesController::class, 'update']);
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
@@ -161,10 +138,15 @@ Route::group(['prefix'=>'courses'], function(){
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| LESSONS ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::group(['prefix' => 'lessons'], function () {
     Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
-    Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
-    Route::get('/view/{id}',[LessonsController::class, 'viewLesson'])->name('lesson.view');
-    Route::get('all/{id}',[LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}',[LessonsController::class, 'stream']);   
+    Route::post('/', [LessonsController::class, 'create'])->name('lessons.store');
+    Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
+    Route::get('/all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
+    Route::get('/{id}', [LessonsController::class, 'stream']);
 });
