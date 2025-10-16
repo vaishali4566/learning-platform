@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Learning Platform')</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Optional: custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #003FA6;
-            border-radius: 3px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #003FA6; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
@@ -27,10 +18,19 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="{{ url('/') }}" class="text-xl font-bold">Learning Platform</a>
             <nav class="space-x-4">
-                <a href="{{ route('user.login') }}" class="hover:underline">User Login</a>
-                <a href="{{ route('user.register') }}" class="hover:underline">User Register</a>
-                <a href="{{ route('trainer.login') }}" class="hover:underline">Trainer Login</a>
-                <a href="{{ route('trainer.register') }}" class="hover:underline">Trainer Register</a>
+                @if(Request::is('user/login') || Request::is('user/register'))
+                    <!-- Only show Trainer Login -->
+                    <a href="{{ route('trainer.login') }}" class="hover:underline">Trainer Login</a>
+                @elseif(Request::is('trainer/login') || Request::is('trainer/register'))
+                    <!-- Only show User Login -->
+                    <a href="{{ route('user.login') }}" class="hover:underline">User Login</a>
+                @else
+                    <!-- Normal navbar for other pages -->
+                    <a href="{{ route('user.login') }}" class="hover:underline">User Login</a>
+                    <a href="{{ route('user.register') }}" class="hover:underline">User Register</a>
+                    <a href="{{ route('trainer.login') }}" class="hover:underline">Trainer Login</a>
+                    <a href="{{ route('trainer.register') }}" class="hover:underline">Trainer Register</a>
+                @endif
             </nav>
         </div>
     </header>
