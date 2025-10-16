@@ -3,8 +3,14 @@
 @section('title', 'Trainer Login')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-green-700 p-4">
-    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
+     style="background-image: url('{{ asset('images/image.png') }}');">
+
+    <!-- Black overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+    <!-- Content box -->
+    <div class="relative w-full max-w-md bg-white rounded-xl shadow-lg p-8 z-10">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Trainer Login</h2>
 
         <form id="trainer-login-form" action="{{ route('trainer.login.submit') }}" method="POST" class="space-y-4">
@@ -24,6 +30,15 @@
                     class="w-full mt-1 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Enter your password">
                 <p class="text-red-600 text-sm mt-1 hidden" id="password-error"></p>
+            </div>
+
+            <!-- Remember + Forgot -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <input type="checkbox" name="remember" id="remember" class="mr-1">
+                    <label for="remember" class="text-gray-600 text-sm">Remember me</label>
+                </div>
+                <a href="{{ route('trainer.password.request') }}" class="text-blue-700 hover:underline text-sm">Forgot password?</a>
             </div>
 
             <button type="submit"
@@ -62,16 +77,10 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 if(xhr.status === 422) {
-                    // Validation errors
                     let errors = xhr.responseJSON.errors;
-                    if(errors.email) {
-                        $('#email-error').text(errors.email[0]).show();
-                    }
-                    if(errors.password) {
-                        $('#password-error').text(errors.password[0]).show();
-                    }
+                    if(errors.email) $('#email-error').text(errors.email[0]).show();
+                    if(errors.password) $('#password-error').text(errors.password[0]).show();
                 } else {
-                    // Other errors
                     alert('Something went wrong. Please try again.');
                 }
             }

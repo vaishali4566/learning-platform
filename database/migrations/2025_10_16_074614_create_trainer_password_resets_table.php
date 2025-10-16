@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_actions', function (Blueprint $table) {
-            $table->id();
-             $table->foreignId('admin_id')->constrained('users')->onDelete('cascade'); 
-            $table->string('action_type', 100); 
-            $table->text('description');
-            $table->timestamps();
+        Schema::create('trainer_password_resets', function (Blueprint $table) {
+            $table->string('email')->index();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
         });
     }
 
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin_actions');
+        Schema::dropIfExists('trainer_password_resets');
     }
 };

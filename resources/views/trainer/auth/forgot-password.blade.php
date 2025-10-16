@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
+    <title>Trainer Forgot Password</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-900 to-green-700 min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Reset Password</h2>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Trainer Forgot Password</h2>
 
         {{-- Success Message --}}
         @if(session('status'))
@@ -29,32 +29,19 @@
             </div>
         @endif
 
-        {{-- Reset Password Form --}}
-        <form method="POST" action="{{ route('user.password.update') }}" class="space-y-4">
+        {{-- Forgot Password Form --}}
+        <form method="POST" action="{{ route('trainer.password.email') }}" class="space-y-4">
             @csrf
-            <input type="hidden" name="token" value="{{ $token }}">
-            <input type="hidden" name="email" value="{{ $email }}">
 
             <div>
-                <label for="password" class="block text-gray-700 font-semibold mb-1">New Password</label>
+                <label for="email" class="block text-gray-700 font-semibold mb-1">Email Address</label>
                 <input
-                    type="password"
-                    name="password"
-                    id="password"
+                    type="email"
+                    name="email"
+                    id="email"
+                    value="{{ old('email') }}"
                     required
-                    placeholder="Enter new password"
-                    class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                >
-            </div>
-
-            <div>
-                <label for="password_confirmation" class="block text-gray-700 font-semibold mb-1">Confirm New Password</label>
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    id="password_confirmation"
-                    required
-                    placeholder="Confirm new password"
+                    placeholder="Enter your email"
                     class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
             </div>
@@ -63,12 +50,12 @@
                 type="submit"
                 class="w-full bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold py-3 rounded-lg hover:opacity-90 transition"
             >
-                Reset Password
+                Send Reset Link
             </button>
 
             <p class="text-center text-gray-600 text-sm mt-3">
                 Remembered your password? 
-                <a href="{{ route('user.login') }}" class="text-blue-700 font-semibold hover:underline">Login</a>
+                <a href="{{ route('trainer.login') }}" class="text-blue-700 font-semibold hover:underline">Login</a>
             </p>
         </form>
     </div>
