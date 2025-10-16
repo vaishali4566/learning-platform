@@ -104,7 +104,8 @@ Route::prefix('trainer')->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin.only'])->group(function () {
+    Route::get('/dashboard', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
 });

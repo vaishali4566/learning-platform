@@ -1,9 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br p-4">
-    <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8">
-        <h1 class="text-4xl font-bold mb-4 text-gray-800 text-center">
+<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
+     style="background-image: url('{{ asset('images/image.png') }}');">
+
+    <!-- Black overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+    <!-- Content box -->
+    <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-lg p-10 z-10">
+        <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">
             Welcome, {{ Auth::guard('trainer')->user()->name }}
         </h1>
 
@@ -11,21 +17,21 @@
             This is your trainer dashboard. You can manage your profile, courses, and other trainer-related settings here.
         </p>
 
-        <div class="flex justify-center gap-4 flex-wrap">
-            <a href="{{ route('trainer.profile') }}" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
-                My Profile
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <a href="{{ route('trainer.profile') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">My Profile</span>
             </a>
-            <a href="#" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
-                My Courses
+            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">My Courses</span>
             </a>
-            <a href="#" class="px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90">
-                Settings
+            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">Settings</span>
             </a>
         </div>
 
-        <form action="{{ route('trainer.logout') }}" method="POST" class="mt-8 text-center">
+        <form action="{{ route('trainer.logout') }}" method="POST" class="text-center">
             @csrf
-            <button type="submit" class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
+            <button type="submit" class="px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
                 Logout
             </button>
         </form>

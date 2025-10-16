@@ -30,6 +30,11 @@ class AuthController extends Controller
         return view('user.auth.register');
     }
 
+    public function adminDashboard()
+    {
+        return view('admin.dashboard'); // create this blade view
+    }
+
     // Handle user registration
     public function userRegister(Request $request)
     {
@@ -72,10 +77,21 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('web')->attempt($credentials)) {
-            return response()->json([
-                'success' => true,
-                'redirect' => route('user.dashboard')
-            ]);
+            $user = Auth::guard('web')->user();
+
+            if ($user->is_admin) {
+                // If user is admin, redirect to admin dashboard
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('admin.dashboard')
+                ]);
+            } else {
+                // Normal user
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('user.dashboard')
+                ]);
+            }
         }
 
         return response()->json([
@@ -83,6 +99,7 @@ class AuthController extends Controller
             'errors' => ['password' => ['Incorrect email or password.']]
         ], 422);
     }
+
 
     // Handle user logout
     public function userLogout()

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'authenticate.user' => AuthenticateUser::class,
              'prevent.back.history' => \App\Http\Middleware\PreventBackHistory::class,
              'prevent.trainer.back' => \App\Http\Middleware\PreventTrainerBackHistory::class,
+             'admin.only' => \App\Http\Middleware\AdminOnly::class,
 
         ]);
         //
