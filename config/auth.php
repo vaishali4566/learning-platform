@@ -43,7 +43,7 @@ return [
         // Optional: if you want password resets for trainers
         'trainers' => [
             'provider' => 'trainers',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'table' => 'trainer_password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],
