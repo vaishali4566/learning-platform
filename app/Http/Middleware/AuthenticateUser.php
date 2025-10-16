@@ -11,11 +11,12 @@ class AuthenticateUser
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next, $guard = null)
+  public function handle(Request $request, Closure $next, $guard = null)
 {
     $guard = $guard ?? 'web';
 
-    // Debug
+    Auth::shouldUse($guard); // ✅ Force the correct guard
+
     logger('AuthenticateUser Middleware', [
         'guard' => $guard,
         'url' => $request->url(),
@@ -30,6 +31,7 @@ class AuthenticateUser
 
     return $next($request);
 }
+
 
 }
 

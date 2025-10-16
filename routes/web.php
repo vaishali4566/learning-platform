@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
+use Illuminate\Support\Facades\Auth;
 
 // --------------------------------------------------
 // Root redirect
@@ -69,15 +70,15 @@ Route::prefix('trainer')->group(function () {
 });
 
 
-Route::prefix('trainer')->name('trainer.')->group(function() {
+Route::prefix('trainer')->name('trainer.')->group(function () {
     Route::get('quizzes', [QuizController::class, 'index'])->name('quizzes.index');
     Route::get('quizzes/create', [QuizController::class, 'create'])->name('quizzes.create');
     Route::post('quizzes/store', [QuizController::class, 'store'])->name('quizzes.store');
     Route::get('quizzes/{quiz}/edit', [QuizController::class, 'edit'])->name('quizzes.edit');
-    
+
     // Add question to a quiz
     Route::post('quizzes/{quiz}/questions/store', [QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
-    
+
     // Finalize quiz (calculate total & passing marks)
     Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('quizzes.finalize');
 });
@@ -93,11 +94,13 @@ Route::prefix('admin')->group(function () {
 // --------------------------------------------------
 // 💳 PAYMENT ROUTES
 // --------------------------------------------------
+
+
 Route::prefix('payment')->controller(PaymentController::class)->group(function () {
-    Route::get('/', 'base')->name('payment.base');
-    Route::get('/stripe', 'stripe')->name('payment.stripe');
-    Route::post('/stripe', 'stripePost')->name('stripe.post');
+    Route::get('/{courseId}', 'stripe')->name('payment.stripe');
+    Route::post('/', 'stripePost')->name('payment.post');
 });
+
 
 //////////////////////////
 // FORGOT & RESET PASSWORD ROUTES
@@ -111,26 +114,23 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name
 
 // Show reset password form (the link in email will use this route)
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])
-    ->name('password.reset');// important: this name must be "password.reset"
+    ->name('password.reset'); // important: this name must be "password.reset"
 
 // Submit new password
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-Route::prefix('user')->middleware(['authenticate.user:web'])->group(function() {
+Route::prefix('user')->middleware(['authenticate.user:web'])->group(function () {
     Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
     Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
     Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
 });
 
-
-
-
-Route::group(['prefix'=>'courses'], function(){
+Route::group(['prefix' => 'courses'], function () {
     Route::get('/courseform', [CoursesController::class, 'showCreateForm'])->name('courses.create');
     Route::post('/', [CoursesController::class, 'create']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/all',[CoursesController::class, 'getAllCourse']);
-    Route::get('/view/{id}',[CoursesController::class, 'showPage'])->name('courses.show');
+    Route::get('/all', [CoursesController::class, 'getAllCourse']);
+    Route::get('/view/{id}', [CoursesController::class, 'showPage'])->name('courses.show');
     Route::put('/{id}', [CoursesController::class, 'update']);
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
@@ -141,7 +141,7 @@ Route::group(['prefix'=>'courses'], function(){
 Route::group(['prefix' => 'lessons'], function () {
     Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
     Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
-    Route::get('/view/{id}',[LessonsController::class, 'viewLesson'])->name('lesson.view');
-    Route::get('all/{id}',[LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}',[LessonsController::class, 'stream']);   
+    Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
+    Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
+    Route::get('/{id}', [LessonsController::class, 'stream']);
 });
