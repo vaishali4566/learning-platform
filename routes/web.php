@@ -84,21 +84,23 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword
 // Submit new password
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-
-
-
-
-
-
-
-
-
 Route::group(['prefix'=>'courses'], function(){
-    Route::get('/', [CoursesController::class, 'showCreateForm'])->name('courses.create');
-    Route::post('/', [CoursesController::class, 'create'])->name('courses.store');
+    Route::get('/courseform', [CoursesController::class, 'showCreateForm'])->name('courses.create');
+    Route::post('/', [CoursesController::class, 'create']);
+    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
+    Route::get('/all',[CoursesController::class, 'getAllCourse']);
+    Route::get('/view/{id}',[CoursesController::class, 'showPage'])->name('courses.show');
+    Route::put('/{id}', [CoursesController::class, 'update']);
+    Route::delete('/{id}', [CoursesController::class, 'delete']);
+    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
+    Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
+    Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
 Route::group(['prefix' => 'lessons'], function () {
-    Route::get('/', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
-    Route::post('/', [LessonsController::class, 'create'])->name('lessons.store');
+    Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
+    Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
+    Route::get('/view/{id}',[LessonsController::class, 'viewLesson'])->name('lesson.view');
+    Route::get('all/{id}',[LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
+    Route::get('/{id}',[LessonsController::class, 'stream']);   
 });
