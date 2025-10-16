@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Courses</title>
-    @vite('resources/css/app.css')
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
-   
     <div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
         <div class="container mx-auto px-4">
             <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">My Courses</h1>
@@ -30,7 +29,7 @@
                     </div>
                     <div class="p-5 flex flex-col justify-between h-40">
                         <h2 class="text-lg font-bold text-purple-700">{{ $course->title }}</h2>
-                        <a href="{{ route('courses.show', $course->id) }}"
+                        <a href="{{ route('lessons.alllesson', $course->id) }}"
                             class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
                             Open
                         </a>
@@ -41,7 +40,21 @@
             @endif
         </div>
     </div>
-    
+
+    <script>
+        fetch('/courses/all')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                const list = document.getElementById('courses-list');
+                list.innerHTML = data.data.map(course => `
+            <div class="mb-3">
+                <h4>${course.title}</h4>
+                <a href="/courses/view/${course.id}" class="btn btn-primary">View Course</a>
+            </div>
+        `).join('');
+            });
+    </script>
 
 </body>
 
