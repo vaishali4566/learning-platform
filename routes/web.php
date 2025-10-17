@@ -100,23 +100,11 @@ Route::prefix('trainer')->group(function () {
     });
 });
 
-
-Route::prefix('trainer')->name('trainer.')->group(function () {
-    Route::get('quizzes', [QuizController::class, 'index'])->name('quizzes.index');
-    Route::get('quizzes/create', [QuizController::class, 'create'])->name('quizzes.create');
-    Route::post('quizzes/store', [QuizController::class, 'store'])->name('quizzes.store');
-    Route::get('quizzes/{quiz}/edit', [QuizController::class, 'edit'])->name('quizzes.edit');
-
-    // Add question to a quiz
-    Route::post('quizzes/{quiz}/questions/store', [QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
-
-    // Finalize quiz (calculate total & passing marks)
-    Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('quizzes.finalize');
-});
-
-// --------------------------------------------------
-// ⚙️ ADMIN ROUTES
-// --------------------------------------------------
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->group(function () {
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');

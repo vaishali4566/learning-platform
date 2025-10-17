@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
-     style="background-image: url('{{ asset('images/user-bg.jpg') }}');">
+     style="background-image: url('{{ asset('images/image.png') }}');">
 
     <!-- Black overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60"></div>
@@ -14,18 +14,18 @@
         </h1>
 
         <p class="text-center text-gray-600 text-lg mb-8">
-            This is your user dashboard. You can view your profile, courses, and manage your account here.
+            This is your admin dashboard. You can manage users, trainers, and monitor admin actions here.
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <a href="{{ route('user.profile') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">My Profile</span>
+            <a href="{{ route('admin.users') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">Manage Users</span>
+            </a>
+            <a href="{{ route('admin.trainers') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">Manage Trainers</span>
             </a>
             <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">My Courses</span>
-            </a>
-            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">Settings</span>
+                <span class="text-gray-700 font-medium">Admin Logs</span>
             </a>
         </div>
 
