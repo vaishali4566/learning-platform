@@ -11,7 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
-use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
