@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
-     style="background-image: url('{{ asset('images/user-bg.jpg') }}');">
+<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
+    style="background-image: url('{{ asset('images/user-bg.jpg') }}');">
 
     <!-- Black overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60"></div>
@@ -21,7 +21,7 @@
             <a href="{{ route('user.profile') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Profile</span>
             </a>
-            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+            <a href="{{ route('courses.mycourses') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Courses</span>
             </a>
             <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">

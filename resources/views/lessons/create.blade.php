@@ -176,7 +176,10 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    displaySuccessMessage('');
+                    displaySuccessMessage(data.message);
+                    this.reset();
+                    clearErrors();
+                    toggleSubmitButton();
                 } else {
                     console.log("mydata", data);
                     displayValidationErrors(data.errors || {}, data.message);
