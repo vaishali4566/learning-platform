@@ -12,11 +12,9 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 use Illuminate\Support\Facades\Auth;
 
-/*
-|--------------------------------------------------------------------------
-| ROOT REDIRECT
-|--------------------------------------------------------------------------
-*/
+// --------------------------------------------------
+// Root redirect
+// --------------------------------------------------
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
         $user = Auth::guard('web')->user();
@@ -168,6 +166,7 @@ Route::group(['prefix' => 'courses'], function () {
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
+    Route::get('/{courseId}/explore', [CoursesController::class, 'showExplorePage'])->name('courses.exploreNow');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 

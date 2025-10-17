@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    @vite('resources/css/app.css')
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
     <div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
         <div class="container mx-auto px-4">
-            <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">Courses</h1>
+            <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">My Courses</h1>
 
             @if($courses->isEmpty())
             <div class="bg-white p-10 rounded-lg shadow-md text-center text-gray-700">
@@ -27,11 +27,22 @@
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
                     <div class="h-40 bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $course->image) }}')">
                     </div>
-                    <div class="p-5 flex flex-col justify-between h-40">
-                        <h2 class="text-lg font-bold text-purple-700">{{ $course->title }}</h2>
-                        <a href="{{ route('courses.show', $course->id) }}"
+                    <div class="p-5 flex flex-col justify-between h-42">
+                        <div class="flex justify-around">
+                            <h2 class="text-lg font-bold text-purple-700">{{ $course->title }}</h2>
+                            <div class="text-lg font-bold text-purple-700">
+                                <h2>
+                                    RS {{$course->price}}
+                                </h2>
+                            </div>
+                        </div>
+                        <a href="{{ route('lessons.alllesson', ['id' => $course->id, 'price' => $course->price]) }}"
                             class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
-                            Open
+                            Buy Now
+                        </a>
+                        <a href="{{ route('courses.exploreNow', $course->id) }}"
+                            class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
+                            Explore
                         </a>
                     </div>
                 </div>

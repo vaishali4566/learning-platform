@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Create Course</title>
-    @vite('resources/css/app.css')
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -27,31 +27,31 @@
             @endphp
 
             <div class="mb-4">
-                <label for="trainer_id" class="block font-medium text-gray-700">Trainer ID</label>
-                <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}">
+                <label for="trainer_id" class="block font-medium text-gray-700">Trainer ID<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}" required>
                 <div id="trainer_idError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div class="mb-4">
-                <label for="title" class="block font-medium text-gray-700">Title</label>
+                <label for="title" class="block font-medium text-gray-700">Title<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <input type="text" name="title" id="title" class="{{ $inputClass }}">
                 <div id="titleError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div class="mb-4">
-                <label for="description" class="block font-medium text-gray-700">Description</label>
+                <label for="description" class="block font-medium text-gray-700">Description<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <textarea name="description" id="description" rows="3" class="{{ $inputClass }}"></textarea>
                 <div id="descriptionError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div class="mb-4">
-                <label for="price" class="block font-medium text-gray-700">Price ($)</label>
+                <label for="price" class="block font-medium text-gray-700">Price (Rs)<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
                 <div id="priceError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div class="mb-4">
-                <label for="duration" class="block font-medium text-gray-700">Duration</label>
+                <label for="duration" class="block font-medium text-gray-700">Duration<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
                 <div id="durationError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
@@ -84,19 +84,19 @@
             </div>
 
             <div class="mb-4">
-                <label for="city" class="block font-medium text-gray-700">City</label>
+                <label for="city" class="block font-medium text-gray-700">City<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <input type="text" name="city" id="city" class="{{ $inputClass }}">
                 <div id="cityError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div class="mb-6">
-                <label for="country" class="block font-medium text-gray-700">Country</label>
+                <label for="country" class="block font-medium text-gray-700">Country<sup><span class="text-red-600 text-sm">*</span></sup></label>
                 <input type="text" name="country" id="country" class="{{ $inputClass }}">
                 <div id="countryError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded shadow transition duration-150">
+                <button type="submit" id="submitButton" disabled class="w-full bg-indigo-400 text-white font-semibold py-2 px-4 rounded shadow transition duration-150 cursor-not-allowed">
                     Create Course
                 </button>
             </div>
@@ -162,9 +162,11 @@
                     body: formData
                 });
                 const data = await response.json();
-
                 if (response.ok) {
-                    displaySuccessMessage('');
+                    displaySuccessMessage(data.message);
+                    this.reset();
+                    clearErrors();
+                    toggleSubmitButton();
                 } else {
                     console.log("mydata", data);
                     displayValidationErrors(data.errors || {}, data.message);
@@ -175,6 +177,116 @@
             }
         });
     </script>
+
+    <script>
+        const form = document.getElementById('courseForm');
+
+        const validators = {
+            trainer_id: (value) => {
+                if (!value.trim()) return "Trainer ID is required.";
+                if (!/^\d+$/.test(value)) return "Trainer ID must be a number.";
+                return "";
+            },
+            title: (value) => {
+                if (!value.trim()) return "Title is required.";
+                if (value.length < 5) return "Title must be at least 5 characters.";
+                return "";
+            },
+            description: (value) => {
+                if (!value.trim()) return "Description is required.";
+                if (value.length < 10) return "Description must be at least 10 characters.";
+                return "";
+            },
+            price: (value) => {
+                if (!value.trim()) return "Price is required.";
+                if (isNaN(value) || parseFloat(value) <= 0) return "Price must be a positive number.";
+                return "";
+            },
+            duration: (value) => {
+                if (!value.trim()) return "Duration is required.";
+                return "";
+            },
+            city: (value) => {
+                if (!value.trim()) return "City is required.";
+                return "";
+            },
+            country: (value) => {
+                if (!value.trim()) return "Country is required.";
+                return "";
+            }
+        };
+
+        function validateField(field) {
+            const value = field.value;
+            const name = field.name;
+            const errorDiv = document.getElementById(`${name}Error`);
+
+            if (validators[name]) {
+                const error = validators[name](value);
+                if (error) {
+                    field.classList.add('border-red-500');
+                    errorDiv.textContent = error;
+                } else {
+                    field.classList.remove('border-red-500');
+                    errorDiv.textContent = '';
+                }
+            }
+        }
+
+        // Attach validation on input
+        Object.keys(validators).forEach((name) => {
+            const field = document.querySelector(`[name="${name}"]`);
+            if (field) {
+                field.addEventListener('input', () => validateField(field));
+            }
+        });
+    </script>
+
+    <script>
+        const submitButton = document.getElementById('submitButton');
+
+        function isFormValid() {
+            let isValid = true;
+            Object.keys(validators).forEach((name) => {
+                const field = document.querySelector(`[name="${name}"]`);
+                const error = validators[name](field.value);
+                if (error) {
+                    isValid = false;
+                }
+            });
+            return isValid;
+        }
+
+        function toggleSubmitButton() {
+            if (isFormValid()) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('bg-indigo-400', 'cursor-not-allowed');
+                submitButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.add('bg-indigo-400', 'cursor-not-allowed');
+                submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+        }
+
+        // Add event listeners to all fields
+        Object.keys(validators).forEach((name) => {
+            const field = document.querySelector(`[name="${name}"]`);
+            if (field) {
+                field.addEventListener('input', () => {
+                    validateField(field);
+                    toggleSubmitButton();
+                });
+            }
+        });
+
+        // Disable button on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleSubmitButton();
+        });
+    </script>
+
+
 
 </body>
 

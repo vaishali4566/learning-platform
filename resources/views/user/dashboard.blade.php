@@ -21,7 +21,7 @@
             <a href="{{ route('user.profile') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Profile</span>
             </a>
-            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+            <a href="{{ route('courses.mycourses') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Courses</span>
             </a>
             <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
