@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
-     style="background-image: url('{{ asset('images/user-bg.jpg') }}');">
+     style="background-image: url('{{ asset('images/image.png') }}');">
 
     <!-- Black overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60"></div>

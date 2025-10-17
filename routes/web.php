@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\TrainerController;
@@ -20,12 +19,20 @@ use Illuminate\Support\Facades\Auth;
 */
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
+        $user = Auth::guard('web')->user();
+
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
         return redirect()->route('user.dashboard');
-    } elseif (Auth::guard('trainer')->check()) {
+    }
+
+    if (Auth::guard('trainer')->check()) {
         return redirect()->route('trainer.dashboard');
     }
     return redirect()->route('user.login');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -105,10 +112,12 @@ Route::prefix('trainer')->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['admin.only'])->group(function () {
+    Route::get('/', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
 });
+
 
 /*
 |--------------------------------------------------------------------------
