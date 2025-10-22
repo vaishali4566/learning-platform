@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
@@ -140,37 +142,33 @@ class AuthController extends Controller
         $trainer = Trainer::where('email', $request->email)->first();
 
         if (!$trainer || !Hash::check($request->password, $trainer->password)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid credentials',
-            ], 401);
+            return back()->withErrors([
+                'email' => 'Invalid credentials',
+            ])->withInput();
         }
 
-        $token = $trainer->createToken('trainer-token')->plainTextToken;
+        // ✅ Log in trainer into session
+        Auth::guard('trainer')->login($trainer);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Trainer logged in successfully',
-            'trainer' => $trainer,
-            'token' => $token,
-        ], 200);
+        // Optional: regenerate session
+        $request->session()->regenerate();
+
+        return redirect()->route('trainer.dashboard');
     }
+
 
     public function updateTrainer(Request $request)
     {
         return "Update trainer successfully.";
     }
 
-  
 
-    public function logout(Request $request)
+    public function trainerLogout(Request $request)
     {
-        // revoke all tokens
-        $request->user()->tokens()->delete();
+        Auth::guard('trainer')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Logged out successfully',
-        ]);
+        return redirect()->route('trainer.login')->with('success', 'Logged out successfully');
     }
 }

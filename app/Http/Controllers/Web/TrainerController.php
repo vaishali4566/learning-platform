@@ -29,7 +29,8 @@ class TrainerController extends Controller
      * Show trainer dashboard
      */
     public function index()
-    {
+    { 
+        
         if (!Auth::guard('trainer')->check()) {
             return redirect()->route('trainer.login');
         }
@@ -43,6 +44,8 @@ class TrainerController extends Controller
      */
     public function updateProfile(Request $request)
     {
+            /** @var \App\Models\Trainer $trainer */
+
         $trainer = Auth::guard('trainer')->user();
 
         $validator = Validator::make($request->all(), [
@@ -92,6 +95,8 @@ class TrainerController extends Controller
      */
     public function deleteAccount(Request $request)
     {
+        /** @var \App\Models\Trainer $trainer */
+
         $trainer = Auth::guard('trainer')->user();
 
         Auth::guard('trainer')->logout();

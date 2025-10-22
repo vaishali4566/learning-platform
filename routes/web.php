@@ -17,12 +17,20 @@ use Illuminate\Support\Facades\Auth;
 // --------------------------------------------------
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
+        $user = Auth::guard('web')->user();
+
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
         return redirect()->route('user.dashboard');
-    } elseif (Auth::guard('trainer')->check()) {
+    }
+
+    if (Auth::guard('trainer')->check()) {
         return redirect()->route('trainer.dashboard');
     }
     return redirect()->route('user.login');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -102,11 +110,12 @@ Route::prefix('trainer')->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->middleware(['auth', 'admin.only'])->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
+Route::prefix('admin')->middleware(['admin.only'])->group(function () {
+    Route::get('/', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -114,9 +123,32 @@ Route::prefix('admin')->middleware(['auth', 'admin.only'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('payment')->controller(PaymentController::class)->group(function () {
-    Route::get('/', 'base')->name('payment.base');
-    Route::get('/stripe', 'stripe')->name('payment.stripe');
-    Route::post('/stripe', 'stripePost')->name('stripe.post');
+    Route::get('/{courseId}', 'stripe')->name('payment.stripe');
+    Route::post('/', 'stripePost')->name('payment.post');
+});
+
+
+//////////////////////////
+// FORGOT & RESET PASSWORD ROUTES
+//////////////////////////
+
+// Show forgot password form
+
+
+// Submit email to send reset link
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
+
+// Show reset password form (the link in email will use this route)
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])
+    ->name('password.reset'); // important: this name must be "password.reset"
+
+// Submit new password
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+Route::prefix('user')->middleware(['authenticate.user:web'])->group(function () {
+    Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
+    Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
+    Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
 });
 
 /*
@@ -150,7 +182,7 @@ Route::group(['prefix' => 'courses'], function () {
 Route::group(['prefix' => 'lessons'], function () {
     Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
     Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
-    Route::get('/view/{id}',[LessonsController::class, 'viewLesson'])->name('lesson.view');
-    Route::get('all/{id}',[LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}/stream',[LessonsController::class, 'stream']);   
+    Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
+    Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
+    Route::get('/{id}', [LessonsController::class, 'stream']);
 });
