@@ -125,17 +125,21 @@ Route::prefix('payment')->controller(PaymentController::class)->group(function (
 |--------------------------------------------------------------------------
 */
 Route::group(['prefix' => 'courses'], function () {
-    Route::get('/courseform', [CoursesController::class, 'showCreateForm'])->name('courses.create');
-    Route::post('/', [CoursesController::class, 'create']);
-    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/all', [CoursesController::class, 'getAllCourse']);
-    Route::get('/view/{id}', [CoursesController::class, 'showPage'])->name('courses.show');
-    Route::put('/{id}', [CoursesController::class, 'update']);
-    Route::delete('/{id}', [CoursesController::class, 'delete']);
-    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
-    Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
-    Route::get('/{courseId}/explore', [CoursesController::class, 'showExplorePage'])->name('courses.exploreNow');
-    Route::get('/{id}', [CoursesController::class, 'getCourse']);
+    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');    //show all courses page
+    Route::post('/', [CoursesController::class, 'store']);     //submit courses data
+    
+    Route::get('/create', [CoursesController::class, 'create'])->name('courses.create');  //show create form
+    
+    Route::get('/data', [CoursesController::class, 'getAll']);     //get all courses on click
+    Route::delete('/{id}', [CoursesController::class, 'delete']);       //delete course
+
+    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);     //get all lesson by courses
+    Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');       //show my course page
+
+    Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');       //show explore page
+    Route::get('/trainer/{id}',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
+    Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');   //update trainer course
+    Route::get('/{id}', [CoursesController::class, 'getCourse']);       //show trainer course on click
 });
 
 /*
