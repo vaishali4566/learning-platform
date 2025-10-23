@@ -36,7 +36,7 @@
                                 </h2>
                             </div>
                         </div>
-                        <a href="{{ route('lessons.alllesson', ['id' => $course->id, 'price' => $course->price]) }}"
+                        <a href="{{ route('payment.stripe', ['courseId' => $course->id]) }}"
                             class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
                             Buy Now
                         </a>

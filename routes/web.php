@@ -169,8 +169,9 @@ Route::group(['prefix' => 'courses'], function () {
     Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');       //show my course page
 
     Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');       //show explore page
-    Route::get('/trainer/{id}',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
+    Route::get('/trainer',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
     Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');   //update trainer course
+    Route::get('/trainer/course/count',[CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');  //each course purchase count
     Route::get('/{id}', [CoursesController::class, 'getCourse']);       //show trainer course on click
 
     

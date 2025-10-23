@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Trainer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -105,14 +108,15 @@ class CoursesController extends Controller
 
     public function myCourses()
     {
-        $courses = Course::all();
-
+        $userId = Auth::id();
+        $courses = User::findOrFail($userId)->courses;
         return view('courses.mycourses', compact('courses'));
     }
 
-    public function showTrainerCourses($id)
+    public function showTrainerCourses()
     {
-        $courses = Course::with('trainer')->where('trainer_id', $id)->get();
+        $trainerId = Auth::guard('trainer')->id();
+        $courses = Course::with('trainer')->where('trainer_id', $trainerId)->get();
         return view('courses.trainercourses', compact('courses'));
     }
 
@@ -184,5 +188,15 @@ class CoursesController extends Controller
     {
         return view('courses.exploreNow', ['courseId' => $courseId]);
     }
-    
+
+    public function coursesWithPurchaseCount()
+    {
+        $trainerId = Auth::guard('trainer')->id() || 1;
+        $trainer = Trainer::with(['courses' => function ($query) {
+            $query->withCount('payments')
+                ->withSum('payments', 'amount');
+        }])->findOrFail($trainerId);
+
+        return view('courses.courseCount', compact('trainer'));
+    }    
 }
