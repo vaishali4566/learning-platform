@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Charge;
+use App\Notifications\PurchaseSuccessMail;
+
 
 class PaymentController extends Controller
 {
@@ -51,7 +53,9 @@ class PaymentController extends Controller
                 'status' => $charge->status === 'succeeded' ? 'success' : 'failed',
                 'receipt_url' => $charge->receipt_url ?? null,
             ]);
-
+            if ($charge->status === 'succeeded' && Auth::check()) {
+                Auth::user()->notify(new PurchaseSuccessMail(Auth::user(), $course));
+            }
             return redirect()
                 ->route('payment.stripe', $course->id)
                 ->with('success', 'Payment successful for ' . $course->title . '!');
