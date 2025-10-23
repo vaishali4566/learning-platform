@@ -172,6 +172,8 @@ Route::group(['prefix' => 'courses'], function () {
     Route::get('/trainer/{id}',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
     Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');   //update trainer course
     Route::get('/{id}', [CoursesController::class, 'getCourse']);       //show trainer course on click
+
+    
 });
 
 /*
