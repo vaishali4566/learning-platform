@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center" 
-     style="background-image: url('{{ asset('images/image.png') }}');">
+<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
+    style="background-image: url('{{ asset('images/image.png') }}');">
 
     <!-- Black overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60"></div>
@@ -23,6 +23,9 @@
             </a>
             <a href="{{ route('courses.mycourses') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Courses</span>
+            </a>
+            <a href="{{ route('courses.index') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">All Courses</span>
             </a>
             <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">Settings</span>

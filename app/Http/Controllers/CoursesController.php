@@ -108,14 +108,20 @@ class CoursesController extends Controller
 
     public function myCourses()
     {
-        $userId = Auth::id();
-        $courses = User::findOrFail($userId)->courses;
+        $userId = Auth::id() || 1;
+
+        $courses = DB::table('payments')
+            ->join('courses', 'payments.course_id', '=', 'courses.id')
+            ->where('payments.user_id', $userId)
+            ->select('courses.*')
+            ->get();
+
         return view('courses.mycourses', compact('courses'));
     }
 
     public function showTrainerCourses()
     {
-        $trainerId = Auth::guard('trainer')->id();
+        $trainerId = Auth::guard('trainer')->id() || 1;
         $courses = Course::with('trainer')->where('trainer_id', $trainerId)->get();
         return view('courses.trainercourses', compact('courses'));
     }

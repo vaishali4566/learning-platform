@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Create Lession</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@section('content')
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-2xl p-8 bg-white rounded shadow-lg">
         <div id="flashMessages" class="mb-4 space-y-2">
             <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center"></div>
@@ -344,8 +337,5 @@
             }
         });
     </script>
-
-
-</body>
-
-</html>
+</div>
+@endsection

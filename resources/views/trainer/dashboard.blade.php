@@ -9,9 +9,14 @@
 
     <!-- Content box -->
     <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-lg p-10 z-10">
-        <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">
-            Welcome, {{ Auth::guard('trainer')->user()->name }}
-        </h1>
+        <div class="flex justify-center">
+            <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">
+                Welcome, {{ Auth::guard('trainer')->user()->name }}
+            </h1>
+            @if($user->profile_image)
+            <img src="{{ asset('storage/' . $user->profile_image) }}" alt="Profile" class="mt-3 w-10 h-10 rounded-full object-cover">
+            @endif
+        </div>
 
         <p class="text-center text-gray-600 text-lg mb-8">
             This is your trainer dashboard. You can manage your profile, courses, and other trainer-related settings here.
@@ -23,6 +28,15 @@
             </a>
             <a href="{{ route('courses.trainercourses') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">My Courses</span>
+            </a>
+            <a href="{{ route('courses.index') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">All Courses</span>
+            </a>
+            <a href="{{ route('courses.create') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">Create Courses</span>
+            </a>
+            <a href="{{ route('course.purchase') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+                <span class="text-gray-700 font-medium">Sells</span>
             </a>
             <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
                 <span class="text-gray-700 font-medium">Settings</span>
