@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\UserQuizController;
 | ROOT REDIRECT
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
         return redirect()->route('user.dashboard');
@@ -59,6 +60,12 @@ Route::prefix('user')->group(function () {
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
         Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
+
+        //payment route for authenticate user
+        Route::prefix('payment')->controller(PaymentController::class)->group(function () {
+            Route::get('/{courseId}', 'stripe')->name('payment.stripe');
+            Route::post('/', 'stripePost')->name('payment.post');
+        });
     });
 });
 
@@ -115,10 +122,11 @@ Route::prefix('admin')->group(function () {
 | PAYMENT ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('payment')->controller(PaymentController::class)->group(function () {
-    Route::get('/{courseId}', 'stripe')->name('payment.stripe');
-    Route::post('/', 'stripePost')->name('payment.post');
-});
+
+// Route::prefix('payment')->controller(PaymentController::class)->group(function () {
+//     Route::get('/{courseId}', 'stripe')->name('payment.stripe');
+//     Route::post('/', 'stripePost')->name('payment.post');
+// });
 
 
 //////////////////////////
