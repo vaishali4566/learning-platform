@@ -51,7 +51,7 @@
     <main>
         @yield('content')
     </main>
-    @include('components.chatbot')
+    @include('partials.chatbot')
 </body>
 
 </html>

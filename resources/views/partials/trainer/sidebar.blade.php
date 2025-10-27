@@ -9,32 +9,32 @@
     </div>
 
     <nav class="flex-1 mt-4 relative">
-        <a href="{{ route('trainer.dashboard1') }}"
+        <a href="{{ route('trainer.dashboard') }}"
             class="menu-item flex items-center gap-3 px-6 py-2 font-medium cursor-pointer 
                   {{ request()->routeIs('trainer.dashboard1') ? 'bg-blue-100 text-blue-700 border-r-4 border-blue-500' : 'hover:bg-blue-50 text-gray-700' }}">
             <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-600"></i>
             <span class="sidebar-text">Dashboard</span>
         </a>
-        <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
+        <a href="{{ route('trainer.courses.index') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
             <i data-lucide="library" class="w-5 h-5 text-green-600"></i>
             <span class="sidebar-text">All Courses</span>
             <span class="tooltip">All Courses</span>
-        </div>
-        <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
+        </a>
+        <a href="{{ route('trainer.courses.my') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
             <i data-lucide="library" class="w-5 h-5 text-green-600"></i>
             <span class="sidebar-text">My Courses</span>
             <span class="tooltip">My Courses</span>
-        </div>
+        </a>
         <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
             <i data-lucide="users" class="w-5 h-5 text-yellow-600"></i>
             <span class="sidebar-text">Students</span>
             <span class="tooltip">Students</span>
         </div>
-        <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
+        <a href="{{ route('trainer.courses.create') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
             <i data-lucide="user-check" class="w-5 h-5 text-red-600"></i>
             <span class="sidebar-text">Create Course</span>
             <span class="tooltip">Create Course</span>
-        </div>
+        </a>
         <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
             <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-600"></i>
             <span class="sidebar-text">Reports</span>

@@ -65,7 +65,7 @@
     @include('partials.trainer.navbar')
 
     {{-- LAYOUT BODY --}}
-    <div class="flex flex-1 pt-16 overflow-hidden">
+    <div class="flex flex-1 pt-16 overflow-scroll">
         {{-- SIDEBAR --}}
         @include('partials.trainer.sidebar')
 
