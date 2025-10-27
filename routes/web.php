@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCourseController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminTrainerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
@@ -12,6 +15,11 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ChatBotController;
+use App\Http\Controllers\Trainer\TrainerCourseController;
+use App\Http\Controllers\Trainer\TrainerDashboardController;
+use App\Http\Controllers\Trainer\TrainerStudentController;
+use App\Http\Controllers\User\UserCourseController;
+use App\Http\Controllers\User\UserDashboardController;
 
 // --------------------------------------------------
 // Root redirect
@@ -96,7 +104,7 @@ Route::prefix('trainer')->group(function () {
 
     // Authenticated routes
     Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
-        Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
+        // Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
         Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
@@ -168,14 +176,14 @@ Route::prefix('user')->middleware(['authenticate.user:web'])->group(function () 
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
 
 Route::group(['prefix' => 'courses'], function () {
-    
+
     Route::post('/', [CoursesController::class, 'store']);     //submit courses data    //trainer only
     Route::get('/create', [CoursesController::class, 'create'])->name('courses.create');  //show create form    //trainer only
     Route::delete('/{id}', [CoursesController::class, 'delete']);       //delete course //trainer only
-    Route::get('/trainer',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
+    Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
     Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');   //update trainer course
-    Route::get('/trainer/course/count',[CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');  //each course purchase count
-    
+    Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');  //each course purchase count
+
     Route::get('/data', [CoursesController::class, 'getAll']);     //get all courses on click
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');    //show all courses page
 
@@ -222,9 +230,9 @@ Route::group(['prefix' => 'lessons'], function () {
     Route::get('/{id}', [LessonsController::class, 'stream']);
 });
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.anudashboard');
-})->name('admin.dashboard');
+// Route::get('/admin/dashboard', function () {
+//     return view('admin.anudashboard');
+// })->name('admin.dashboard');
 
 
 
