@@ -3,28 +3,33 @@
 @section('title', 'Learning project')
 
 @section('content')
+<!-- Load Bootstrap Icons CDN (works without installing) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 <div class="flex flex-col items-center justify-center p-4">
 
     <!-- Role Toggle -->
     <div class="flex justify-center gap-4 mb-6">
-        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-700 text-white font-semibold" data-role="user">User</button>
-        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-900 text-white font-semibold" data-role="trainer">Trainer</button>
+        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-700 text-white font-semibold"
+            data-role="user">User</button>
+        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-900 text-white font-semibold"
+            data-role="trainer">Trainer</button>
     </div>
-
-
 
     <!-- Login Form -->
     <form id="login-form" action="{{ route('user.login.submit') }}" method="POST" class="form w-full max-w-md">
         @csrf
-        <p id="heading">Swagatham User👋</p>
+        <p id="heading">Swagatham User 👋</p>
 
         <!-- Email -->
         <div class="field">
             <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                 fill="currentColor" viewBox="0 0 16 16">
-                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v0.217l-8 4.8-8-4.8V4zm0 1.383V12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.383l-7.555 4.533a1 1 0 0 1-1.11 0L0 5.383z" />
+                <path
+                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v0.217l-8 4.8-8-4.8V4zm0 1.383V12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.383l-7.555 4.533a1 1 0 0 1-1.11 0L0 5.383z" />
             </svg>
-            <input autocomplete="off" placeholder="Email" class="input-field" type="email" name="email" value="{{ old('email') }}">
+            <input autocomplete="off" placeholder="Email" class="input-field" type="email" name="email"
+                value="{{ old('email') }}">
         </div>
         <p class="text-red-500 text-sm mt-1 hidden" id="email-error"></p>
 
@@ -32,14 +37,16 @@
         <div class="field relative">
             <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                 fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                <path
+                    d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
             </svg>
-            <input placeholder="Password" class="input-field pr-8" type="password" id="password" name="password">
-            <button type="button" id="toggle-password" class="absolute right-4 top-3 text-gray-400 hover:text-white">
-                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z" />
-                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" />
-                </svg>
+
+            <input placeholder="Password" class="input-field pr-10" type="password" id="password" name="password">
+
+            <!-- Toggle Button: now using Bootstrap Icons -->
+            <button type="button" id="toggle-password"
+                class="absolute right-3 top-2.5 text-gray-400 hover:text-white bg-transparent border-none p-1">
+                <i id="eye-icon" class="bi bi-eye" style="font-size: 18px;"></i>
             </button>
         </div>
         <p class="text-red-500 text-sm mt-1 hidden" id="password-error"></p>
@@ -54,62 +61,75 @@
     </form>
 </div>
 
+<!-- jQuery (kept as you used it) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
 
-        // Password toggle
-        $('#toggle-password').on('click', function() {
+<script>
+    $(document).ready(function () {
+
+        // Password toggle using Bootstrap Icons
+        $('#toggle-password').on('click', function () {
             const passwordField = $('#password');
+            const icon = $('#eye-icon');
             const isPassword = passwordField.attr('type') === 'password';
+
+            // Toggle input type
             passwordField.attr('type', isPassword ? 'text' : 'password');
+
+            // Animate: add rotate class, then swap icon
+            icon.addClass('icon-rotate');
+            setTimeout(() => {
+                if (isPassword) {
+                    // show "eye-slash" (password visible => show slash)
+                    icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    // show "eye" (password hidden => normal eye)
+                    icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
+                // remove rotate after animation completes
+                setTimeout(() => icon.removeClass('icon-rotate'), 220);
+            }, 100);
         });
 
         // Role toggle
-        $('.role-toggle').on('click', function() {
+        $('.role-toggle').on('click', function () {
             const role = $(this).data('role');
-            console.log(role);
             const form = $('#login-form');
 
-            // Update form action and links
             if (role === 'user') {
                 form.attr('action', "{{ route('user.login.submit') }}");
                 $('#register-link').attr('href', "{{ route('user.register') }}");
                 $('#forgot-link').attr('href', "{{ route('user.password.request') }}");
-            }
-            if (role === 'trainer') {
+            } else {
                 form.attr('action', "{{ route('trainer.login.submit') }}");
                 $('#register-link').attr('href', "{{ route('trainer.register') }}");
                 $('#forgot-link').attr('href', "{{ route('trainer.password.request') }}");
             }
 
-            // Correct highlight logic
-            $('.role-toggle').each(function() {
+            $('.role-toggle').each(function () {
                 if ($(this).data('role') === role) {
                     $(this).removeClass('bg-gray-900').addClass('bg-gray-700');
                 } else {
                     $(this).removeClass('bg-gray-700').addClass('bg-gray-900');
                 }
             });
-             $('#heading').text('Swagatham ' + (role === 'user' ? 'User' : 'Trainer') + ' 👋');
+
+            $('#heading').text('Swagatham ' + (role === 'user' ? 'User' : 'Trainer') + ' 👋');
         });
 
-
-        // AJAX form submit
-        $('#login-form').on('submit', function(e) {
+        // AJAX Login
+        $('#login-form').on('submit', function (e) {
             e.preventDefault();
-
-            $('#email-error').hide();
-            $('#password-error').hide();
+            $('#email-error, #password-error').hide();
 
             $.ajax({
                 url: $(this).attr('action'),
                 method: 'POST',
                 data: $(this).serialize(),
-                success: function(response) {
+                success: function (response) {
                     if (response.success) window.location.href = response.redirect;
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
                         if (errors.email) $('#email-error').text(errors.email[0]).show();
@@ -124,7 +144,6 @@
 </script>
 
 <style>
-    /* Form styling */
     .form {
         display: flex;
         flex-direction: column;
@@ -212,6 +231,38 @@
 
     .button3:hover {
         background-color: red;
+    }
+
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #222 inset !important;
+        -webkit-text-fill-color: #d3d3d3 !important;
+    }
+
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #222 inset !important;
+        -webkit-text-fill-color: #d3d3d3 !important;
+    }
+
+    /* Icon rotate animation */
+    .icon-rotate {
+        transform: rotate(180deg);
+        transition: transform 0.22s ease-in-out;
+        display: inline-block;
+    }
+
+    /* Small button reset */
+    #toggle-password {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    /* make icon color match hover */
+    #toggle-password:hover i {
+        color: #fff;
     }
 </style>
 @endsection

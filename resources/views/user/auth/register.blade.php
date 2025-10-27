@@ -174,5 +174,17 @@ $(document).ready(function() {
     width: 1.2em;
     fill: white;
 }
+input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #222 inset !important; /* same as input bg */
+        -webkit-text-fill-color: #d3d3d3 !important; /* match your text color */
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #222 inset !important;
+        -webkit-text-fill-color: #d3d3d3 !important;
+    }
 </style>
 @endsection
