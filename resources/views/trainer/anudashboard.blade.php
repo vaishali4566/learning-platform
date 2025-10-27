@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-sm">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome to Trainer Dashboard</h1>
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome {{ $name }}, to Dashboard</h1>
     <p class="text-gray-600 mb-4">Manage your courses, students, and quizzes efficiently from one place.</p>
 
     <!-- Dashboard Cards -->
