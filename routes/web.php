@@ -10,7 +10,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
-
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ChatBotController;
 
 // --------------------------------------------------
 // Root redirect
@@ -163,19 +164,50 @@ Route::prefix('user')->middleware(['authenticate.user:web'])->group(function () 
 | COURSES ROUTES
 |--------------------------------------------------------------------------
 */
+
+Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
+
 Route::group(['prefix' => 'courses'], function () {
-    Route::get('/courseform', [CoursesController::class, 'showCreateForm'])->name('courses.create');
-    Route::post('/', [CoursesController::class, 'create']);
-    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/all', [CoursesController::class, 'getAllCourse']);
-    Route::get('/view/{id}', [CoursesController::class, 'showPage'])->name('courses.show');
-    Route::put('/{id}', [CoursesController::class, 'update']);
-    Route::delete('/{id}', [CoursesController::class, 'delete']);
-    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
-    Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
-    Route::get('/{courseId}/explore', [CoursesController::class, 'showExplorePage'])->name('courses.exploreNow');
-    Route::get('/{id}', [CoursesController::class, 'getCourse']);
+    
+    Route::post('/', [CoursesController::class, 'store']);     //submit courses data    //trainer only
+    Route::get('/create', [CoursesController::class, 'create'])->name('courses.create');  //show create form    //trainer only
+    Route::delete('/{id}', [CoursesController::class, 'delete']);       //delete course //trainer only
+    Route::get('/trainer',[CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');        //show trainer courses page
+    Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');   //update trainer course
+    Route::get('/trainer/course/count',[CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');  //each course purchase count
+    
+    Route::get('/data', [CoursesController::class, 'getAll']);     //get all courses on click
+    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');    //show all courses page
+
+    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);     //get all lesson by courses
+    Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');       //show my course page
+
+    Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');       //show explore page
+    Route::get('/{id}', [CoursesController::class, 'getCourse']);       //show trainer course on click
 });
+
+// Route::group(['prefix' => 'courses'], function () {
+
+//     // 🔒 Trainer-only routes
+//     Route::middleware('auth:trainer')->group(function () {
+//         Route::post('/', [CoursesController::class, 'store']); // trainer only
+//         Route::get('/create', [CoursesController::class, 'create'])->name('courses.create'); // trainer only
+//         Route::delete('/{id}', [CoursesController::class, 'delete']); // trainer only
+//         Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses'); // trainer only
+//         Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update'); // trainer only
+//         Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase'); // trainer only
+//     });
+
+//     // 🔐 Authenticated users (user or trainer)
+//     Route::middleware('auth:web,trainer')->group(function () {
+//         Route::get('/data', [CoursesController::class, 'getAll']); // get all courses
+//         Route::get('/', [CoursesController::class, 'index'])->name('courses.index'); // show all courses
+//         Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']); // get all lessons by course
+//         Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses'); // show my courses
+//         Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore'); // explore course
+//         Route::get('/{id}', [CoursesController::class, 'getCourse']); // show single course
+//     });
+// });
 
 /*
 |--------------------------------------------------------------------------
@@ -189,3 +221,18 @@ Route::group(['prefix' => 'lessons'], function () {
     Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
     Route::get('/{id}', [LessonsController::class, 'stream']);
 });
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.anudashboard');
+})->name('admin.dashboard');
+
+Route::get('/trainer/dashboard', function () {
+    return view('trainer.anudashboard');
+})->name('trainer.dashboard1');
+
+Route::get('/user/dashboard', function () {
+    return view('user.anudashboard');
+})->name('user.dashboard');
+
+// routes/web.php
+
