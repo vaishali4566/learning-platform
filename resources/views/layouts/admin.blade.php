@@ -71,7 +71,7 @@
         @include('partials.admin.sidebar')
 
         {{-- MAIN CONTENT --}}
-        <main id="mainContent" class="flex-1 ml-64 p-6 transition-all duration-300">
+        <main id="mainContent" class="flex-1 bg-black ml-64 p-6 transition-all duration-300">
             @yield('content')
         </main>
     </div>

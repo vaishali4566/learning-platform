@@ -143,7 +143,7 @@
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main id="mainContent" class="flex-1 ml-64 p-6 transition-all duration-300">
+        <main id="mainContent" class="flex-1 bg-black ml-64 p-6 transition-all duration-300">
             <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome to E-Learning Dashboard</h1>
                 <p class="text-gray-600 mb-4">Manage your courses, instructors, and students efficiently from one place.</p>

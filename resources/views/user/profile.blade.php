@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
 @section('content')
 <div class="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden 
@@ -9,7 +9,7 @@
                 animate-gradient-slow blur-3xl opacity-40"></div>
 
     <!-- Glassmorphic Profile Container -->
-    <div class="relative z-10 w-full max-w-5xl bg-white/10 backdrop-blur-2xl rounded-2xl shadow-[0_0_40px_rgba(0,194,255,0.1)] border border-white/10 p-8 md:p-10 flex flex-col md:flex-row gap-10
+    <div class="relative z-10 w-full max-w-5xl bg-white/10 backdrop-blur-2xl rounded-md shadow-[0_0_40px_rgba(0,194,255,0.1)] border border-white/10 p-8 md:p-10 flex flex-col md:flex-row gap-10
                 transition-all duration-700 ease-in-out transform hover:scale-[1.01] hover:shadow-[0_0_50px_rgba(0,194,255,0.2)]">
 
         <!-- Left Section: Profile Summary -->

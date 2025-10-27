@@ -226,13 +226,5 @@ Route::get('/admin/dashboard', function () {
     return view('admin.anudashboard');
 })->name('admin.dashboard');
 
-Route::get('/trainer/dashboard', function () {
-    return view('trainer.anudashboard');
-})->name('trainer.dashboard1');
 
-Route::get('/user/dashboard', function () {
-    return view('user.anudashboard');
-})->name('user.dashboard');
-
-// routes/web.php
 
