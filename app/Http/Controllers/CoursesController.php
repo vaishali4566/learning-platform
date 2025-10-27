@@ -93,7 +93,7 @@ class CoursesController extends Controller
 
     public function getCourse($id)
     {
-        $course = Course::find($id);
+        $course = Course::with('trainer')->findOrFail($id);
 
         if (!$course) {
             return response()->json([
@@ -183,8 +183,9 @@ class CoursesController extends Controller
         }
     }
 
-
-
-
+    public function showExplorePage($courseId)
+    {
+        return view('courses.exploreNow', ['courseId' => $courseId]);
+    }
     
 }

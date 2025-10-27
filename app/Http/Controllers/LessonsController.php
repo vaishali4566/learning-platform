@@ -84,8 +84,9 @@ class LessonsController extends Controller
 
     public function viewLesson1($id)
     {
-        $course = Course::with('lessons')->findOrFail($id);
-        return view('lessons.alllessons', ['course' => $course]);
+        // $course = Course::with('lessons')->findOrFail($id);
+        // return view('lessons.alllessons1', ['course' => $course]);
+        return view('lessons.alllessons1', ['courseId' => $id]);
     }
 
     public function showLessonForm()
@@ -231,5 +232,5 @@ class LessonsController extends Controller
     {
         return view('lessons.videoStream');
     }
-
+        
 }

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\TrainerController;
@@ -13,20 +12,25 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 
 
-/*
-|--------------------------------------------------------------------------
-| ROOT REDIRECT
-|--------------------------------------------------------------------------
-*/
-
+// --------------------------------------------------
+// Root redirect
+// --------------------------------------------------
 Route::get('/', function () {
     if (Auth::guard('web')->check()) {
+        $user = Auth::guard('web')->user();
+
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
         return redirect()->route('user.dashboard');
-    } elseif (Auth::guard('trainer')->check()) {
+    }
+
+    if (Auth::guard('trainer')->check()) {
         return redirect()->route('trainer.dashboard');
     }
     return redirect()->route('user.login');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -112,10 +116,12 @@ Route::prefix('trainer')->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['admin.only'])->group(function () {
+    Route::get('/', [AuthController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'fetchAllUsers'])->name('admin.users');
     Route::get('/trainers', [AdminController::class, 'fetchAllTrainers'])->name('admin.trainers');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -167,6 +173,7 @@ Route::group(['prefix' => 'courses'], function () {
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/mycourses', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
+    Route::get('/{courseId}/explore', [CoursesController::class, 'showExplorePage'])->name('courses.exploreNow');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
