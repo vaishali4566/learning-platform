@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Trainer;
+use App\Notifications\WelcomeMail;
+
 
 class AuthController extends Controller
 {
@@ -58,7 +60,7 @@ class AuthController extends Controller
         }
 
         Auth::guard('web')->login($user);
-
+        $user->notify(new WelcomeMail($user->name));
         return response()->json([
             'success' => true,
             'redirect' => route('user.dashboard'),
@@ -216,7 +218,7 @@ class AuthController extends Controller
         }
 
         Auth::guard('trainer')->login($trainer);
-
+        $trainer->notify(new WelcomeMail($trainer->name));
         return response()->json([
             'success' => true,
             'redirect' => route('trainer.dashboard'),
