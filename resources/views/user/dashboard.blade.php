@@ -1,43 +1,47 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
-    style="background-image: url('{{ asset('images/image.png') }}');">
+<div class="relative min-h-screen flex flex-col items-center justify-center p-6 bg-cover bg-center"
+     style="background-image: url('{{ asset('images/image.png') }}');">
 
-    <!-- Black overlay -->
+    <!-- Overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60"></div>
 
-    <!-- Content box -->
-    <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-lg p-10 z-10">
-        <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">
-            Welcome, {{ Auth::user()->name }}
-        </h1>
+    <!-- Dashboard Card -->
+    <div class="relative w-full max-w-4xl bg-[#2f76a615] backdrop-blur-md rounded-xl shadow-2xl z-10 border border-white/20 p-10">
 
-        <p class="text-center text-gray-600 text-lg mb-8">
-            This is your user dashboard. You can view your profile, courses, and manage your account here.
-        </p>
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white">Welcome, {{ Auth::user()->name }}</h1>
+            <p class="text-white/80 mt-2">
+                This is your dashboard. View your profile, courses, and manage your account.
+            </p>
+        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <a href="{{ route('user.profile') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">My Profile</span>
+        <!-- Dashboard Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <a href="{{ route('user.profile') }}" class="flex flex-col items-center justify-center bg-[#93a8be46] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:scale-105">
+                <span class="text-lg font-semibold">My Profile</span>
             </a>
-            <a href="{{ route('courses.mycourses') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">My Courses</span>
+
+            <a href="{{ route('courses.mycourses') }}" class="flex flex-col items-center justify-center bg-[#93a8be46] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:scale-105">
+                <span class="text-lg font-semibold">My Courses</span>
             </a>
-            <a href="{{ route('courses.index') }}" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">All Courses</span>
-            </a>
-            <a href="#" class="flex items-center justify-center px-5 py-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
-                <span class="text-gray-700 font-medium">Settings</span>
+
+            <a href="#" class="flex flex-col items-center justify-center bg-[#93a8be46] text-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:scale-105">
+                <span class="text-lg font-semibold">Settings</span>
             </a>
         </div>
 
+        <!-- Logout Button -->
         <form action="{{ route('user.logout') }}" method="POST" class="text-center">
             @csrf
-            <button type="submit" class="px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition">
+            <button type="submit" 
+                    class="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition">
                 Logout
             </button>
         </form>
+
     </div>
 </div>
 @endsection

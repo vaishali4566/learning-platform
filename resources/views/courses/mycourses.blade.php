@@ -1,51 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
-    <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">My Courses</h1>
+<div class="relative min-h-screen flex flex-col items-center justify-center p-6 bg-cover bg-center"
+     style="background-image: url('{{ asset('images/image.png') }}');">
+
+    <!-- Black overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 w-full max-w-6xl">
+        <h1 class="text-4xl font-bold text-white text-center mb-10 drop-shadow-lg">My Courses</h1>
 
         @if($courses->isEmpty())
-        <div class="bg-white p-10 rounded-lg shadow-md text-center text-gray-700">
-            <h2 class="text-2xl font-semibold mb-4">No courses purchased yet 😔</h2>
-            <p>Explore our catalog and find your next learning adventure!</p>
-            <a href="{{ route('courses.index') }}" class="inline-block mt-6 px-6 py-2 bg-purple-600 text-white font-semibold rounded hover:bg-purple-700 transition">
-                Browse Courses
-            </a>
-        </div>
-        @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            @foreach($courses as $course)
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
-                {{-- <div class="h-40 bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $course->image) }}')">--}}
-                <div class="h-40 bg-cover bg-center">
-                </div>
-                <div class="p-5 flex flex-col justify-between h-40">
-                    <h2 class="text-lg font-bold text-purple-700">{{ $course->title }}</h2>
-                    <a href="{{ route('lessons.alllesson', $course->id) }}"
-                        class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
-                        Open
-                    </a>
-                </div>
+            <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-lg p-10 text-center">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-3">No Courses Purchased </h2>
+                <p class="text-gray-600 mb-6">Explore our catalog and start learning something new today!</p>
+                <a href="{{ route('courses.index') }}"
+                   class="inline-block px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90 transition">
+                    Browse Courses
+                </a>
             </div>
-            @endforeach
-        </div>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach($courses as $course)
+                    <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-2xl overflow-hidden transition transform hover:scale-105">
+                        <!-- Course Image -->
+                        <div class="h-40 bg-cover bg-center"
+                             style="background-image: url('{{ asset('storage/' . $course->image) }}');">
+                        </div>
+
+                        <!-- Course Details -->
+                        <div class="p-5 flex flex-col justify-between h-40">
+                            <h2 class="text-lg font-semibold text-gray-800 line-clamp-2">{{ $course->title }}</h2>
+                            <a href="{{ route('lessons.alllesson', $course->id) }}"
+                               class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-blue-800 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition">
+                                Open Course
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         @endif
     </div>
 </div>
-
-<script>
-    fetch('/courses/all')
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            const list = document.getElementById('courses-list');
-            list.innerHTML = data.data.map(course => `
-            <div class="mb-3">
-                <h4>${course.title}</h4>
-                <a href="/courses/view/${course.id}" class="btn btn-primary">View Course</a>
-            </div>
-        `).join('');
-        });
-</script>
 @endsection

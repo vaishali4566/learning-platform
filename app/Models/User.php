@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable; // ✅ Add this
+use Illuminate\Notifications\Notifiable; // 
+use App\Notifications\CustomResetPassword; // 
+
 
 class User extends Authenticatable
 {
-    use HasFactory, HasApiTokens, Notifiable; // ✅ Add Notifiable here
+    use HasFactory, HasApiTokens, Notifiable; // 
 
     protected $fillable = [
         'name',
@@ -41,5 +43,9 @@ class User extends Authenticatable
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
     }
 }
