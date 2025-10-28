@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
     <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">My Courses</h1>
+        <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">Available Courses</h1>
 
         @if($courses->isEmpty())
         <div class="bg-white p-10 rounded-lg shadow-md text-center text-gray-700">
