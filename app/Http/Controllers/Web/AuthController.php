@@ -32,10 +32,7 @@ class AuthController extends Controller
         return view('user.auth.register');
     }
 
-    public function adminDashboard()
-    {
-        return view('admin.dashboard'); // create this blade view
-    }
+    
 
     // Handle user registration
     public function userRegister(Request $request)

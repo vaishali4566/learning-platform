@@ -17,73 +17,76 @@
         class="flex-1 mt-4 relative text-[#8A93A8] overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[#101727]/50 scrollbar-track-transparent transition-all duration-500 ease-in-out">
 
         <!-- Dashboard -->
-        <a href="{{ route('admin.dashboard') }}"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.dashboard') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
+        <a href="#"
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="layout-dashboard"
-                class="w-5 h-5 text-[#FF6B6B] transition-all duration-300 group-hover:scale-110"></i>
-            <span class="sidebar-text">Dashboard</span>
+            <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#FF6B6B] transition-all duration-300 group-hover:scale-110"></i>
+            <span class="sidebar-text">Dashboard Overview</span>
         </a>
 
-        <!-- Manage Users -->
+        <!-- User Management -->
         <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.users.index') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="users"
-                class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
-            <span class="sidebar-text">Manage Users</span>
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#4ADE80] rounded transition-all duration-300"></div>
+            <i data-lucide="users" class="w-5 h-5 text-[#4ADE80] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">User Management</span>
         </a>
 
-        <!-- Manage Courses -->
+        <!-- Course Management -->
         <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.courses.index') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="book"
-                class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
-            <span class="sidebar-text">Manage Courses</span>
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#38BDF8] rounded transition-all duration-300"></div>
+            <i data-lucide="book-open" class="w-5 h-5 text-[#38BDF8] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">Course Management</span>
+        </a>
+
+        <!-- Trainer Management -->
+        <a href="#"
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FACC15] rounded transition-all duration-300"></div>
+            <i data-lucide="user-check" class="w-5 h-5 text-[#FACC15] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">Trainer Management</span>
         </a>
 
         <!-- Quiz Management -->
         <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.quizzes.index') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="clipboard-list"
-                class="w-5 h-5 text-[#FF6B6B] group-hover:scale-110 transition-all duration-300"></i>
-            <span class="sidebar-text">Manage Quizzes</span>
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FB923C] rounded transition-all duration-300"></div>
+            <i data-lucide="clipboard-list" class="w-5 h-5 text-[#FB923C] group-hover:scale-110 transition-all duration-300"></i>
+            <span class="sidebar-text">Quiz Management</span>
         </a>
 
-        <!-- Reports -->
+        <!-- Payment Reports -->
         <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.reports') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="bar-chart-2"
-                class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
-            <span class="sidebar-text">Reports</span>
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#C084FC] rounded transition-all duration-300"></div>
+            <i data-lucide="credit-card" class="w-5 h-5 text-[#C084FC] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">Payment Reports</span>
+        </a>
+
+        <!-- Analytics -->
+        <a href="#"
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#60A5FA] rounded transition-all duration-300"></div>
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#60A5FA] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">Analytics</span>
         </a>
 
         <!-- Settings -->
         <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.settings') ? 'bg-[#101727] text-[#FF6B6B] border-r-4 border-[#FF6B6B]' : '' }}">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
-            <i data-lucide="settings"
-                class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
-            <span class="sidebar-text">Settings</span>
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#94A3B8] rounded transition-all duration-300"></div>
+            <i data-lucide="settings" class="w-5 h-5 text-[#94A3B8] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
+            <span class="sidebar-text">System Settings</span>
         </a>
 
         <!-- Logout -->
-        <form action="{{ route('user.logout') }}" method="POST"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
+        <form action="#" method="POST"
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-2 mt-4 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
             @csrf
             <button type="submit" class="flex items-center gap-3 w-full text-left">
                 <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-red-500 rounded transition-all duration-300"></div>
-                <i data-lucide="log-out"
-                    class="w-5 h-5 text-red-500 group-hover:scale-110 transition-all duration-300"></i>
+                <i data-lucide="log-out" class="w-5 h-5 text-red-500 group-hover:scale-110 transition-all duration-300"></i>
                 <span class="sidebar-text">Logout</span>
             </button>
         </form>
