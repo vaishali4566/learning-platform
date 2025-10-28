@@ -15,11 +15,7 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ChatBotController;
-use App\Http\Controllers\Trainer\TrainerCourseController;
-use App\Http\Controllers\Trainer\TrainerDashboardController;
-use App\Http\Controllers\Trainer\TrainerStudentController;
-use App\Http\Controllers\User\UserCourseController;
-use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\TelegramController;
 
 // --------------------------------------------------
 // Root redirect
@@ -39,6 +35,7 @@ Route::get('/', function () {
     }
     return redirect()->route('user.login');
 });
+
 
 
 /*
@@ -68,6 +65,10 @@ Route::prefix('user')->group(function () {
         Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+
+
+
 
         // User quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
@@ -235,4 +236,7 @@ Route::group(['prefix' => 'lessons'], function () {
 // })->name('admin.dashboard');
 
 
-
+Route::get('/contact', function () {
+    return view('contact'); // yahan 'contact.blade.php' file resources/views me hogi
+});
+Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->name('send.to.telegram');
