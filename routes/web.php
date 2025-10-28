@@ -22,6 +22,7 @@ use App\Http\Controllers\Trainer\TrainerStudentController;
 // User Controllers
 use App\Http\Controllers\User\UserCourseController;
 use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\TelegramController;
 
 // Admin Controllers (single merged file)
 use App\Http\Controllers\Admin\AdminProfileController;
@@ -73,6 +74,11 @@ Route::prefix('user')->group(function () {
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
 
         // Quizzes
+
+
+
+
+        // User quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
         Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
@@ -183,3 +189,12 @@ Route::group(['prefix' => 'lessons'], function () {
 // CHATBOT
 // --------------------------------------------------
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
+// Route::get('/admin/dashboard', function () {
+//     return view('admin.anudashboard');
+// })->name('admin.dashboard');
+
+
+Route::get('/contact', function () {
+    return view('contact'); // yahan 'contact.blade.php' file resources/views me hogi
+});
+Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->name('send.to.telegram');
