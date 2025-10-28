@@ -14,19 +14,23 @@ use Illuminate\Support\Facades\Storage;
 
 class CoursesController extends Controller
 {
+    // =========================================================
+    // 🧑‍🏫 TRAINER SECTION
+    // =========================================================
 
+    /**
+     * Show the trainer's course creation page.
+     * Route: trainer/courses/create
+     */
     public function create()
     {
-        return view('courses.create');
+        return view('trainer.courses.create');
     }
 
-    public function index()
-    {
-        $courses = Course::all();
-
-        return view('courses.index', compact('courses'));
-    }
-    
+    /**
+     * Store a new course created by a trainer.
+     * Handles validation, database transaction, and error logging.
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -63,6 +67,7 @@ class CoursesController extends Controller
                 'city',
                 'country'
             ]);
+
             $course = Course::create($data);
             DB::commit();
 
@@ -81,6 +86,88 @@ class CoursesController extends Controller
         }
     }
 
+    /**
+     * Display all courses created by the logged-in trainer.
+     * Route: trainer/courses
+     */
+    public function showTrainerCourses()
+    {
+        $trainerId = Auth::guard('trainer')->id() || 1;
+
+        $courses = Course::with('trainer')
+            ->where('trainer_id', $trainerId)
+            ->get();
+
+        return view('courses.trainercourses', compact('courses'));
+    }
+
+    /**
+     * Show course statistics for the trainer — includes number of purchases and total revenue.
+     * Route: trainer/courses/stats
+     */
+    public function coursesWithPurchaseCount()
+    {
+        $trainerId = Auth::guard('trainer')->id() || 1;
+
+        $trainer = Trainer::with([
+            'courses' => function ($query) {
+                $query->withCount('payments')
+                    ->withSum('payments', 'amount');
+            }
+        ])->findOrFail($trainerId);
+
+        return view('courses.courseCount', compact('trainer'));
+    }
+
+
+    // =========================================================
+    // 🧑‍🎓 USER SECTION
+    // =========================================================
+
+    /**
+     * Show all available courses to users.
+     * Route: /courses
+     */
+    public function index()
+    {
+        $courses = Course::all();
+        return view('user.courses.index', compact('courses'));
+    }
+
+    /**
+     * Show the logged-in user's purchased courses.
+     * Route: user/my-courses
+     */
+    public function myCourses()
+    {
+        $userId = Auth::id() || 1;
+
+        $courses = DB::table('payments')
+            ->join('courses', 'payments.course_id', '=', 'courses.id')
+            ->where('payments.user_id', $userId)
+            ->select('courses.*')
+            ->get();
+
+        return view('courses.mycourses', compact('courses'));
+    }
+
+    /**
+     * Show the "Explore Now" page for a specific course.
+     * Route: /courses/explore/{courseId}
+     */
+    public function explore($courseId)
+    {
+        return view('courses.exploreNow', ['courseId' => $courseId]);
+    }
+
+
+    // =========================================================
+    // 🌍 SHARED / COMMON METHODS (Used by both Users & Trainers)
+    // =========================================================
+
+    /**
+     * Fetch all courses (used for API calls or AJAX).
+     */
     public function getAll()
     {
         $courses = Course::all();
@@ -90,6 +177,10 @@ class CoursesController extends Controller
         ]);
     }
 
+    /**
+     * Get detailed info of a single course by ID.
+     * Includes trainer details.
+     */
     public function getCourse($id)
     {
         $course = Course::with('trainer')->findOrFail($id);
@@ -106,27 +197,10 @@ class CoursesController extends Controller
         ]);
     }
 
-    public function myCourses()
-    {
-        $userId = Auth::id() || 1;
-
-        $courses = DB::table('payments')
-            ->join('courses', 'payments.course_id', '=', 'courses.id')
-            ->where('payments.user_id', $userId)
-            ->select('courses.*')
-            ->get();
-
-        return view('courses.mycourses', compact('courses'));
-    }
-
-    public function showTrainerCourses()
-    {
-        $trainerId = Auth::guard('trainer')->id() || 1;
-        $courses = Course::with('trainer')->where('trainer_id', $trainerId)->get();
-        return view('courses.trainercourses', compact('courses'));
-    }
-
-
+    /**
+     * Update course details (for trainer dashboard).
+     * Handles optional image upload.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -162,6 +236,9 @@ class CoursesController extends Controller
         ]);
     }
 
+    /**
+     * Delete a course (Trainer access only).
+     */
     public function destroy($id)
     {
         $course = Course::find($id);
@@ -171,17 +248,19 @@ class CoursesController extends Controller
                 'message' => 'Course not found'
             ], 404);
         }
-        
+
         try {
             if ($course->image && Storage::exists($course->image)) {
                 Storage::delete($course->image);
             }
             $course->delete();
+
             return response()->json([
                 'message' => 'Course deleted successfully'
             ]);
         } catch (\Exception $e) {
             Log::error('Course deletion failed: ' . $e->getMessage());
+
             return response()->json([
                 'message' => 'Failed to delete course'
             ], 500);
@@ -189,20 +268,4 @@ class CoursesController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-    public function explore($courseId)
-    {
-        return view('courses.exploreNow', ['courseId' => $courseId]);
-    }
-
-    public function coursesWithPurchaseCount()
-    {
-        $trainerId = Auth::guard('trainer')->id() || 1;
-        $trainer = Trainer::with(['courses' => function ($query) {
-            $query->withCount('payments')
-                ->withSum('payments', 'amount');
-        }])->findOrFail($trainerId);
-
-        return view('courses.courseCount', compact('trainer'));
-    }    
 }

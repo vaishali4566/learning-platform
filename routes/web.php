@@ -104,7 +104,7 @@ Route::prefix('trainer')->group(function () {
 
     // Authenticated routes
     Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
-        // Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
+        Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
         Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');

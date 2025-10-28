@@ -1,41 +1,55 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
 @section('content')
-<div class="relative min-h-screen flex flex-col items-center justify-center p-6 bg-cover bg-center"
-     style="background-image: url('{{ asset('images/image.png') }}');">
-
-    <!-- Black overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-
-    <!-- Content -->
-    <div class="relative z-10 w-full max-w-6xl">
-        <h1 class="text-4xl font-bold text-white text-center mb-10 drop-shadow-lg">My Courses</h1>
+<div class="min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] py-10 px-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- Page Title -->
+        <h1 class="text-2xl md:text-3xl font-semibold text-center text-[#E6EDF7] mb-10">
+            My Courses
+        </h1>
 
         @if($courses->isEmpty())
-            <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-lg p-10 text-center">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-3">No Courses Purchased </h2>
-                <p class="text-gray-600 mb-6">Explore our catalog and start learning something new today!</p>
+            <!-- No Courses Message -->
+            <div class="bg-[#10182C]/70 border border-[#1F2A44] backdrop-blur-md p-10 rounded-2xl shadow-lg text-center text-[#B8C1D8]">
+                <h2 class="text-xl font-medium text-[#00C2FF] mb-3">No courses purchased yet</h2>
+                <p class="text-[#AAB3C7] text-sm mb-6">
+                    You haven’t purchased any courses yet. Browse our catalog and start learning today.
+                </p>
                 <a href="{{ route('courses.index') }}"
-                   class="inline-block px-6 py-3 bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold rounded-lg hover:opacity-90 transition">
+                   class="inline-block px-5 py-2.5 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white text-sm font-medium rounded-full shadow-md hover:shadow-[0_0_10px_#00C2FF70] transition-all duration-300">
                     Browse Courses
                 </a>
             </div>
         @else
+            <!-- Course Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($courses as $course)
-                    <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-2xl overflow-hidden transition transform hover:scale-105">
-                        <!-- Course Image -->
-                        <div class="h-40 bg-cover bg-center"
-                             style="background-image: url('{{ asset('storage/' . $course->image) }}');">
+                    <div
+                        class="group bg-[#10182C]/80 border border-[#1F2A44] backdrop-blur-md rounded-2xl overflow-hidden shadow-md hover:shadow-[0_0_15px_#00C2FF40] transition-all duration-300 hover:-translate-y-1">
+                        
+                        <!-- Course Thumbnail -->
+                        <div class="relative h-40 overflow-hidden">
+                            <img src="{{ asset('storage/' . $course->image) }}"
+                                alt="{{ $course->title }}"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0A0E19]/80 via-transparent to-transparent"></div>
                         </div>
 
-                        <!-- Course Details -->
-                        <div class="p-5 flex flex-col justify-between h-40">
-                            <h2 class="text-lg font-semibold text-gray-800 line-clamp-2">{{ $course->title }}</h2>
-                            <a href="{{ route('lessons.alllesson', $course->id) }}"
-                               class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-blue-800 to-green-700 text-white rounded-lg font-medium hover:opacity-90 transition">
-                                Open Course
-                            </a>
+                        <!-- Course Info -->
+                        <div class="p-4 flex flex-col justify-between">
+                            <div>
+                                <h2 class="text-base font-medium text-[#E6EDF7] leading-snug line-clamp-2">
+                                    {{ $course->title }}
+                                </h2>
+                            </div>
+
+                            <!-- Button -->
+                            <div class="mt-4">
+                                <a href="{{ route('lessons.alllesson', $course->id) }}"
+                                   class="block text-center w-full px-4 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] rounded-full text-sm font-medium text-white shadow-md hover:shadow-[0_0_10px_#00C2FF70] transition-all duration-300">
+                                    Open Course
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endforeach
