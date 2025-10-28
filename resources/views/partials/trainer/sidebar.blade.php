@@ -1,44 +1,87 @@
-<aside id="sidebar" class="bg-white shadow-md sidebar-expanded transition-all fixed top-16 left-0 bottom-0 flex flex-col z-30">
-    <div class="flex items-center justify-center py-5 border-b">
-        <div class="flex items-center gap-2">
-            <i data-lucide="book-open" class="w-6 h-6 text-blue-600"></i>
-            <span id="sidebar-title" class="text-lg font-semibold text-gray-700 whitespace-nowrap">
-                E-Learning Admin
+<aside id="sidebar"
+    class="bg-gradient-to-b from-[#0E1625] via-[#1C2541] to-[#0E1625] shadow-2xl sidebar-expanded fixed top-16 left-0 bottom-0 flex flex-col z-30 border-r border-[#26304D] backdrop-blur-md bg-opacity-95 transition-all duration-500 ease-in-out">
+
+    <!-- Header -->
+    <div
+        class="flex items-center justify-center py-5 border-b border-[#26304D] bg-[#0E1625]/80 backdrop-blur-sm shadow-inner">
+        <div class="flex items-center gap-2 animate-fade-in">
+            <i data-lucide="book-open" class="w-6 h-6 text-[#00C2FF] animate-pulse-slow"></i>
+            <span id="sidebar-title" class="text-lg font-semibold text-[#E6EDF7] whitespace-nowrap tracking-wide">
+                Trainer Panel
             </span>
         </div>
     </div>
 
-    <nav class="flex-1 mt-4 relative">
+    <!-- Menu -->
+    <nav class="flex-1 mt-4 relative text-[#8A93A8] overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[#101727]/50 scrollbar-track-transparent">
+
+        <!-- Dashboard -->
         <a href="{{ route('trainer.dashboard') }}"
-            class="menu-item flex items-center gap-3 px-6 py-2 font-medium cursor-pointer 
-                  {{ request()->routeIs('trainer.dashboard1') ? 'bg-blue-100 text-blue-700 border-r-4 border-blue-500' : 'hover:bg-blue-50 text-gray-700' }}">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-600"></i>
-            <span class="sidebar-text">Dashboard</span>
+            class="group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('trainer.dashboard')
+                ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]'
+                : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#00C2FF] transition-all duration-300 group-hover:scale-110"></i>
+            <span class="sidebar-text transition-all duration-300">Dashboard</span>
         </a>
-        <a href="{{ route('trainer.courses.index') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
-            <i data-lucide="library" class="w-5 h-5 text-green-600"></i>
+
+        <!-- All Courses -->
+        <a href="{{ route('courses.index') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="library" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">All Courses</span>
-            <span class="tooltip">All Courses</span>
         </a>
-        <a href="{{ route('trainer.courses.my') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
-            <i data-lucide="library" class="w-5 h-5 text-green-600"></i>
+
+        <!-- My Courses -->
+        <a href="{{ route('courses.trainercourses') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.trainercourses') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="library" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">My Courses</span>
-            <span class="tooltip">My Courses</span>
         </a>
-        <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
-            <i data-lucide="users" class="w-5 h-5 text-yellow-600"></i>
-            <span class="sidebar-text">Students</span>
-            <span class="tooltip">Students</span>
-        </div>
-        <a href="{{ route('trainer.courses.create') }}" class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
-            <i data-lucide="user-check" class="w-5 h-5 text-red-600"></i>
+
+        <!-- Create Course -->
+        <a href="{{ route('courses.create') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.create') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="plus-circle" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">Create Course</span>
-            <span class="tooltip">Create Course</span>
         </a>
-        <div class="menu-item relative flex items-center gap-3 px-6 py-2 hover:bg-blue-50 text-gray-700 font-medium cursor-pointer">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-600"></i>
-            <span class="sidebar-text">Reports</span>
-            <span class="tooltip">Reports</span>
+
+        <!-- Students -->
+        <div
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="users" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
+            <span class="sidebar-text">Students</span>
         </div>
+
+        <!-- Reports -->
+        <div
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
+            <span class="sidebar-text">Reports</span>
+        </div>
+
+        <!-- Logout -->
+        <form action="{{ route('trainer.logout') }}" method="POST"
+            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
+            @csrf
+            <button type="submit" class="flex items-center gap-3 w-full text-left">
+                <div
+                    class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-red-500 rounded transition-all duration-300 ease-in-out">
+                </div>
+                <i data-lucide="log-out"
+                    class="w-5 h-5 text-red-500 group-hover:scale-110 transition-all duration-300"></i>
+                <span class="sidebar-text transition-all duration-300">Logout</span>
+            </button>
+        </form>
+
     </nav>
 </aside>

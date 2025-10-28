@@ -15,11 +15,7 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Web\UserQuizController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ChatBotController;
-use App\Http\Controllers\Trainer\TrainerCourseController;
-use App\Http\Controllers\Trainer\TrainerDashboardController;
-use App\Http\Controllers\Trainer\TrainerStudentController;
-use App\Http\Controllers\User\UserCourseController;
-use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\TelegramController;
 
 // --------------------------------------------------
 // Root redirect
@@ -39,6 +35,7 @@ Route::get('/', function () {
     }
     return redirect()->route('user.login');
 });
+
 
 
 /*
@@ -68,6 +65,10 @@ Route::prefix('user')->group(function () {
         Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+
+
+
 
         // User quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
@@ -104,7 +105,7 @@ Route::prefix('trainer')->group(function () {
 
     // Authenticated routes
     Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
-        // Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
+        Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
         Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
@@ -234,58 +235,8 @@ Route::group(['prefix' => 'lessons'], function () {
 //     return view('admin.anudashboard');
 // })->name('admin.dashboard');
 
-// Route::get('/trainer/dashboard', function () {
-//     return view('trainer.anudashboard');
-// })->name('trainer.dashboard1');
 
-// Route::get('/user/dashboard', function () {
-//     return view('user.anudashboard');
-// })->name('user.dashboard');
-
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['admin.only'])
-    ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-        // Nested group for admin courses
-        Route::prefix('courses')->name('courses.')->group(function () {
-            Route::get('/', [AdminCourseController::class, 'index'])->name('index');
-            Route::get('/create', [AdminCourseController::class, 'create'])->name('create');
-            Route::post('/', [AdminCourseController::class, 'store'])->name('store');
-        });
-
-        // Trainers management
-        Route::resource('trainers', AdminTrainerController::class);
+Route::get('/contact', function () {
+    return view('contact'); // yahan 'contact.blade.php' file resources/views me hogi
 });
-
-Route::prefix('trainer')
-    ->name('trainer.')
-    ->middleware(['trainer.only'])
-    ->group(function () {
-        Route::get('/dashboard', [TrainerDashboardController::class, 'index'])->name('dashboard');
-
-        // Trainer’s own courses
-        Route::prefix('courses')->name('courses.')->group(function () {
-            Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
-            Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
-            Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
-            Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
-        });
-
-        Route::get('/students', [TrainerStudentController::class, 'index'])->name('students');
-    });
-
-Route::prefix('user')
-    ->name('user.')
-    ->middleware(['auth'])
-    ->group(function () {
-        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-
-        // User-specific course routes
-        Route::prefix('courses')->name('courses.')->group(function () {
-            Route::get('/', [UserCourseController::class, 'index'])->name('index');
-            Route::get('/{course}', [UserCourseController::class, 'show'])->name('show');
-            Route::post('/{course}/enroll', [UserCourseController::class, 'enroll'])->name('enroll');
-        });
-    });
+Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->name('send.to.telegram');

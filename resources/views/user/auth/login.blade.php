@@ -8,13 +8,7 @@
 
 <div class="flex flex-col items-center justify-center p-4">
 
-    <!-- Role Toggle -->
-    <div class="flex justify-center gap-4 mb-6">
-        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-700 text-white font-semibold"
-            data-role="user">User</button>
-        <button type="button" class="role-toggle px-4 py-2 rounded-md bg-gray-900 text-white font-semibold"
-            data-role="trainer">Trainer</button>
-    </div>
+   
 
     <!-- Login Form -->
     <form id="login-form" action="{{ route('user.login.submit') }}" method="POST" class="form w-full max-w-md">
