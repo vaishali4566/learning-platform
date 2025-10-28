@@ -27,20 +27,31 @@
         </a>
 
         <!-- All Courses -->
-        <div
-            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+        <a href="{{ route('courses.index') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="library" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">All Courses</span>
-        </div>
+        </a>
 
         <!-- My Courses -->
-        <div
-            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+        <a href="{{ route('courses.trainercourses') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.trainercourses') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="library" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">My Courses</span>
-        </div>
+        </a>
+
+        <!-- Create Course -->
+        <a href="{{ route('courses.create') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('courses.create') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="plus-circle" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
+            <span class="sidebar-text">Create Course</span>
+        </a>
 
         <!-- Students -->
         <div
@@ -48,14 +59,6 @@
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="users" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Students</span>
-        </div>
-
-        <!-- Create Course -->
-        <div
-            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
-            <i data-lucide="user-check" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
-            <span class="sidebar-text">Create Course</span>
         </div>
 
         <!-- Reports -->
@@ -66,7 +69,7 @@
             <span class="sidebar-text">Reports</span>
         </div>
 
-         <!-- Logout -->
+        <!-- Logout -->
         <form action="{{ route('trainer.logout') }}" method="POST"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
             @csrf
