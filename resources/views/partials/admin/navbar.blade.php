@@ -20,7 +20,7 @@
 
     <!-- Middle: Quick Links -->
     <div class="hidden md:flex items-center gap-6">
-        <a href="#"
+        <a href="{{route('admin.dashboard')}}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Dashboard</span>
@@ -82,7 +82,7 @@
                 opacity-0 scale-95 invisible peer-hover:opacity-100 hover:opacity-100 peer-hover:scale-100 hover:scale-100 peer-hover:visible hover:visible
                 transition-all duration-200 backdrop-blur-md z-50">
                 
-                <a href="#"
+                <a href="{{ route('admin.profile') }}"
                     class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Profile</a>
                 <a href="#"
                     class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Settings</a>

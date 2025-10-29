@@ -64,19 +64,19 @@
             <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#00C2FF]"></i> Quick Access
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="{{ route('admin.users') }}" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#00C2FF]/30 transition-all hover:-translate-y-1">
+            <a href="#" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#00C2FF]/30 transition-all hover:-translate-y-1">
                 <i data-lucide="users" class="w-7 h-7 text-[#00C2FF] mb-3"></i>
                 <h3 class="text-lg font-semibold text-[#E6EDF7]">Manage Users</h3>
                 <p class="text-sm text-[#8A93A8] mt-1">View and control student accounts.</p>
             </a>
 
-            <a href="{{ route('admin.trainers') }}" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#16a34a]/30 transition-all hover:-translate-y-1">
+            <a href="#" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#16a34a]/30 transition-all hover:-translate-y-1">
                 <i data-lucide="user-check" class="w-7 h-7 text-[#16a34a] mb-3"></i>
                 <h3 class="text-lg font-semibold text-[#E6EDF7]">Manage Trainers</h3>
                 <p class="text-sm text-[#8A93A8] mt-1">Approve and monitor trainers.</p>
             </a>
 
-            <a href="{{ route('courses.index') }}" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#facc15]/30 transition-all hover:-translate-y-1">
+            <a href="#" class="group bg-gradient-to-br from-[#1C2541] to-[#11182A] p-6 rounded-lg border border-[#26304D] hover:shadow-[#facc15]/30 transition-all hover:-translate-y-1">
                 <i data-lucide="book-open" class="w-7 h-7 text-[#facc15] mb-3"></i>
                 <h3 class="text-lg font-semibold text-[#E6EDF7]">View Courses</h3>
                 <p class="text-sm text-[#8A93A8] mt-1">Track and moderate uploaded courses.</p>

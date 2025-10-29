@@ -1,126 +1,110 @@
 @extends('layouts.trainer.index')
 
 @section('content')
-<div class="relative min-h-full flex items-center justify-center px-4 overflow-hidden 
-            bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
-
-    <!-- Animated Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 
-                animate-gradient-slow blur-2xl opacity-40 pointer-events-none"></div>
-
-    <!-- Glassmorphic Container -->
-    <div class="relative z-10 w-full max-w-2xl bg-white/10 backdrop-blur-xl rounded-lg shadow-[0_0_25px_rgba(0,194,255,0.08)] 
-                border border-white/10 p-6 md:p-8 transition-all duration-500 ease-in-out transform 
-                hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(0,194,255,0.15)] overflow-hidden">
-
-        <!-- Flash Messages -->
-        <div id="flashMessages" class="mb-3 text-center space-y-1">
-            <div id="successMessage" class="hidden bg-[#00C2FF]/10 text-[#00C2FF] border border-[#00C2FF]/30 px-3 py-1.5 rounded text-sm font-medium"></div>
-            <div id="errorMessage" class="hidden bg-red-500/10 text-red-400 border border-red-400/30 px-3 py-1.5 rounded text-sm font-medium"></div>
+<div class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-2xl p-8 bg-white rounded shadow-lg">
+        <div id="flashMessages" class="mb-4 space-y-2">
+            <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center"></div>
+            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center"></div>
         </div>
 
-        <h2 class="text-2xl font-semibold mb-5 text-[#E6EDF7] text-center tracking-wide">Create a New Course</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">Create a New Course</h2>
 
         <!-- Course Form -->
-        <form method="POST" id="courseForm" class="space-y-3">
+        <form method="POST" id="courseForm">
+
+            {{-- Input Component --}}
             @php
-            $inputClass = "mt-1 block w-full rounded-md bg-[#1C2541]/60 text-[#E6EDF7] border border-[#00C2FF]/20
-            px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#00C2FF]/70 text-sm transition-all duration-200 placeholder-gray-400";
+            $inputClass = "mt-1 pl-1.5 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150";
             @endphp
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="trainer_id" class="block text-[#A1A9C4] text-xs mb-1">Trainer ID<span class="text-red-500">*</span></label>
-                    <input
-                        type="number"
-                        name="trainer_id"
-                        id="trainer_id"
-                        value="{{ Auth::guard('trainer')->id() }}"
-                        class="{{ $inputClass }} bg-[#1C2541]/80 cursor-not-allowed opacity-80"
-                        readonly>
-                    <div id="trainer_idError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
+            <div class="mb-4">
+                <label for="trainer_id" class="block font-medium text-gray-700">Trainer ID<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}" required>
+                <div id="trainer_idError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
 
-                <div>
-                    <label for="title" class="block text-[#A1A9C4] text-xs mb-1">Title<span class="text-red-500">*</span></label>
-                    <input type="text" name="title" id="title" class="{{ $inputClass }}">
-                    <div id="titleError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
+            <div class="mb-4">
+                <label for="title" class="block font-medium text-gray-700">Title<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="text" name="title" id="title" class="{{ $inputClass }}">
+                <div id="titleError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block font-medium text-gray-700">Description<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <textarea name="description" id="description" rows="3" class="{{ $inputClass }}"></textarea>
+                <div id="descriptionError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="price" class="block font-medium text-gray-700">Price (Rs)<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
+                <div id="priceError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="duration" class="block font-medium text-gray-700">Duration<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
+                <div id="durationError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="difficulty" class="block font-medium text-gray-700">Difficulty</label>
+                <select name="difficulty" id="difficulty" class="{{ $inputClass }}">
+                    <option value="">-- Select --</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="is_online" value="1" class="form-checkbox text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <span class="ml-2 text-gray-700">Is Online?</span>
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block font-medium text-gray-700">Status</label>
+                <select name="status" id="status" class="{{ $inputClass }}">
+                    <option value="">-- Select --</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="city" class="block font-medium text-gray-700">City<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="text" name="city" id="city" class="{{ $inputClass }}">
+                <div id="cityError" class="text-red-600 text-sm mt-1 error-message"></div>
+            </div>
+
+            <div class="mb-6">
+                <label for="country" class="block font-medium text-gray-700">Country<sup><span class="text-red-600 text-sm">*</span></sup></label>
+                <input type="text" name="country" id="country" class="{{ $inputClass }}">
+                <div id="countryError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>
 
             <div>
-                <label for="description" class="block text-[#A1A9C4] text-xs mb-1">Description<span class="text-red-500">*</span></label>
-                <textarea name="description" id="description" rows="2" class="{{ $inputClass }}"></textarea>
-                <div id="descriptionError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="price" class="block text-[#A1A9C4] text-xs mb-1">Price (Rs)<span class="text-red-500">*</span></label>
-                    <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
-                    <div id="priceError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
-
-                <div>
-                    <label for="duration" class="block text-[#A1A9C4] text-xs mb-1">Duration<span class="text-red-500">*</span></label>
-                    <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
-                    <div id="durationError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="difficulty" class="block text-[#A1A9C4] text-xs mb-1">Difficulty</label>
-                    <select name="difficulty" id="difficulty" class="{{ $inputClass }}">
-                        <option value="">-- Select --</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center  space-x-2 mt-5">
-                    <input type="checkbox" name="is_online" value="1" class="form-checkbox text-[#00C2FF] border-gray-300 rounded focus:ring-[#00C2FF]">
-                    <label class="text-[#E6EDF7] text-xs">Is Online?</label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="city" class="block text-[#A1A9C4] text-xs mb-1">City<span class="text-red-500">*</span></label>
-                    <input type="text" name="city" id="city" class="{{ $inputClass }}">
-                    <div id="cityError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
-
-                <div>
-                    <label for="country" class="block text-[#A1A9C4] text-xs mb-1">Country<span class="text-red-500">*</span></label>
-                    <input type="text" name="country" id="country" class="{{ $inputClass }}">
-                    <div id="countryError" class="text-red-500 text-[11px] mt-1 error-message"></div>
-                </div>
-            </div>
-
-            <div class="pt-2">
-                <button type="submit" id="submitButton" disabled
-                    class="w-full bg-gradient-to-r from-[#2f82db] to-[#00C2FF] text-white font-medium text-sm py-2 px-3 rounded-md 
-                               shadow-md cursor-not-allowed transition-all duration-300 transform hover:scale-[1.01] hover:shadow-[0_0_15px_rgba(0,194,255,0.3)]">
+                <button type="submit" id="submitButton" disabled class="w-full bg-indigo-400 text-white font-semibold py-2 px-4 rounded shadow transition duration-150 cursor-not-allowed">
                     Create Course
                 </button>
             </div>
         </form>
     </div>
-</div>
+    <!-- Scripts -->
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-<style>
-    /* prevent scrolling */
-    html,
-    body {
-        height: 100%;
-        overflow: hidden;
-    }
-
-    @keyframes gradient-slow {
-        0% {
-            background-position: 0% 50%;
+        function clearMessages() {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            successDiv.textContent = '';
+            successDiv.classList.add('hidden');
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
         }
 
         50% {

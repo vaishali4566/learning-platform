@@ -10,7 +10,7 @@
     <!-- Registration Form -->
     <form id="trainer-register-form" action="{{ route('trainer.register.submit') }}" method="POST" enctype="multipart/form-data" class="form w-full max-w-md">
         @csrf
-        <p id="heading">Swagatham Trainer 👋</p>
+        <p id="heading">Trainer Registration</p>
 
         <!-- Full Name -->
         <div class="field">
@@ -61,11 +61,16 @@
         </div>
         <p class="text-red-500 text-sm mt-1 hidden" id="password_confirmation-error"></p>
 
-        <!-- Buttons -->
+        <!-- Submit -->
         <div class="btn">
-            <button type="submit" class="button1">Register</button>
-            <a href="{{ route('trainer.login') }}" class="button2 text-center">Login</a>
+            <button type="submit" class="button1 w-full">Register</button>
         </div>
+
+        <!-- Login Link -->
+        <p class="text-center text-gray-400 text-sm mt-4">
+            Already have an account?
+            <a href="{{ route('trainer.login') }}" class="text-blue-400 hover:underline">Login</a>
+        </p>
     </form>
 </div>
 
@@ -74,15 +79,13 @@
 
 <script>
 $(document).ready(function () {
-
-    // Password toggle with rotation animation
+    // Password toggle
     $('#toggle-password').on('click', function () {
         const passwordField = $('#password');
         const icon = $('#eye-icon');
         const isPassword = passwordField.attr('type') === 'password';
 
         passwordField.attr('type', isPassword ? 'text' : 'password');
-
         icon.addClass('icon-rotate');
         setTimeout(() => {
             if (isPassword) {
@@ -94,7 +97,7 @@ $(document).ready(function () {
         }, 100);
     });
 
-    // AJAX Trainer Registration
+    // AJAX form submit
     $('#trainer-register-form').on('submit', function (e) {
         e.preventDefault();
         $('#name-error, #email-error, #password-error, #password_confirmation-error').hide();
@@ -139,14 +142,15 @@ $(document).ready(function () {
 }
 
 .form:hover {
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 #heading {
     text-align: center;
     color: white;
-    font-size: 1.4em;
+    font-size: 1.2em;
     font-weight: 600;
+    margin-bottom: 0.5em;
 }
 
 .field {
@@ -171,18 +175,16 @@ $(document).ready(function () {
     outline: none;
     width: 100%;
     color: #d3d3d3;
-    font-size: 0.95em;
+    font-size: 0.9em;
 }
 
 .btn {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 1.5em;
+    margin-top: 1.2em;
 }
 
-.button1,
-.button2 {
+.button1 {
     padding: 0.6em 1.8em;
     border-radius: 6px;
     border: none;
@@ -193,14 +195,8 @@ $(document).ready(function () {
     font-weight: 600;
 }
 
-.button1:hover,
-.button2:hover {
+.button1:hover {
     background-color: black;
-}
-
-input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px #222 inset !important;
-    -webkit-text-fill-color: #d3d3d3 !important;
 }
 
 .icon-rotate {
