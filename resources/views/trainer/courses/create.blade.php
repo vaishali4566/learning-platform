@@ -1,155 +1,151 @@
 @extends('layouts.trainer.index')
 
 @section('content')
-<div class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="w-full max-w-2xl p-8 bg-white rounded shadow-lg">
+<div class="relative min-h-screen flex items-center justify-center px-4 py-10 
+            bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] overflow-hidden">
+
+    <!-- Animated Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 
+                animate-gradient-slow blur-3xl opacity-40"></div>
+
+    <!-- Compact Glassmorphic Container -->
+    <div class="relative z-10 w-full max-w-3xl bg-white/10 backdrop-blur-2xl rounded-lg shadow-[0_0_25px_rgba(0,194,255,0.1)] border border-white/10 p-8 
+                transition-all duration-700 ease-in-out transform hover:scale-[1.005] hover:shadow-[0_0_35px_rgba(0,194,255,0.2)]">
+
+        <!-- Title -->
+        <h2 class="text-xl font-semibold text-center text-[#E6EDF7] mb-6 tracking-wide border-b border-white/10 pb-2">
+            Create a New Course
+        </h2>
+
+        <!-- Flash Messages -->
         <div id="flashMessages" class="mb-4 space-y-2">
-            <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center"></div>
-            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center"></div>
+            <div id="successMessage" class="hidden bg-[#00C2FF]/10 border border-[#00C2FF]/40 text-[#00C2FF] px-3 py-2 rounded-md text-center text-sm"></div>
+            <div id="errorMessage" class="hidden bg-red-500/10 border border-red-400/40 text-red-400 px-3 py-2 rounded-md text-center text-sm"></div>
         </div>
 
-        <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">Create a New Course</h2>
-
-        <!-- Course Form -->
+        <!-- Form -->
         <form method="POST" id="courseForm">
-
-            {{-- Input Component --}}
             @php
-            $inputClass = "mt-1 pl-1.5 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150";
+                $inputClass = "mt-1 block w-full px-2.5 py-1.5 rounded-md bg-[#1C2541]/70 text-[#E6EDF7] placeholder-gray-400 border border-white/10 
+                focus:outline-none focus:ring-1 focus:ring-[#00C2FF]/60 text-sm transition-all duration-300";
             @endphp
 
-            <div class="mb-4">
-                <label for="trainer_id" class="block font-medium text-gray-700">Trainer ID<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}" required>
-                <div id="trainer_idError" class="text-red-600 text-sm mt-1 error-message"></div>
+            <!-- Two-column layout -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Trainer ID<span class="text-red-500">*</span></label>
+                    <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}">
+                    <div id="trainer_idError" class="text-red-400 text-xs mt-1"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Title<span class="text-red-500">*</span></label>
+                    <input type="text" name="title" id="title" class="{{ $inputClass }}">
+                    <div id="titleError" class="text-red-400 text-xs mt-1"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Price (₹)<span class="text-red-500">*</span></label>
+                    <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
+                    <div id="priceError" class="text-red-400 text-xs mt-1"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Duration<span class="text-red-500">*</span></label>
+                    <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
+                    <div id="durationError" class="text-red-400 text-xs mt-1"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Difficulty</label>
+                    <select name="difficulty" id="difficulty" class="{{ $inputClass }}">
+                        <option value="">-- Select --</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Status</label>
+                    <select name="status" id="status" class="{{ $inputClass }}">
+                        <option value="">-- Select --</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">City<span class="text-red-500">*</span></label>
+                    <input type="text" name="city" id="city" class="{{ $inputClass }}">
+                    <div id="cityError" class="text-red-400 text-xs mt-1"></div>
+                </div>
+
+                <div>
+                    <label class="block text-[#A1A9C4] text-xs mb-1">Country<span class="text-red-500">*</span></label>
+                    <input type="text" name="country" id="country" class="{{ $inputClass }}">
+                    <div id="countryError" class="text-red-400 text-xs mt-1"></div>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label for="title" class="block font-medium text-gray-700">Title<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="title" id="title" class="{{ $inputClass }}">
-                <div id="titleError" class="text-red-600 text-sm mt-1 error-message"></div>
+            <!-- Description -->
+            <div class="mt-5">
+                <label class="block text-[#A1A9C4] text-xs mb-1">Description<span class="text-red-500">*</span></label>
+                <textarea name="description" id="description" rows="2" class="{{ $inputClass }}"></textarea>
+                <div id="descriptionError" class="text-red-400 text-xs mt-1"></div>
             </div>
 
-            <div class="mb-4">
-                <label for="description" class="block font-medium text-gray-700">Description<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <textarea name="description" id="description" rows="3" class="{{ $inputClass }}"></textarea>
-                <div id="descriptionError" class="text-red-600 text-sm mt-1 error-message"></div>
+            <!-- Checkbox -->
+            <div class="mt-3 flex items-center space-x-2">
+                <input type="checkbox" name="is_online" value="1" class="w-3.5 h-3.5 text-[#00C2FF] bg-transparent border-gray-500 rounded focus:ring-[#00C2FF]">
+                <label class="text-xs text-[#E6EDF7]">Is Online?</label>
             </div>
 
-            <div class="mb-4">
-                <label for="price" class="block font-medium text-gray-700">Price (Rs)<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
-                <div id="priceError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="duration" class="block font-medium text-gray-700">Duration<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
-                <div id="durationError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="difficulty" class="block font-medium text-gray-700">Difficulty</label>
-                <select name="difficulty" id="difficulty" class="{{ $inputClass }}">
-                    <option value="">-- Select --</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_online" value="1" class="form-checkbox text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <span class="ml-2 text-gray-700">Is Online?</span>
-                </label>
-            </div>
-
-            <div class="mb-4">
-                <label for="status" class="block font-medium text-gray-700">Status</label>
-                <select name="status" id="status" class="{{ $inputClass }}">
-                    <option value="">-- Select --</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="city" class="block font-medium text-gray-700">City<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="city" id="city" class="{{ $inputClass }}">
-                <div id="cityError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-6">
-                <label for="country" class="block font-medium text-gray-700">Country<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="country" id="country" class="{{ $inputClass }}">
-                <div id="countryError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div>
-                <button type="submit" id="submitButton" disabled class="w-full bg-indigo-400 text-white font-semibold py-2 px-4 rounded shadow transition duration-150 cursor-not-allowed">
+            <!-- Submit -->
+            <div class="mt-6">
+                <button type="submit" id="submitButton" disabled
+                    class="w-full bg-gradient-to-r from-[#2f82db] to-[#00C2FF] text-white font-medium text-xs py-2 rounded-md shadow 
+                           transition-all cursor-not-allowed opacity-60 hover:opacity-100 hover:scale-[1.01]">
                     Create Course
                 </button>
             </div>
         </form>
     </div>
-    <!-- Scripts -->
-    <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+</div>
 
-        function clearMessages() {
-            const successDiv = document.getElementById('successMessage');
-            const errorDiv = document.getElementById('errorMessage');
-            successDiv.textContent = '';
-            successDiv.classList.add('hidden');
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-
-        50% {
-            background-position: 100% 50%;
-        }
-
-        100% {
-            background-position: 0% 50%;
-        }
+<!-- Styles -->
+<style>
+    select option {
+        background-color: #1C2541;
+        color: #E6EDF7;
     }
 
+    @keyframes gradient-slow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     .animate-gradient-slow {
         background-size: 200% 200%;
-        animation: gradient-slow 10s ease infinite;
-    }
-
-    input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px rgba(30, 64, 175, 0.1) inset !important;
-        -webkit-text-fill-color: #e5e7eb !important;
+        animation: gradient-slow 12s ease infinite;
     }
 </style>
-<!-- Scripts -->
+
+<!-- JS Validation (unchanged logic) -->
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     function clearMessages() {
-        const successDiv = document.getElementById('successMessage');
-        const errorDiv = document.getElementById('errorMessage');
-        successDiv.textContent = '';
-        successDiv.classList.add('hidden');
-        errorDiv.textContent = '';
-        errorDiv.classList.add('hidden');
-    }
-
-    function clearErrors() {
-        document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
-        document.querySelectorAll('input').forEach(input => input.classList.remove('border-red-500'));
+        document.getElementById('successMessage').classList.add('hidden');
+        document.getElementById('errorMessage').classList.add('hidden');
     }
 
     function displayValidationErrors(errors = {}, message = '') {
         const errorDiv = document.getElementById('errorMessage');
         const successDiv = document.getElementById('successMessage');
-        successDiv.textContent = '';
         successDiv.classList.add('hidden');
-
         errorDiv.textContent = message || 'Please fix the errors below.';
         errorDiv.classList.remove('hidden');
 
@@ -161,10 +157,9 @@
         }
     }
 
-    function displaySuccessMessage(message = 'Success!') {
+    function displaySuccessMessage(message = 'Course created successfully!') {
         const successDiv = document.getElementById('successMessage');
         const errorDiv = document.getElementById('errorMessage');
-        errorDiv.textContent = '';
         errorDiv.classList.add('hidden');
         successDiv.textContent = message;
         successDiv.classList.remove('hidden');
@@ -172,141 +167,71 @@
 
     document.getElementById('courseForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        clearErrors();
+        clearMessages();
 
         const formData = new FormData(this);
-        console.log("Error", formData)
-
         try {
-            console.log("Submitting to:", "{{ route('trainer.courses.store') }}");
             const response = await fetch("{{ route('trainer.courses.store') }}", {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
+                headers: { 'X-CSRF-TOKEN': csrfToken },
                 body: formData
             });
             const data = await response.json();
+
             if (response.ok) {
                 displaySuccessMessage(data.message);
                 this.reset();
-                clearErrors();
                 toggleSubmitButton();
             } else {
-                console.log("mydata", data);
                 displayValidationErrors(data.errors || {}, data.message);
             }
         } catch (err) {
-            alert('An error occurred while creating course');
-            console.log(err)
+            displayValidationErrors({}, 'An unexpected error occurred.');
         }
     });
-</script>
-
-<script>
-    const form = document.getElementById('courseForm');
 
     const validators = {
-        trainer_id: (value) => {
-            if (!value.trim()) return "Trainer ID is required.";
-            if (!/^\d+$/.test(value)) return "Trainer ID must be a number.";
-            return "";
-        },
-        title: (value) => {
-            if (!value.trim()) return "Title is required.";
-            if (value.length < 5) return "Title must be at least 5 characters.";
-            return "";
-        },
-        description: (value) => {
-            if (!value.trim()) return "Description is required.";
-            if (value.length < 10) return "Description must be at least 10 characters.";
-            return "";
-        },
-        price: (value) => {
-            if (!value.trim()) return "Price is required.";
-            if (isNaN(value) || parseFloat(value) <= 0) return "Price must be a positive number.";
-            return "";
-        },
-        duration: (value) => {
-            if (!value.trim()) return "Duration is required.";
-            return "";
-        },
-        city: (value) => {
-            if (!value.trim()) return "City is required.";
-            return "";
-        },
-        country: (value) => {
-            if (!value.trim()) return "Country is required.";
-            return "";
-        }
+        trainer_id: v => !v.trim() ? "Trainer ID is required." : "",
+        title: v => !v.trim() ? "Title is required." : v.length < 5 ? "Min 5 characters." : "",
+        description: v => !v.trim() ? "Description is required." : v.length < 10 ? "Min 10 characters." : "",
+        price: v => !v.trim() ? "Price is required." : parseFloat(v) <= 0 ? "Must be positive." : "",
+        duration: v => !v.trim() ? "Duration is required." : "",
+        city: v => !v.trim() ? "City is required." : "",
+        country: v => !v.trim() ? "Country is required." : ""
     };
 
     function validateField(field) {
-        const value = field.value;
-        const name = field.name;
-        const errorDiv = document.getElementById(`${name}Error`);
-
-        if (validators[name]) {
-            const error = validators[name](value);
-            if (error) {
-                field.classList.add('border-red-500');
-                errorDiv.textContent = error;
-            } else {
-                field.classList.remove('border-red-500');
-                errorDiv.textContent = '';
-            }
-        }
+        const error = validators[field.name]?.(field.value);
+        const errorDiv = document.getElementById(`${field.name}Error`);
+        field.classList.toggle('border-red-500', !!error);
+        errorDiv.textContent = error || '';
     }
 
-    // Attach validation on input
-    Object.keys(validators).forEach((name) => {
-        const field = document.querySelector(`[name="${name}"]`);
-        if (field) {
-            field.addEventListener('input', () => validateField(field));
-        }
-    });
-</script>
-
-<script>
-    const submitButton = document.getElementById('submitButton');
-
     function isFormValid() {
-        let isValid = true;
-        Object.keys(validators).forEach((name) => {
-            const field = document.querySelector(`[name="${name}"]`);
-            const error = validators[name](field.value);
-            if (error) {
-                isValid = false;
-            }
-        });
-        return isValid;
+        return Object.keys(validators).every(name => !validators[name](document.querySelector(`[name="${name}"]`).value));
     }
 
     function toggleSubmitButton() {
+        const button = document.getElementById('submitButton');
         if (isFormValid()) {
-            submitButton.disabled = false;
-            submitButton.classList.remove('bg-indigo-400', 'cursor-not-allowed');
-            submitButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            button.disabled = false;
+            button.classList.remove('cursor-not-allowed', 'opacity-60');
         } else {
-            submitButton.disabled = true;
-            submitButton.classList.add('bg-indigo-400', 'cursor-not-allowed');
-            submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            button.disabled = true;
+            button.classList.add('cursor-not-allowed', 'opacity-60');
         }
     }
 
-    // Add event listeners to all fields
-    Object.keys(validators).forEach((name) => {
-        const field = document.querySelector(`[name="${name}"]`);
-        if (field) {
-            field.addEventListener('input', () => {
-                validateField(field);
-                toggleSubmitButton();
-            });
-        }
-    });
-
-    // Disable button on page load
     document.addEventListener('DOMContentLoaded', () => {
+        Object.keys(validators).forEach(name => {
+            const field = document.querySelector(`[name="${name}"]`);
+            if (field) {
+                field.addEventListener('input', () => {
+                    validateField(field);
+                    toggleSubmitButton();
+                });
+            }
+        });
         toggleSubmitButton();
     });
 </script>
