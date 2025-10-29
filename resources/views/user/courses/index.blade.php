@@ -1,4 +1,4 @@
-@extends('layouts.user')
+@extends('layouts.user.index')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] py-10 px-6">
@@ -21,7 +21,7 @@
             @foreach($courses as $course)
             <div
                 class="group bg-[#10182C]/80 border border-[#1F2A44] backdrop-blur-md rounded-2xl overflow-hidden shadow-md hover:shadow-[0_0_15px_#00C2FF40] transition-all duration-300 hover:-translate-y-1">
-                
+
                 <!-- Thumbnail -->
                 <div class="relative h-40 overflow-hidden">
                     <img src="{{ asset('storage/' . $course->image) }}"

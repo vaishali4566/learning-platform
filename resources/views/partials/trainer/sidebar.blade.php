@@ -27,27 +27,27 @@
         </a>
 
         <!-- All Courses -->
-        <a href="{{ route('courses.index') }}"
+        <a href="{{ route('trainer.courses.index') }}"
             class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('courses.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('trainer.courses.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="library" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">All Courses</span>
         </a>
 
         <!-- My Courses -->
-        <a href="{{ route('courses.trainercourses') }}"
+        <a href="{{ route('trainer.courses.my') }}"
             class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('courses.trainercourses') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('trainer.courses.my') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="library" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">My Courses</span>
         </a>
 
         <!-- Create Course -->
-        <a href="{{ route('courses.create') }}"
+        <a href="{{ route('trainer.courses.create') }}"
             class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('courses.create') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('trainer.courses.create') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="plus-circle" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">Create Course</span>

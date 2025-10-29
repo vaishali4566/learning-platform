@@ -1,4 +1,4 @@
-@extends('layouts.trainer')
+@extends('layouts.trainer.index')
 
 @section('content')
 <div class="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -107,174 +107,207 @@
             errorDiv.classList.add('hidden');
         }
 
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
-            document.querySelectorAll('input').forEach(input => input.classList.remove('border-red-500'));
+        50% {
+            background-position: 100% 50%;
         }
 
-        function displayValidationErrors(errors = {}, message = '') {
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = '';
-            successDiv.classList.add('hidden');
-
-            errorDiv.textContent = message || 'Please fix the errors below.';
-            errorDiv.classList.remove('hidden');
-
-            for (const field in errors) {
-                const input = document.getElementById(field);
-                const errorFieldDiv = document.getElementById(`${field}Error`);
-                if (input) input.classList.add('border-red-500');
-                if (errorFieldDiv) errorFieldDiv.textContent = errors[field][0];
-            }
+        100% {
+            background-position: 0% 50%;
         }
+    }
 
-        function displaySuccessMessage(message = 'Success!') {
-            const successDiv = document.getElementById('successMessage');
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-            successDiv.textContent = message;
-            successDiv.classList.remove('hidden');
+    .animate-gradient-slow {
+        background-size: 200% 200%;
+        animation: gradient-slow 10s ease infinite;
+    }
+
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px rgba(30, 64, 175, 0.1) inset !important;
+        -webkit-text-fill-color: #e5e7eb !important;
+    }
+</style>
+<!-- Scripts -->
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    function clearMessages() {
+        const successDiv = document.getElementById('successMessage');
+        const errorDiv = document.getElementById('errorMessage');
+        successDiv.textContent = '';
+        successDiv.classList.add('hidden');
+        errorDiv.textContent = '';
+        errorDiv.classList.add('hidden');
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
+        document.querySelectorAll('input').forEach(input => input.classList.remove('border-red-500'));
+    }
+
+    function displayValidationErrors(errors = {}, message = '') {
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+        successDiv.textContent = '';
+        successDiv.classList.add('hidden');
+
+        errorDiv.textContent = message || 'Please fix the errors below.';
+        errorDiv.classList.remove('hidden');
+
+        for (const field in errors) {
+            const input = document.getElementById(field);
+            const errorFieldDiv = document.getElementById(`${field}Error`);
+            if (input) input.classList.add('border-red-500');
+            if (errorFieldDiv) errorFieldDiv.textContent = errors[field][0];
         }
+    }
 
-        document.getElementById('courseForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            clearErrors();
+    function displaySuccessMessage(message = 'Success!') {
+        const successDiv = document.getElementById('successMessage');
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = '';
+        errorDiv.classList.add('hidden');
+        successDiv.textContent = message;
+        successDiv.classList.remove('hidden');
+    }
 
-            const formData = new FormData(this);
-            console.log("Error", formData)
+    document.getElementById('courseForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        clearErrors();
 
-            try {
-                const response = await fetch('/courses', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: formData
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    displaySuccessMessage(data.message);
-                    this.reset();
-                    clearErrors();
-                    toggleSubmitButton();
-                } else {
-                    console.log("mydata", data);
-                    displayValidationErrors(data.errors || {}, data.message);
-                }
-            } catch (err) {
-                alert('An error occurred while creating course');
-                console.log(err)
-            }
-        });
-    </script>
+        const formData = new FormData(this);
+        console.log("Error", formData)
 
-    <script>
-        const form = document.getElementById('courseForm');
-
-        const validators = {
-            trainer_id: (value) => {
-                if (!value.trim()) return "Trainer ID is required.";
-                if (!/^\d+$/.test(value)) return "Trainer ID must be a number.";
-                return "";
-            },
-            title: (value) => {
-                if (!value.trim()) return "Title is required.";
-                if (value.length < 5) return "Title must be at least 5 characters.";
-                return "";
-            },
-            description: (value) => {
-                if (!value.trim()) return "Description is required.";
-                if (value.length < 10) return "Description must be at least 10 characters.";
-                return "";
-            },
-            price: (value) => {
-                if (!value.trim()) return "Price is required.";
-                if (isNaN(value) || parseFloat(value) <= 0) return "Price must be a positive number.";
-                return "";
-            },
-            duration: (value) => {
-                if (!value.trim()) return "Duration is required.";
-                return "";
-            },
-            city: (value) => {
-                if (!value.trim()) return "City is required.";
-                return "";
-            },
-            country: (value) => {
-                if (!value.trim()) return "Country is required.";
-                return "";
-            }
-        };
-
-        function validateField(field) {
-            const value = field.value;
-            const name = field.name;
-            const errorDiv = document.getElementById(`${name}Error`);
-
-            if (validators[name]) {
-                const error = validators[name](value);
-                if (error) {
-                    field.classList.add('border-red-500');
-                    errorDiv.textContent = error;
-                } else {
-                    field.classList.remove('border-red-500');
-                    errorDiv.textContent = '';
-                }
-            }
-        }
-
-        // Attach validation on input
-        Object.keys(validators).forEach((name) => {
-            const field = document.querySelector(`[name="${name}"]`);
-            if (field) {
-                field.addEventListener('input', () => validateField(field));
-            }
-        });
-    </script>
-
-    <script>
-        const submitButton = document.getElementById('submitButton');
-
-        function isFormValid() {
-            let isValid = true;
-            Object.keys(validators).forEach((name) => {
-                const field = document.querySelector(`[name="${name}"]`);
-                const error = validators[name](field.value);
-                if (error) {
-                    isValid = false;
-                }
+        try {
+            console.log("Submitting to:", "{{ route('trainer.courses.store') }}");
+            const response = await fetch("{{ route('trainer.courses.store') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: formData
             });
-            return isValid;
-        }
-
-        function toggleSubmitButton() {
-            if (isFormValid()) {
-                submitButton.disabled = false;
-                submitButton.classList.remove('bg-indigo-400', 'cursor-not-allowed');
-                submitButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            const data = await response.json();
+            if (response.ok) {
+                displaySuccessMessage(data.message);
+                this.reset();
+                clearErrors();
+                toggleSubmitButton();
             } else {
-                submitButton.disabled = true;
-                submitButton.classList.add('bg-indigo-400', 'cursor-not-allowed');
-                submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                console.log("mydata", data);
+                displayValidationErrors(data.errors || {}, data.message);
+            }
+        } catch (err) {
+            alert('An error occurred while creating course');
+            console.log(err)
+        }
+    });
+</script>
+
+<script>
+    const form = document.getElementById('courseForm');
+
+    const validators = {
+        trainer_id: (value) => {
+            if (!value.trim()) return "Trainer ID is required.";
+            if (!/^\d+$/.test(value)) return "Trainer ID must be a number.";
+            return "";
+        },
+        title: (value) => {
+            if (!value.trim()) return "Title is required.";
+            if (value.length < 5) return "Title must be at least 5 characters.";
+            return "";
+        },
+        description: (value) => {
+            if (!value.trim()) return "Description is required.";
+            if (value.length < 10) return "Description must be at least 10 characters.";
+            return "";
+        },
+        price: (value) => {
+            if (!value.trim()) return "Price is required.";
+            if (isNaN(value) || parseFloat(value) <= 0) return "Price must be a positive number.";
+            return "";
+        },
+        duration: (value) => {
+            if (!value.trim()) return "Duration is required.";
+            return "";
+        },
+        city: (value) => {
+            if (!value.trim()) return "City is required.";
+            return "";
+        },
+        country: (value) => {
+            if (!value.trim()) return "Country is required.";
+            return "";
+        }
+    };
+
+    function validateField(field) {
+        const value = field.value;
+        const name = field.name;
+        const errorDiv = document.getElementById(`${name}Error`);
+
+        if (validators[name]) {
+            const error = validators[name](value);
+            if (error) {
+                field.classList.add('border-red-500');
+                errorDiv.textContent = error;
+            } else {
+                field.classList.remove('border-red-500');
+                errorDiv.textContent = '';
             }
         }
+    }
 
-        // Add event listeners to all fields
+    // Attach validation on input
+    Object.keys(validators).forEach((name) => {
+        const field = document.querySelector(`[name="${name}"]`);
+        if (field) {
+            field.addEventListener('input', () => validateField(field));
+        }
+    });
+</script>
+
+<script>
+    const submitButton = document.getElementById('submitButton');
+
+    function isFormValid() {
+        let isValid = true;
         Object.keys(validators).forEach((name) => {
             const field = document.querySelector(`[name="${name}"]`);
-            if (field) {
-                field.addEventListener('input', () => {
-                    validateField(field);
-                    toggleSubmitButton();
-                });
+            const error = validators[name](field.value);
+            if (error) {
+                isValid = false;
             }
         });
+        return isValid;
+    }
 
-        // Disable button on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            toggleSubmitButton();
-        });
-    </script>
-    @endsection
+    function toggleSubmitButton() {
+        if (isFormValid()) {
+            submitButton.disabled = false;
+            submitButton.classList.remove('bg-indigo-400', 'cursor-not-allowed');
+            submitButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        } else {
+            submitButton.disabled = true;
+            submitButton.classList.add('bg-indigo-400', 'cursor-not-allowed');
+            submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        }
+    }
+
+    // Add event listeners to all fields
+    Object.keys(validators).forEach((name) => {
+        const field = document.querySelector(`[name="${name}"]`);
+        if (field) {
+            field.addEventListener('input', () => {
+                validateField(field);
+                toggleSubmitButton();
+            });
+        }
+    });
+
+    // Disable button on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        toggleSubmitButton();
+    });
+</script>
+@endsection

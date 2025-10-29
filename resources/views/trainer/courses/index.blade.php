@@ -1,13 +1,13 @@
-@extends('layouts.trainer')
+@extends('layouts.trainer.index')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
+<div class="min-h-full bg-gradient-to-br from-purple-100 to-blue-100 py-10">
     <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">My Courses</h1>
+        <h1 class="text-4xl font-bold text-center text-purple-800 mb-10">Available Courses</h1>
 
         @if($courses->isEmpty())
         <div class="bg-white p-10 rounded-lg shadow-md text-center text-gray-700">
-            <h2 class="text-2xl font-semibold mb-4">No courses purchased yet 😔</h2>
+            <h2 class="text-2xl font-semibold mb-4">No Available Courses</h2>
             <p>Explore our catalog and find your next learning adventure!</p>
             <a href="{{ route('courses.index') }}" class="inline-block mt-6 px-6 py-2 bg-purple-600 text-white font-semibold rounded hover:bg-purple-700 transition">
                 Browse Courses
@@ -32,7 +32,7 @@
                         class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
                         Buy Now
                     </a>
-                    <a href="{{ route('courses.explore', $course->id) }}"
+                    <a href="{{ route('trainer.courses.explore', $course->id) }}"
                         class="mt-4 px-4 py-2 text-center bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full font-semibold hover:from-purple-600 hover:to-indigo-600 transition">
                         Explore
                     </a>

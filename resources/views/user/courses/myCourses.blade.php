@@ -1,4 +1,4 @@
-@extends('layouts.user')
+@extends('layouts.user.index')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 py-10">
