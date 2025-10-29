@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin.index')
 
 @section('content')
 <div class="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden 

@@ -151,11 +151,14 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     Route::post('/account/delete', [AdminProfileController::class, 'deleteAccount'])->name('admin.account.delete');
 
     // Data Management
-    Route::get('/users', [AdminProfileController::class, 'fetchAllUsers'])->name('admin.users.index');
-    Route::get('/trainers', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.index');
-
+    Route::get('/users', [AdminProfileController::class, 'showUserPage'])->name('admin.users');
+    Route::get('/users/fetch', [AdminProfileController::class, 'fetchAllUsers'])->name('admin.users.fetch');
+    Route::get('/trainers', [AdminProfileController::class, 'showTrainerPage'])->name('admin.trainers');
+    Route::get('/trainers/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
+    Route::get('/courses', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
+    Route::get('/courses/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
     // Optional
-    Route::get('/courses', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.index')->middleware('optional');
+    
     Route::get('/quizzes', [AdminProfileController::class, 'fetchAllQuizzes'])->name('admin.quizzes.index')->middleware('optional');
     Route::get('/reports', [AdminProfileController::class, 'reports'])->name('admin.reports')->middleware('optional');
     Route::get('/settings', [AdminProfileController::class, 'settings'])->name('admin.settings')->middleware('optional');
