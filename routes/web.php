@@ -23,7 +23,6 @@ use App\Http\Controllers\Trainer\TrainerStudentController;
 use App\Http\Controllers\User\UserCourseController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\TelegramController;
-use App\Http\Controllers\Trainer\TrainerCourseController;
 
 // Admin Controllers (single merged file)
 use App\Http\Controllers\Admin\AdminProfileController;
