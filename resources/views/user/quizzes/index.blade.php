@@ -1,4 +1,4 @@
-@extends('layouts.user')
+@extends('layouts.user.index')
 
 @section('title', 'Available Quizzes')
 

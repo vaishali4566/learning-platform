@@ -25,6 +25,7 @@ use App\Http\Controllers\TelegramController;
 // ----------------------------
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Trainer\TrainerCourseController;
+use App\Http\Controllers\Trainer\ReportController;
 
 // ----------------------------
 // Admin Controllers
@@ -117,6 +118,7 @@ Route::prefix('trainer')->group(function () {
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
         Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+        Route::get('/report', [ReportController::class, 'index'])->name('trainer.report');
 
         // Courses
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
