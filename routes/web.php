@@ -16,6 +16,7 @@ use App\Http\Controllers\Web\UserQuizController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\TelegramController;
+use App\Http\Controllers\Trainer\TrainerCourseController;
 
 // --------------------------------------------------
 // Root redirect
@@ -110,6 +111,14 @@ Route::prefix('trainer')->group(function () {
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
         Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+
+        Route::prefix('courses')->name('trainer.courses.')->group(function () {
+            Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
+            Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
+            Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
+            Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
+            Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
+        });
 
         // Trainer quizzes CRUD
         Route::get('quizzes', [QuizController::class, 'index'])->name('trainer.quizzes.index');

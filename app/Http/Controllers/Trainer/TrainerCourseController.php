@@ -86,4 +86,9 @@ class TrainerCourseController extends Controller
         return view('trainer.courses.myCourses', compact('courses'));
 
     }
+
+    public function explore($courseId)
+    {
+        return view('trainer.courses.explore', ['courseId' => $courseId]);
+    }
 }

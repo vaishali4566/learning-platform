@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin.index')
 
 @section('title', 'Admin Dashboard')
 
@@ -156,7 +156,10 @@
                 plugins: {
                     legend: {
                         display: true,
-                        labels: { color: '#E6EDF7', boxWidth: 0 }
+                        labels: {
+                            color: '#E6EDF7',
+                            boxWidth: 0
+                        }
                     },
                     tooltip: {
                         backgroundColor: '#11182A',
@@ -168,13 +171,21 @@
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#8A93A8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
+                        ticks: {
+                            color: '#8A93A8'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)'
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        ticks: { color: '#8A93A8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
+                        ticks: {
+                            color: '#8A93A8'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)'
+                        }
                     }
                 }
             }

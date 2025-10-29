@@ -1,4 +1,4 @@
-@extends('layouts.user')
+@extends('layouts.user.index')
 
 @section('title', 'Student Dashboard')
 
@@ -63,18 +63,18 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach([
-                ['title' => 'React Basics', 'progress' => '45%', 'status' => 'In Progress', 'color' => '#00C2FF'],
-                ['title' => 'Advanced JavaScript', 'progress' => '80%', 'status' => 'Almost Done', 'color' => '#16a34a'],
-                ['title' => 'Node.js Fundamentals', 'progress' => '20%', 'status' => 'New', 'color' => '#facc15'],
+            ['title' => 'React Basics', 'progress' => '45%', 'status' => 'In Progress', 'color' => '#00C2FF'],
+            ['title' => 'Advanced JavaScript', 'progress' => '80%', 'status' => 'Almost Done', 'color' => '#16a34a'],
+            ['title' => 'Node.js Fundamentals', 'progress' => '20%', 'status' => 'New', 'color' => '#facc15'],
             ] as $course)
-                <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] p-5 rounded-lg shadow-md hover:shadow-[#00C2FF]/20 transition-all">
-                    <h3 class="font-semibold text-[#E6EDF7] mb-2">{{ $course['title'] }}</h3>
-                    <p class="text-sm text-[#8A93A8] mb-3">Progress: {{ $course['progress'] }}</p>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="font-medium" style="color: {{ $course['color'] }}">{{ $course['status'] }}</span>
-                        <a href="#" class="text-[#00C2FF] hover:underline">Continue →</a>
-                    </div>
+            <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] p-5 rounded-lg shadow-md hover:shadow-[#00C2FF]/20 transition-all">
+                <h3 class="font-semibold text-[#E6EDF7] mb-2">{{ $course['title'] }}</h3>
+                <p class="text-sm text-[#8A93A8] mb-3">Progress: {{ $course['progress'] }}</p>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="font-medium" style="color: {{ $course['color'] }}">{{ $course['status'] }}</span>
+                    <a href="#" class="text-[#00C2FF] hover:underline">Continue →</a>
                 </div>
+            </div>
             @endforeach
         </div>
     </div>
@@ -136,7 +136,10 @@
                 plugins: {
                     legend: {
                         display: true,
-                        labels: { color: '#E6EDF7', boxWidth: 0 }
+                        labels: {
+                            color: '#E6EDF7',
+                            boxWidth: 0
+                        }
                     },
                     tooltip: {
                         mode: 'index',
@@ -150,13 +153,21 @@
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#8A93A8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
+                        ticks: {
+                            color: '#8A93A8'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)'
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        ticks: { color: '#8A93A8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
+                        ticks: {
+                            color: '#8A93A8'
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.05)'
+                        }
                     }
                 }
             }
