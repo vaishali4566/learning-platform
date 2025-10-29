@@ -7,7 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAnswer;
 use Illuminate\Support\Facades\Auth;
-
+ 
 class UserQuizController extends Controller
 {
     // 1️⃣ List of quizzes
