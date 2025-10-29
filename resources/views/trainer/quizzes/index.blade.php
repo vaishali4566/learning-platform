@@ -1,15 +1,16 @@
-@extends('layouts.trainer')
+@extends('layouts.trainer.index')
 
 @section('content')
-<div class="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden 
+<div class="relative min-h-screen flex justify-center px-6 py-10 overflow-hidden 
             bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
 
     <!-- Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 
                 animate-gradient-slow"></div>
 
+    <!-- Main Container (now aligned at top) -->
     <div class="relative w-full max-w-5xl bg-[#0E1426]/80 backdrop-blur-xl rounded-2xl shadow-2xl 
-                p-8 border border-[#2F82DB]/20 z-10">
+                p-8 border border-[#2F82DB]/20 z-10 self-start mt-8">
 
         <!-- Header -->
         <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
