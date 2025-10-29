@@ -74,7 +74,7 @@
 
                 <!-- Toggle -->
                 <div class="flex justify-center gap-3 mb-6">
-                    <button id="userBtn" class="role-toggle active">User</button>
+                    <button id="userBtn" class="role-toggle">User</button>
                     <button id="trainerBtn" class="role-toggle">Trainer</button>
                 </div>
 
@@ -93,17 +93,23 @@
     <script>
         const userBtn = document.getElementById('userBtn');
         const trainerBtn = document.getElementById('trainerBtn');
-        const authContainer = document.getElementById('authContainer');
 
-        userBtn.addEventListener('click', () => {
+        // Detect active route
+        const currentUrl = window.location.href;
+
+        // Highlight the correct button based on URL
+        if (currentUrl.includes('/user/')) {
             userBtn.classList.add('active');
-            trainerBtn.classList.remove('active');
+        } else if (currentUrl.includes('/trainer/')) {
+            trainerBtn.classList.add('active');
+        }
+
+        // Handle clicks
+        userBtn.addEventListener('click', () => {
             window.location.href = "{{ route('user.login') }}";
         });
 
         trainerBtn.addEventListener('click', () => {
-            trainerBtn.classList.add('active');
-            userBtn.classList.remove('active');
             window.location.href = "{{ route('trainer.login') }}";
         });
     </script>

@@ -1,29 +1,58 @@
-@extends('layouts.app')
+@extends('layouts.trainer')
 
 @section('content')
-<div class="min-h-screen bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">All Quizzes</h1>
+<div class="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden 
+            bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 
+                animate-gradient-slow"></div>
+
+    <div class="relative w-full max-w-5xl bg-[#0E1426]/80 backdrop-blur-xl rounded-2xl shadow-2xl 
+                p-8 border border-[#2F82DB]/20 z-10">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-8">
+            <h1 class="text-2xl font-semibold text-white tracking-wide mb-4 sm:mb-0">
+                Manage Quizzes
+            </h1>
             <a href="{{ route('trainer.quizzes.create') }}"
-               class="bg-gradient-to-r from-blue-800 to-green-700 text-white font-semibold px-4 py-2 rounded-lg hover:opacity-90">
-                Create New Quiz
+               class="bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] hover:opacity-90 text-white 
+                      font-medium text-sm px-4 py-2 rounded-lg transition duration-200 shadow-md">
+                + Create Quiz
             </a>
         </div>
 
+        <!-- Quiz List -->
         @if($quizzes->isEmpty())
-            <p class="text-gray-600">No quizzes found. Click "Create New Quiz" to add one.</p>
+            <div class="text-center py-12">
+                <p class="text-gray-400 text-sm">
+                    No quizzes found. Click “Create Quiz” to add one.
+                </p>
+            </div>
         @else
             <ul class="space-y-4">
                 @foreach($quizzes as $quiz)
-                    <li class="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
-                        <span class="font-semibold text-gray-700">{{ $quiz->title }}</span>
-                        <div class="flex gap-2">
+                    <li class="flex flex-col sm:flex-row justify-between items-start sm:items-center 
+                               bg-[#141C33]/70 border border-[#00C2FF]/10 rounded-xl p-5 
+                               hover:shadow-lg hover:border-[#00C2FF]/30 transition duration-200">
+
+                        <div>
+                            <h2 class="text-lg font-semibold text-white">{{ $quiz->title }}</h2>
+                            <p class="text-gray-400 text-xs mt-1">
+                                {{ $quiz->description ?? 'No description available' }}
+                            </p>
+                        </div>
+
+                        <div class="flex gap-3 mt-4 sm:mt-0">
                             <a href="{{ route('trainer.quizzes.edit', $quiz->id) }}"
-                               class="text-white bg-blue-600 px-3 py-1 rounded-lg hover:bg-blue-700">
+                               class="px-3 py-1.5 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] 
+                                      text-white text-sm rounded-md font-medium hover:opacity-90 transition">
                                 Edit
                             </a>
-                            <button data-id="{{ $quiz->id }}" class="delete-quiz-btn text-white bg-red-600 px-3 py-1 rounded-lg hover:bg-red-700">
+                            <button data-id="{{ $quiz->id }}" 
+                                    class="delete-quiz-btn px-3 py-1.5 bg-red-600 text-white 
+                                           text-sm rounded-md font-medium hover:bg-red-700 transition">
                                 Delete
                             </button>
                         </div>
@@ -52,8 +81,7 @@ $(document).ready(function() {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
-                alert('Quiz deleted successfully!');
-                row.remove();
+                row.fadeOut(400, function() { $(this).remove(); });
             },
             error: function() {
                 alert('Something went wrong. Please try again.');

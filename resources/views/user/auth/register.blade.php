@@ -1,17 +1,18 @@
 @extends('layouts.guest')
 
-@section('title', 'Learning Project')
+@section('title', 'Learning Project - User Register')
 
 @section('content')
 <!-- Load Bootstrap Icons CDN -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 <div class="relative flex items-center justify-center p-4 bg-cover bg-center">
-
     <!-- Registration Card -->
     <div class="relative w-full max-w-md bg-[#171717] rounded-xl shadow-lg p-8 z-10">
 
-        <h2 id="heading" class="text-2xl font-bold text-center text-white mb-6">Swagatham 👋 User</h2>
+        <h2 id="heading" class="text-xl font-semibold text-center text-white mb-6">
+            User Registration
+        </h2>
 
         <!-- Registration Form -->
         <form id="register-form" action="{{ route('user.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -64,11 +65,18 @@
             </div>
             <p class="text-red-600 text-sm mt-1 hidden" id="password_confirmation-error"></p>
 
-            <!-- Buttons -->
-            <div class="flex justify-center gap-4 mt-4">
-                <button type="submit" class="px-6 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition">Register</button>
-                <a href="{{ route('user.login') }}" class="px-6 py-2 bg-gray-700 text-white font-semibold rounded hover:bg-gray-800 transition">Login</a>
+            <!-- Register Button -->
+            <div class="flex justify-center mt-6">
+                <button type="submit" class="px-6 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition">
+                    Register
+                </button>
             </div>
+
+            <!-- Login Text -->
+            <p class="text-center text-gray-400 text-sm mt-4">
+                Already have an account?
+                <a href="{{ route('user.login') }}" class="text-blue-400 hover:underline">Login</a>
+            </p>
         </form>
     </div>
 </div>
@@ -98,7 +106,7 @@ $(document).ready(function() {
         }, 100);
     });
 
-    // AJAX form submit (same as before)
+    // AJAX form submit
     $('#register-form').on('submit', function(e) {
         e.preventDefault();
         $('#name-error, #email-error, #password-error, #password_confirmation-error').text('').hide();
@@ -139,13 +147,16 @@ $(document).ready(function() {
     background-color: #222;
     box-shadow: inset 1px 2px 6px rgba(0,0,0,0.7);
 }
+
 .input-field {
     background: none;
     border: none;
     outline: none;
     width: 100%;
     color: #d3d3d3;
+    font-size: 0.95em;
 }
+
 .input-icon {
     height: 1.2em;
     width: 1.2em;
@@ -164,11 +175,13 @@ input:-webkit-autofill {
     transition: transform 0.22s ease-in-out;
     display: inline-block;
 }
+
 #toggle-password {
     cursor: pointer;
     background: transparent;
     border: none;
 }
+
 #toggle-password:hover i {
     color: #fff;
 }
