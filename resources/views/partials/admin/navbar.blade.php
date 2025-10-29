@@ -28,7 +28,7 @@
                 class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
-        <a href="#"
+        <a href="{{route('admin.users')}}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="users" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Users</span>
@@ -36,7 +36,7 @@
                 class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
-        <a href="#"
+        <a href="{{route('admin.courses')}}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="book-open-check" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Courses</span>
