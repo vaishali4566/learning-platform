@@ -140,6 +140,62 @@ class AdminProfileController extends Controller
         ], 200);
     }
 
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User updated successfully'
+        ]);
+    }
+    public function addUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'country' => $validated['country'] ?? null,
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'User added successfully']);
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User not found']);
+        }
+
+        $user->delete();
+        return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
+    }
 }
+
+
 
 
