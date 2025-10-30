@@ -12,7 +12,7 @@
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6 animate-fade-in">
-        <h1 class="text-3xl font-bold tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
+        <h1 class="text-3xl font-bold tracking-wide ">
             Lessons — {{ $course->title }}
         </h1>
 
@@ -53,7 +53,7 @@
                         @if($lesson->content_type === 'quiz')
                             <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
                                 class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-md hover:shadow-green-500/40 transition-all duration-300">
-                                Explore
+                                Add Quiz
                             </a>
                         @else
                             <a href="{{ route('trainer.courses.lessons.view', [$course->id]) }}"
