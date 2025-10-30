@@ -28,7 +28,7 @@
                 class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
-        <a href="#"
+        <a href="{{route('admin.users')}}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="users" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Users</span>
@@ -36,7 +36,7 @@
                 class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
-        <a href="#"
+        <a href="{{route('admin.courses')}}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="book-open-check" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Courses</span>
@@ -55,12 +55,68 @@
 
     <!-- Right: Profile Dropdown -->
     <div class="flex items-center gap-5">
-        <!-- Notification -->
-        <button class="relative group hover:text-[#00C2FF] transition">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-            <span
-                class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#0E1625] shadow-md"></span>
-        </button>
+        <!-- Notifications Dropdown -->
+<div class="relative">
+    <!-- Trigger -->
+    <button id="notifBtn"
+        class="relative group hover:text-[#00C2FF] transition peer">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+        <span
+            class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#0E1625] shadow-md"></span>
+    </button>
+
+    <!-- Dropdown -->
+    <div
+        class="absolute right-0 mt-3 w-80 bg-[#1C2541]/95 border border-[#26304D] text-[#E6EDF7] rounded-lg shadow-lg 
+        opacity-0 scale-95 invisible peer-hover:opacity-100 hover:opacity-100 peer-hover:scale-100 hover:scale-100 
+        peer-hover:visible hover:visible transition-all duration-200 backdrop-blur-md z-50">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-2 border-b border-[#26304D]">
+            <span class="font-semibold text-sm text-[#E6EDF7]">Notifications</span>
+            <a href="#" class="text-xs text-[#00C2FF] hover:underline">Mark all read</a>
+        </div>
+
+        <!-- List -->
+        <div class="max-h-60 overflow-y-auto custom-scrollbar">
+            <!-- Example Notification -->
+            <div class="px-4 py-3 flex items-start gap-3 hover:bg-[#00C2FF]/10 transition cursor-pointer">
+                <div class="p-2 rounded-full bg-[#00C2FF]/10">
+                    <i data-lucide="info" class="w-4 h-4 text-[#00C2FF]"></i>
+                </div>
+                <div>
+                    <p class="text-sm">New course <span class="text-[#00C2FF]">"React Basics"</span> added.</p>
+                    <p class="text-xs text-gray-400 mt-1">2 mins ago</p>
+                </div>
+            </div>
+
+            <div class="px-4 py-3 flex items-start gap-3 hover:bg-[#00C2FF]/10 transition cursor-pointer">
+                <div class="p-2 rounded-full bg-[#00C2FF]/10">
+                    <i data-lucide="user-plus" class="w-4 h-4 text-[#00C2FF]"></i>
+                </div>
+                <div>
+                    <p class="text-sm">Trainer <span class="text-[#00C2FF]">Amit Sharma</span> joined.</p>
+                    <p class="text-xs text-gray-400 mt-1">10 mins ago</p>
+                </div>
+            </div>
+
+            <div class="px-4 py-3 flex items-start gap-3 hover:bg-[#00C2FF]/10 transition cursor-pointer">
+                <div class="p-2 rounded-full bg-[#00C2FF]/10">
+                    <i data-lucide="bell" class="w-4 h-4 text-[#00C2FF]"></i>
+                </div>
+                <div>
+                    <p class="text-sm">New user <span class="text-[#00C2FF]">registered</span>.</p>
+                    <p class="text-xs text-gray-400 mt-1">30 mins ago</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center py-2 border-t border-[#26304D]">
+            <a href="#" class="text-xs text-[#00C2FF] hover:underline">View all notifications</a>
+        </div>
+    </div>
+</div>
 
         <!-- Profile Dropdown -->
         <div class="relative">

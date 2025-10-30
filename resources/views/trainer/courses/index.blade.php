@@ -10,6 +10,7 @@
             Available Courses
         </h1>
 
+        <!-- No Courses -->
         @if($courses->isEmpty())
         <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_0_15px_rgba(0,194,255,0.05)] p-10 text-center text-[#E6EDF7]">
             <h2 class="text-2xl font-semibold mb-4 text-[#00C2FF]">No Available Courses</h2>
@@ -19,8 +20,10 @@
                 Browse Courses
             </a>
         </div>
+
+        <!-- Course Grid -->
         @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn">
             @foreach($courses as $course)
             <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_0_15px_rgba(0,194,255,0.05)] overflow-hidden hover:shadow-[0_0_20px_rgba(0,194,255,0.1)] transition transform hover:scale-[1.02]">
                 <div class="h-40 bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $course->image) }}')"></div>

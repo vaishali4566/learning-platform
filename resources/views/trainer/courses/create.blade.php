@@ -118,15 +118,9 @@
             background-position: 0% 50%;
         }
     }
-
     .animate-gradient-slow {
         background-size: 200% 200%;
-        animation: gradient-slow 10s ease infinite;
-    }
-
-    input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px rgba(30, 64, 175, 0.1) inset !important;
-        -webkit-text-fill-color: #e5e7eb !important;
+        animation: gradient-slow 12s ease infinite;
     }
 
     select {
@@ -207,6 +201,7 @@
     const submitButton = document.getElementById('submitButton');
 
     function toggleSubmitButton() {
+        const button = document.getElementById('submitButton');
         if (isFormValid()) {
             submitButton.disabled = false;
             submitButton.classList.remove('cursor-not-allowed', 'opacity-70');

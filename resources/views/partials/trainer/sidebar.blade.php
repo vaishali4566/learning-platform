@@ -62,12 +62,12 @@
         </div>
 
         <!-- Reports -->
-        <div
+        <a href="{{ route('trainer.report') }}"
             class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Reports</span>
-        </div>
+        </a>
 
         <!-- Logout -->
         <form action="{{ route('trainer.logout') }}" method="POST"

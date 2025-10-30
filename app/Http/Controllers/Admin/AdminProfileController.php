@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Trainer;
+use App\Models\Course;
 
 class AdminProfileController extends Controller
 {
@@ -30,6 +31,7 @@ class AdminProfileController extends Controller
         return view('admin.profile', compact('admin'));
     }
 
+    
     /**
      * Update admin profile
      */
@@ -79,6 +81,12 @@ class AdminProfileController extends Controller
         return back()->with('error', 'There was an error deleting your account.');
     }
 
+    public function showUserPage()
+    {
+        // just return the blade view — no data directly passed
+        return view('admin.users');
+    }
+
     /**
      * Fetch all users (for admin panel)
      */
@@ -91,6 +99,12 @@ class AdminProfileController extends Controller
             'message' => 'Fetched all users successfully',
             'users' => $users
         ], 200);
+    }
+
+    public function showTrainerPage()
+    {
+        // just return the blade view — no data directly passed
+        return view('admin.trainers');
     }
 
     /**
@@ -106,4 +120,82 @@ class AdminProfileController extends Controller
             'trainers' => $trainers
         ], 200);
     }
+
+    public function showCoursePage()
+    {
+        return view('admin.courses');
+    }
+
+    // ✅ Fetch all courses (AJAX)
+    public function fetchAllCourses(Request $request)
+    {
+        $courses = Course::with('trainer:id,name,email')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Fetched all courses successfully',
+            'courses' => $courses
+        ], 200);
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ]);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User updated successfully'
+        ]);
+    }
+    public function addUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'country' => $validated['country'] ?? null,
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'User added successfully']);
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User not found']);
+        }
+
+        $user->delete();
+        return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
+    }
 }
+
+
+
+

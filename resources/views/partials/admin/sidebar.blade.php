@@ -17,7 +17,7 @@
         class="flex-1 mt-4 relative text-[#8A93A8] overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[#101727]/50 scrollbar-track-transparent transition-all duration-500 ease-in-out">
 
         <!-- Dashboard -->
-        <a href="#"
+        <a href="{{route('admin.dashboard')}}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FF6B6B] rounded transition-all duration-300"></div>
             <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#FF6B6B] transition-all duration-300 group-hover:scale-110"></i>
@@ -25,7 +25,7 @@
         </a>
 
         <!-- User Management -->
-        <a href="#"
+        <a href="{{route('admin.users')}}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#4ADE80] rounded transition-all duration-300"></div>
             <i data-lucide="users" class="w-5 h-5 text-[#4ADE80] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
@@ -33,7 +33,7 @@
         </a>
 
         <!-- Course Management -->
-        <a href="#"
+        <a href="{{route('admin.courses')}}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#38BDF8] rounded transition-all duration-300"></div>
             <i data-lucide="book-open" class="w-5 h-5 text-[#38BDF8] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
@@ -41,7 +41,7 @@
         </a>
 
         <!-- Trainer Management -->
-        <a href="#"
+        <a href="{{route('admin.trainers')}}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FACC15] rounded transition-all duration-300"></div>
             <i data-lucide="user-check" class="w-5 h-5 text-[#FACC15] group-hover:text-[#FF6B6B] transition-all duration-300"></i>
@@ -81,7 +81,7 @@
         </a>
 
         <!-- Logout -->
-        <form action="#" method="POST"
+        <form action="{{route('admin.logout')}}" method="POST"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-2 mt-4 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
             @csrf
             <button type="submit" class="flex items-center gap-3 w-full text-left">
