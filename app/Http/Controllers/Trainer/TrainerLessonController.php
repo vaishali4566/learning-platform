@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Trainer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
@@ -9,9 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class LessonsController extends Controller
+class TrainerLessonController extends Controller
 {
-    public function create(Request $request)
+
+    public function create()
+    {
+        return view('trainer.lessons.create');
+    }
+
+    public function store(Request $request)
     {
         $rules = [
             'course_id'     => 'required|exists:courses,id',
@@ -86,13 +93,10 @@ class LessonsController extends Controller
     {
         // $course = Course::with('lessons')->findOrFail($id);
         // return view('lessons.alllessons1', ['course' => $course]);
-        return view('lessons.alllessons1', ['courseId' => $id]);
+        return view('trainer.lessons.index', ['courseId' => $id]);
     }
 
-    public function showLessonForm()
-    {
-        return view('lessons.create');
-    }
+    
 
     public function lessonsByCourse($id)
     {

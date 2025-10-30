@@ -1,57 +1,41 @@
-@extends('layouts.user.index')
+@extends('layouts.trainer.index')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] py-10 px-6">
-    <div class="max-w-7xl mx-auto">
-        <!-- Title -->
-        <h1 class="text-2xl md:text-3xl font-semibold text-center text-[#E6EDF7] mb-10">
+<div class="relative min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
+    <!-- Subtle Animated Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/5 via-transparent to-[#2F82DB]/5 animate-gradient-slow blur-xl opacity-30 pointer-events-none"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto">
+        <h1 class="text-4xl font-semibold text-center text-[#E6EDF7] mb-10 tracking-wide drop-shadow-[0_0_4px_rgba(0,194,255,0.2)]">
             Available Courses
         </h1>
 
-        <!-- No Courses -->
         @if($courses->isEmpty())
-        <div class="bg-[#10182C]/70 border border-[#1F2A44] backdrop-blur-md p-10 rounded-2xl shadow-lg text-center text-[#B8C1D8]">
-            <h2 class="text-xl font-medium text-[#00C2FF] mb-3">No courses available yet</h2>
-            <p class="text-[#AAB3C7] text-sm">Please check back later — new courses are coming soon.</p>
+        <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_0_15px_rgba(0,194,255,0.05)] p-10 text-center text-[#E6EDF7]">
+            <h2 class="text-2xl font-semibold mb-4 text-[#00C2FF]">No Available Courses</h2>
+            <p class="text-[#A1A9C4]">Explore our catalog and find your next learning adventure!</p>
+            <a href="{{ route('courses.index') }}"
+                class="inline-block mt-6 px-6 py-2 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white font-semibold rounded-md hover:scale-[1.02] hover:shadow-[0_0_10px_rgba(0,194,255,0.2)] transition">
+                Browse Courses
+            </a>
         </div>
-
-        <!-- Course Grid -->
         @else
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach($courses as $course)
-            <div
-                class="group bg-[#10182C]/80 border border-[#1F2A44] backdrop-blur-md rounded-2xl overflow-hidden shadow-md hover:shadow-[0_0_15px_#00C2FF40] transition-all duration-300 hover:-translate-y-1">
-
-                <!-- Thumbnail -->
-                <div class="relative h-40 overflow-hidden">
-                    <img src="{{ asset('storage/' . $course->image) }}"
-                        alt="{{ $course->title }}"
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0E19]/80 via-transparent to-transparent"></div>
-                </div>
-
-                <!-- Course Content -->
-                <div class="p-4 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <h2 class="text-base font-medium text-[#E6EDF7] leading-snug">
-                                {{ $course->title }}
-                            </h2>
-                            <span class="text-sm text-[#00C2FF] font-medium">₹{{ $course->price }}</span>
-                        </div>
-                        <p class="text-xs text-[#AAB3C7] line-clamp-2">
-                            {{ Str::limit($course->description, 80, '...') }}
-                        </p>
+            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_0_15px_rgba(0,194,255,0.05)] overflow-hidden hover:shadow-[0_0_20px_rgba(0,194,255,0.1)] transition transform hover:scale-[1.02]">
+                <div class="h-40 bg-cover bg-center" style="background-image: url('{{ asset('storage/' . $course->image) }}')"></div>
+                <div class="p-5 flex flex-col justify-between h-42">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-medium text-[#E6EDF7] truncate">{{ $course->title }}</h2>
+                        <span class="text-[#00C2FF] font-medium">₹{{ $course->price }}</span>
                     </div>
-
-                    <!-- Buttons -->
-                    <div class="mt-4 flex flex-col gap-2">
+                    <div class="mt-4 space-y-2">
                         <a href="{{ route('payment.stripe', ['courseId' => $course->id]) }}"
-                            class="w-full text-center px-3 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white rounded-full text-sm font-medium hover:shadow-[0_0_10px_#00C2FF70] transition-all duration-300">
+                            class="block w-full text-center bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white font-medium rounded-md py-2 hover:scale-[1.01] hover:shadow-[0_0_10px_rgba(0,194,255,0.25)] transition">
                             Buy Now
                         </a>
-                        <a href="{{ route('courses.explore', $course->id) }}"
-                            class="w-full text-center px-3 py-2 border border-[#00C2FF] text-[#00C2FF] rounded-full text-sm font-medium hover:bg-[#00C2FF]/10 hover:shadow-[0_0_8px_#00C2FF60] transition-all duration-300">
+                        <a href="{{ route('trainer.courses.explore', $course->id) }}"
+                            class="block w-full text-center bg-[#1C2541]/60 border border-[#00C2FF]/20 text-[#E6EDF7] font-medium rounded-md py-2 hover:bg-[#1C2541]/80 hover:border-[#00C2FF]/40 hover:scale-[1.01] transition">
                             Explore
                         </a>
                     </div>
@@ -62,4 +46,81 @@
         @endif
     </div>
 </div>
+
+<style>
+    /* Subtle animated gradient */
+    @keyframes gradient-slow {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    .animate-gradient-slow {
+        background-size: 200% 200%;
+        animation: gradient-slow 14s ease infinite;
+    }
+
+    /* Consistent dark field visuals */
+    input,
+    textarea,
+    select {
+        background-color: rgba(28, 37, 65, 0.6) !important;
+        color: #E6EDF7 !important;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        background-color: rgba(36, 52, 90, 0.9) !important;
+        color: #E6EDF7 !important;
+        border-color: rgba(0, 194, 255, 0.4) !important;
+    }
+
+    select option {
+        background-color: #0A0E19;
+        color: #E6EDF7;
+    }
+
+    input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px rgba(28, 37, 65, 0.6) inset !important;
+        -webkit-text-fill-color: #E6EDF7 !important;
+        caret-color: #E6EDF7;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    input::selection,
+    textarea::selection {
+        background-color: rgba(0, 194, 255, 0.3);
+        color: #fff;
+    }
+</style>
+
+<script>
+    fetch('/courses/all')
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('courses-list');
+            if (list) {
+                list.innerHTML = data.data.map(course => `
+                    <div class="mb-3">
+                        <h4 class="text-[#E6EDF7] font-medium">${course.title}</h4>
+                        <a href="/courses/view/${course.id}"
+                           class="inline-block mt-1 px-3 py-1 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white rounded-md text-sm font-medium hover:scale-[1.01] transition">
+                           View Course
+                        </a>
+                    </div>
+                `).join('');
+            }
+        });
+</script>
 @endsection

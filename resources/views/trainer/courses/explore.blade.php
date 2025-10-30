@@ -2,31 +2,81 @@
 
 @section('content')
 <div
-    class="min-h-full bg-gradient-to-br from-blue-100 to-indigo-200 flex justify-center items-start pt-10 px-4"
+    class="relative min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] flex justify-center items-start pt-16 px-4"
     id="explore-app"
     data-course-id="{{ $courseId }}">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl p-8 space-y-6">
-        <h1 class="text-3xl font-bold text-indigo-700" id="course-title">Loading...</h1>
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/10 blur-3xl opacity-30 pointer-events-none"></div>
 
-        <div class="text-gray-600" id="course-bio">Please wait while we load the course details.</div>
+    <div class="relative z-10 w-full max-w-3xl bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_25px_rgba(0,194,255,0.08)] p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,194,255,0.12)]">
+        <!-- Title -->
+        <h1 class="text-4xl font-semibold text-[#E6EDF7] mb-4 tracking-wide drop-shadow-[0_0_4px_rgba(0,194,255,0.2)]" id="course-title">
+            Loading...
+        </h1>
 
-        <div class="border-t pt-4 space-y-2">
-            <p><span class="font-semibold text-gray-700">Trainer:</span> <span id="trainer-name"></span></p>
-            <p><span class="font-semibold text-gray-700">Experience:</span> <span id="trainer-exp"></span> years</p>
-            <p><span class="font-semibold text-gray-700">Created At:</span> <span id="created-date"></span></p>
+        <p class="text-[#A1A9C4] leading-relaxed mb-6" id="course-bio">
+            Please wait while we load the course details.
+        </p>
+
+        <div class="border-t border-white/10 pt-5 space-y-3">
+            <p><span class="font-semibold text-[#00C2FF]">Trainer:</span> <span id="trainer-name" class="text-[#E6EDF7]">—</span></p>
+            <p><span class="font-semibold text-[#00C2FF]">Experience:</span> <span id="trainer-exp" class="text-[#E6EDF7]">—</span></p>
+            <p><span class="font-semibold text-[#00C2FF]">Created At:</span> <span id="created-date" class="text-[#E6EDF7]">—</span></p>
         </div>
 
-        <div class="pt-4">
+        <!-- Buy Section -->
+        <div class="pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <button
                 id="buy-now-btn"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded transition duration-200">
+                class="relative overflow-hidden bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white font-medium px-6 py-2 rounded-lg shadow-[0_0_10px_rgba(0,194,255,0.15)] hover:shadow-[0_0_15px_rgba(0,194,255,0.25)] hover:scale-[1.02] transition-all duration-200">
                 Buy Now
             </button>
 
-            <p id="buy-status" class="mt-3 text-sm font-medium text-green-600 hidden">Purchase successful!</p>
+            <p id="buy-status" class="text-sm font-medium text-green-400 hidden">
+                Purchase successful!
+            </p>
         </div>
     </div>
 </div>
+
+<style>
+    /* Animated gradient border shimmer */
+    .bg-border {
+        background: linear-gradient(130deg, rgba(0, 194, 255, 0.4), rgba(47, 130, 219, 0.4), transparent);
+        background-size: 300% 300%;
+        animation: shimmer 6s infinite alternate;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    /* Subtle shimmer for loading placeholders */
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.4;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    .loading-placeholder {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        height: 1.2rem;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -41,20 +91,20 @@
         const buyBtn = document.getElementById('buy-now-btn');
         const buyStatus = document.getElementById('buy-status');
 
-        // Fetch course data
+        // Fetch course data dynamically
         fetch(`/courses/${courseId}`)
             .then(res => res.json())
             .then(data => {
-                console.log("Mt data", data.data)
-                titleEl.textContent = data.data.title || 'Untitled Course';
-                bioEl.textContent = data.data.description || 'No description available.';
-                trainerNameEl.textContent = data.data.trainer.name || 'Unknown';
-                trainerExpEl.textContent = data.data.trainer.experience_years + " Years" || 'N/A';
-                dateEl.textContent = new Date(data.data.created_at).toLocaleDateString() || '';
+                const course = data.data;
+                titleEl.textContent = course.title || 'Untitled Course';
+                bioEl.textContent = course.description || 'No description available.';
+                trainerNameEl.textContent = course.trainer?.name || 'Unknown';
+                trainerExpEl.textContent = (course.trainer?.experience_years || 'N/A') + ' Years';
+                dateEl.textContent = new Date(course.created_at).toLocaleDateString();
             })
             .catch(error => {
                 titleEl.textContent = 'Failed to load course.';
-                bioEl.textContent = 'An error occurred.';
+                bioEl.textContent = 'An error occurred while loading details.';
                 console.error(error);
             });
 
@@ -68,7 +118,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Required if using web auth
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
                         course_id: courseId
@@ -78,7 +128,7 @@
                     if (!res.ok) throw new Error('Purchase failed.');
                     return res.json();
                 })
-                .then(data => {
+                .then(() => {
                     buyBtn.textContent = 'Purchased ✔';
                     buyStatus.textContent = 'Purchase successful!';
                     buyStatus.classList.remove('hidden');

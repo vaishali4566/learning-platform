@@ -30,7 +30,7 @@ use App\Http\Controllers\Trainer\TrainerCourseController;
 // Admin Controllers
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
-
+use App\Http\Controllers\Trainer\TrainerLessonController;
 
 // ======================================================================
 // ROOT REDIRECT
@@ -125,7 +125,17 @@ Route::prefix('trainer')->group(function () {
             Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
+            Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
+
+            Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
+            Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
+            Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
+            Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLesson1'])->name('lessons.view');
+            
         });
+
+        
+
 
         // Quizzes
         Route::get('quizzes', [QuizController::class, 'index'])->name('trainer.quizzes.index');
@@ -136,6 +146,7 @@ Route::prefix('trainer')->group(function () {
         Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
     });
 });
+
 
 
 // ======================================================================

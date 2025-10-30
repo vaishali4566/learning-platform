@@ -1,110 +1,113 @@
 @extends('layouts.trainer.index')
-
 @section('content')
-<div class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="w-full max-w-2xl p-8 bg-white rounded shadow-lg">
-        <div id="flashMessages" class="mb-4 space-y-2">
-            <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center"></div>
-            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center"></div>
+<div class="relative min-h-full flex items-center justify-center px-4 overflow-hidden bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
+    <!-- Animated Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 animate-gradient-slow blur-2xl opacity-40 pointer-events-none"></div>
+
+    <!-- Glassmorphic Container -->
+    <div class="relative z-10 w-full max-w-2xl bg-white/10 backdrop-blur-xl rounded-lg shadow-[0_0_25px_rgba(0,194,255,0.08)] border border-white/10 p-6 md:p-8 transition-all duration-500 ease-in-out transform hover:scale-[1.01] hover:shadow-[0_0_35px_rgba(0,194,255,0.15)] overflow-hidden">
+
+        <!-- Flash Messages -->
+        <div id="flashMessages" class="mb-3 text-center space-y-1">
+            <div id="successMessage" class="hidden bg-[#00C2FF]/10 text-[#00C2FF] border border-[#00C2FF]/30 px-3 py-1.5 rounded text-sm font-medium"></div>
+            <div id="errorMessage" class="hidden bg-red-500/10 text-red-400 border border-red-400/30 px-3 py-1.5 rounded text-sm font-medium"></div>
         </div>
 
-        <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">Create a New Course</h2>
+        <h2 class="text-2xl font-semibold mb-5 text-[#E6EDF7] text-center tracking-wide">Create a New Course</h2>
 
         <!-- Course Form -->
-        <form method="POST" id="courseForm">
-
-            {{-- Input Component --}}
+        <form method="POST" id="courseForm" class="space-y-3">
+            @csrf
             @php
-            $inputClass = "mt-1 pl-1.5 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150";
+            $inputClass = "mt-1 block w-full rounded-md bg-[#1C2541]/60 text-[#E6EDF7] border border-[#00C2FF]/20 px-2.5 py-1.5
+            focus:outline-none focus:ring-2 focus:ring-[#00C2FF]/70 text-sm transition-all duration-200 placeholder-gray-400";
             @endphp
 
-            <div class="mb-4">
-                <label for="trainer_id" class="block font-medium text-gray-700">Trainer ID<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="number" name="trainer_id" id="trainer_id" class="{{ $inputClass }}" required>
-                <div id="trainer_idError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="trainer_id" class="block text-[#A1A9C4] text-xs mb-1">Trainer ID<span class="text-red-500">*</span></label>
+                    <input
+                        type="number"
+                        name="trainer_id"
+                        id="trainer_id"
+                        value="{{ Auth::guard('trainer')->id() }}"
+                        class="{{ $inputClass }} bg-[#1C2541]/80 cursor-not-allowed opacity-80"
+                        readonly>
+                    <div id="trainer_idError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+                </div>
 
-            <div class="mb-4">
-                <label for="title" class="block font-medium text-gray-700">Title<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="title" id="title" class="{{ $inputClass }}">
-                <div id="titleError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="description" class="block font-medium text-gray-700">Description<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <textarea name="description" id="description" rows="3" class="{{ $inputClass }}"></textarea>
-                <div id="descriptionError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="price" class="block font-medium text-gray-700">Price (Rs)<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}">
-                <div id="priceError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="duration" class="block font-medium text-gray-700">Duration<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="duration" id="duration" class="{{ $inputClass }}">
-                <div id="durationError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="difficulty" class="block font-medium text-gray-700">Difficulty</label>
-                <select name="difficulty" id="difficulty" class="{{ $inputClass }}">
-                    <option value="">-- Select --</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_online" value="1" class="form-checkbox text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <span class="ml-2 text-gray-700">Is Online?</span>
-                </label>
-            </div>
-
-            <div class="mb-4">
-                <label for="status" class="block font-medium text-gray-700">Status</label>
-                <select name="status" id="status" class="{{ $inputClass }}">
-                    <option value="">-- Select --</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="city" class="block font-medium text-gray-700">City<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="city" id="city" class="{{ $inputClass }}">
-                <div id="cityError" class="text-red-600 text-sm mt-1 error-message"></div>
-            </div>
-
-            <div class="mb-6">
-                <label for="country" class="block font-medium text-gray-700">Country<sup><span class="text-red-600 text-sm">*</span></sup></label>
-                <input type="text" name="country" id="country" class="{{ $inputClass }}">
-                <div id="countryError" class="text-red-600 text-sm mt-1 error-message"></div>
+                <div>
+                    <label for="title" class="block text-[#A1A9C4] text-xs mb-1">Title<span class="text-red-500">*</span></label>
+                    <input type="text" name="title" id="title" class="{{ $inputClass }}" placeholder="Enter course title">
+                    <div id="titleError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+                </div>
             </div>
 
             <div>
-                <button type="submit" id="submitButton" disabled class="w-full bg-indigo-400 text-white font-semibold py-2 px-4 rounded shadow transition duration-150 cursor-not-allowed">
+                <label for="description" class="block text-[#A1A9C4] text-xs mb-1">Description<span class="text-red-500">*</span></label>
+                <textarea name="description" id="description" rows="3" class="{{ $inputClass }}" placeholder="Brief description about the course..."></textarea>
+                <div id="descriptionError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="price" class="block text-[#A1A9C4] text-xs mb-1">Price (Rs)<span class="text-red-500">*</span></label>
+                    <input type="number" step="0.01" name="price" id="price" class="{{ $inputClass }}" placeholder="Enter price">
+                    <div id="priceError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+                </div>
+
+                <div>
+                    <label for="difficulty" class="block text-[#A1A9C4] text-xs mb-1">Difficulty</label>
+                    <select name="difficulty" id="difficulty"
+                        class="{{ $inputClass }} appearance-none bg-[#1C2541]/60 hover:bg-[#24345A]/70 focus:bg-[#24345A]/90">
+                        <option value="" class="bg-[#0A0E19] text-[#E6EDF7]">-- Select Level --</option>
+                        <option value="beginner" class="bg-[#0A0E19] text-[#E6EDF7]">Beginner</option>
+                        <option value="intermediate" class="bg-[#0A0E19] text-[#E6EDF7]">Intermediate</option>
+                        <option value="advanced" class="bg-[#0A0E19] text-[#E6EDF7]">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" name="is_online" value="1" class="form-checkbox text-[#00C2FF] border-gray-300 rounded focus:ring-[#00C2FF]">
+                <label class="text-[#E6EDF7] text-xs">This is an Online Course</label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="city" class="block text-[#A1A9C4] text-xs mb-1">City<span class="text-red-500">*</span></label>
+                    <input type="text" name="city" id="city" class="{{ $inputClass }}" placeholder="Enter city">
+                    <div id="cityError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+                </div>
+
+                <div>
+                    <label for="country" class="block text-[#A1A9C4] text-xs mb-1">Country<span class="text-red-500">*</span></label>
+                    <input type="text" name="country" id="country" class="{{ $inputClass }}" placeholder="Enter country">
+                    <div id="countryError" class="text-red-500 text-[11px] mt-1 error-message"></div>
+                </div>
+            </div>
+
+            <div class="pt-3">
+                <button type="submit" id="submitButton" disabled
+                    class="w-full bg-gradient-to-r from-[#2f82db] to-[#00C2FF] text-white font-medium text-sm py-2 px-3 rounded-md 
+                           shadow-md cursor-not-allowed opacity-70 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-[0_0_15px_rgba(0,194,255,0.3)]">
                     Create Course
                 </button>
             </div>
         </form>
     </div>
-    <!-- Scripts -->
-    <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+</div>
 
-        function clearMessages() {
-            const successDiv = document.getElementById('successMessage');
-            const errorDiv = document.getElementById('errorMessage');
-            successDiv.textContent = '';
-            successDiv.classList.add('hidden');
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
+<style>
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    @keyframes gradient-slow {
+        0% {
+            background-position: 0% 50%;
         }
 
         50% {
@@ -125,177 +128,95 @@
         -webkit-box-shadow: 0 0 0px 1000px rgba(30, 64, 175, 0.1) inset !important;
         -webkit-text-fill-color: #e5e7eb !important;
     }
+
+    select {
+        cursor: pointer;
+    }
+
+    /* Ensure consistent dark background and text color on focus/selection/autofill */
+    input,
+    textarea,
+    select {
+        background-color: rgba(28, 37, 65, 0.6) !important;
+        color: #E6EDF7 !important;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        background-color: rgba(36, 52, 90, 0.9) !important;
+        color: #E6EDF7 !important;
+        border-color: rgba(0, 194, 255, 0.6) !important;
+    }
+
+    select option {
+        background-color: #0A0E19;
+        color: #E6EDF7;
+    }
+
+    /* Chrome Autofill Fix */
+    input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px rgba(28, 37, 65, 0.6) inset !important;
+        -webkit-text-fill-color: #E6EDF7 !important;
+        caret-color: #E6EDF7;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* When selecting text inside field */
+    input::selection,
+    textarea::selection {
+        background-color: rgba(0, 194, 255, 0.3);
+        color: #fff;
+    }
 </style>
-<!-- Scripts -->
+
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    function clearMessages() {
-        const successDiv = document.getElementById('successMessage');
-        const errorDiv = document.getElementById('errorMessage');
-        successDiv.textContent = '';
-        successDiv.classList.add('hidden');
-        errorDiv.textContent = '';
-        errorDiv.classList.add('hidden');
-    }
-
-    function clearErrors() {
-        document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
-        document.querySelectorAll('input').forEach(input => input.classList.remove('border-red-500'));
-    }
-
-    function displayValidationErrors(errors = {}, message = '') {
-        const errorDiv = document.getElementById('errorMessage');
-        const successDiv = document.getElementById('successMessage');
-        successDiv.textContent = '';
-        successDiv.classList.add('hidden');
-
-        errorDiv.textContent = message || 'Please fix the errors below.';
-        errorDiv.classList.remove('hidden');
-
-        for (const field in errors) {
-            const input = document.getElementById(field);
-            const errorFieldDiv = document.getElementById(`${field}Error`);
-            if (input) input.classList.add('border-red-500');
-            if (errorFieldDiv) errorFieldDiv.textContent = errors[field][0];
-        }
-    }
-
-    function displaySuccessMessage(message = 'Success!') {
-        const successDiv = document.getElementById('successMessage');
-        const errorDiv = document.getElementById('errorMessage');
-        errorDiv.textContent = '';
-        errorDiv.classList.add('hidden');
-        successDiv.textContent = message;
-        successDiv.classList.remove('hidden');
-    }
-
-    document.getElementById('courseForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        clearErrors();
-
-        const formData = new FormData(this);
-        console.log("Error", formData)
-
-        try {
-            console.log("Submitting to:", "{{ route('trainer.courses.store') }}");
-            const response = await fetch("{{ route('trainer.courses.store') }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: formData
-            });
-            const data = await response.json();
-            if (response.ok) {
-                displaySuccessMessage(data.message);
-                this.reset();
-                clearErrors();
-                toggleSubmitButton();
-            } else {
-                console.log("mydata", data);
-                displayValidationErrors(data.errors || {}, data.message);
-            }
-        } catch (err) {
-            alert('An error occurred while creating course');
-            console.log(err)
-        }
-    });
-</script>
-
-<script>
-    const form = document.getElementById('courseForm');
-
     const validators = {
-        trainer_id: (value) => {
-            if (!value.trim()) return "Trainer ID is required.";
-            if (!/^\d+$/.test(value)) return "Trainer ID must be a number.";
-            return "";
-        },
-        title: (value) => {
-            if (!value.trim()) return "Title is required.";
-            if (value.length < 5) return "Title must be at least 5 characters.";
-            return "";
-        },
-        description: (value) => {
-            if (!value.trim()) return "Description is required.";
-            if (value.length < 10) return "Description must be at least 10 characters.";
-            return "";
-        },
-        price: (value) => {
-            if (!value.trim()) return "Price is required.";
-            if (isNaN(value) || parseFloat(value) <= 0) return "Price must be a positive number.";
-            return "";
-        },
-        duration: (value) => {
-            if (!value.trim()) return "Duration is required.";
-            return "";
-        },
-        city: (value) => {
-            if (!value.trim()) return "City is required.";
-            return "";
-        },
-        country: (value) => {
-            if (!value.trim()) return "Country is required.";
-            return "";
-        }
+        trainer_id: (v) => !v.trim() ? "Trainer ID is required." : "",
+        title: (v) => !v.trim() ? "Title is required." : v.length < 5 ? "Title must be at least 5 characters." : "",
+        description: (v) => !v.trim() ? "Description is required." : v.length < 10 ? "Description must be at least 10 characters." : "",
+        price: (v) => !v.trim() ? "Price is required." : (isNaN(v) || parseFloat(v) <= 0) ? "Price must be positive." : "",
+        city: (v) => !v.trim() ? "City is required." : "",
+        country: (v) => !v.trim() ? "Country is required." : ""
     };
 
     function validateField(field) {
-        const value = field.value;
         const name = field.name;
-        const errorDiv = document.getElementById(`${name}Error`);
-
-        if (validators[name]) {
-            const error = validators[name](value);
-            if (error) {
-                field.classList.add('border-red-500');
-                errorDiv.textContent = error;
-            } else {
-                field.classList.remove('border-red-500');
-                errorDiv.textContent = '';
-            }
+        const error = validators[name]?.(field.value) || "";
+        const errDiv = document.getElementById(`${name}Error`);
+        if (error) {
+            field.classList.add('border-red-500');
+            errDiv.textContent = error;
+        } else {
+            field.classList.remove('border-red-500');
+            errDiv.textContent = '';
         }
     }
-
-    // Attach validation on input
-    Object.keys(validators).forEach((name) => {
-        const field = document.querySelector(`[name="${name}"]`);
-        if (field) {
-            field.addEventListener('input', () => validateField(field));
-        }
-    });
-</script>
-
-<script>
-    const submitButton = document.getElementById('submitButton');
 
     function isFormValid() {
-        let isValid = true;
-        Object.keys(validators).forEach((name) => {
+        return Object.keys(validators).every(name => {
             const field = document.querySelector(`[name="${name}"]`);
-            const error = validators[name](field.value);
-            if (error) {
-                isValid = false;
-            }
+            return field && !validators[name](field.value);
         });
-        return isValid;
     }
+
+    const submitButton = document.getElementById('submitButton');
 
     function toggleSubmitButton() {
         if (isFormValid()) {
             submitButton.disabled = false;
-            submitButton.classList.remove('bg-indigo-400', 'cursor-not-allowed');
-            submitButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            submitButton.classList.remove('cursor-not-allowed', 'opacity-70');
         } else {
             submitButton.disabled = true;
-            submitButton.classList.add('bg-indigo-400', 'cursor-not-allowed');
-            submitButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            submitButton.classList.add('cursor-not-allowed', 'opacity-70');
         }
     }
 
-    // Add event listeners to all fields
-    Object.keys(validators).forEach((name) => {
+    Object.keys(validators).forEach(name => {
         const field = document.querySelector(`[name="${name}"]`);
         if (field) {
             field.addEventListener('input', () => {
@@ -305,9 +226,37 @@
         }
     });
 
-    // Disable button on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        toggleSubmitButton();
+    document.addEventListener('DOMContentLoaded', toggleSubmitButton);
+
+    // Submit handler
+    document.getElementById('courseForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!isFormValid()) return;
+        const formData = new FormData(this);
+
+        try {
+            const res = await fetch("{{ route('trainer.courses.store') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: formData
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('successMessage').textContent = data.message || 'Course created successfully!';
+                document.getElementById('successMessage').classList.remove('hidden');
+                this.reset();
+                toggleSubmitButton();
+            } else {
+                document.getElementById('errorMessage').textContent = data.message || 'Please fix the errors.';
+                document.getElementById('errorMessage').classList.remove('hidden');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An unexpected error occurred.');
+        }
     });
 </script>
 @endsection

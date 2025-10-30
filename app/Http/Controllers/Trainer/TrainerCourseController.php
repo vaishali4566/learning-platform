@@ -26,13 +26,11 @@ class TrainerCourseController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'trainer_id'  => 'required|exists:trainers,id',
-            'title'       => 'required|string|min:3|max:50|unique:courses,title',
-            'description' => 'required|string|min:5|max:255',
+            'title'       => 'required|string|min:5|max:50|unique:courses,title',
+            'description' => 'required|string|min:10|max:255',
             'price'       => 'required|numeric|min:0',
-            'duration'    => 'required|string|max:50',
             'difficulty'  => 'required|in:beginner,intermediate,advanced',
             'is_online'   => 'nullable|boolean',
-            'status'      => 'nullable|string|in:pending,approved,rejected',
             'city'        => 'required|string|max:100',
             'country'     => 'required|string|max:100',
         ]);
@@ -90,5 +88,23 @@ class TrainerCourseController extends Controller
     public function explore($courseId)
     {
         return view('trainer.courses.explore', ['courseId' => $courseId]);
+    }
+
+    public function destroy(Course $course)
+    {
+        $trainer = Auth::guard('trainer')->user();
+
+        // Ensure the authenticated trainer owns the course
+        if ($course->trainer_id !== $trainer->id) {
+            return redirect()->route('trainer.courses.my')->with('error', 'Unauthorized action.');
+        }
+
+        try {
+            $course->delete();
+            return redirect()->route('trainer.courses.my')->with('success', 'Course deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Course deletion failed: ' . $e->getMessage());
+            return redirect()->route('trainer.courses.my')->with('error', 'An error occurred while deleting the course. Please try again later.');
+        }
     }
 }

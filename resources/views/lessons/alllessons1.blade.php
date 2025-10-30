@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.trainer.lesson')
 
 @section('content')
 <div class="flex min-h-screen bg-gray-100" id="lesson-app" data-course-id="{{ $courseId }}">
