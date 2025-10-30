@@ -152,13 +152,28 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     // Data Management
     Route::get('/users', [AdminProfileController::class, 'showUserPage'])->name('admin.users');
     Route::get('/users/fetch', [AdminProfileController::class, 'fetchAllUsers'])->name('admin.users.fetch');
-    Route::get('/trainers', [AdminProfileController::class, 'showTrainerPage'])->name('admin.trainers');
-    Route::get('/trainers/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
-    Route::get('/courses', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
-    Route::get('/courses/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
+    
+    
     Route::post('/users/update/{id}', [AdminProfileController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/users/add', [AdminProfileController::class, 'addUser'])->name('admin.users.add');
-     Route::delete('/users/delete/{id}', [AdminUserController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::delete('/users/delete/{id}', [AdminProfileController::class, 'deleteUser'])->name('admin.users.delete');
+
+    // Trainer Management Routes
+    Route::prefix('trainers')->group(function () {
+        Route::get('/', [AdminProfileController::class, 'showTrainerPage'])->name('admin.trainers');
+        Route::get('/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
+        Route::post('/add', [AdminProfileController::class, 'addTrainer'])->name('admin.trainers.add');
+        Route::post('/update/{id}', [AdminProfileController::class, 'updateTrainer'])->name('admin.trainers.update');
+        Route::delete('/delete/{id}', [AdminProfileController::class, 'deleteTrainer'])->name('admin.trainers.delete');
+    });
+
+    // Course Management Routes
+    Route::prefix('courses')->group(function () {
+        Route::get('/', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
+        Route::get('/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
+        Route::post('/courses/update-status/{id}', [AdminProfileController::class, 'updateStatus'])->name('admin.courses.updateStatus');
+        Route::delete('/courses/{id}', [AdminProfileController::class, 'destroy'])->name('admin.courses.destroy');
+    });
 
     // Optional
     

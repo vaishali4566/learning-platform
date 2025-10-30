@@ -111,18 +111,19 @@
             sidebar.classList.toggle('sidebar-expanded', !isNowCollapsed);
 
             if (isNowCollapsed) {
-                // collapse
+                // Collapse
                 mainContent.classList.replace('ml-64', 'ml-20');
                 sidebarTextElements.forEach(el => el.classList.add('hidden'));
                 sidebarTitle?.classList.add('hidden');
             } else {
-                // expand
+                // Expand
                 mainContent.classList.replace('ml-20', 'ml-64');
                 sidebarTextElements.forEach(el => el.classList.remove('hidden'));
                 sidebarTitle?.classList.remove('hidden');
             }
         });
     </script>
+
 </body>
 
 </html>

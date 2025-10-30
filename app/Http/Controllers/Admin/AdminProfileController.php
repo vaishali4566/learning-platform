@@ -194,6 +194,126 @@ class AdminProfileController extends Controller
         $user->delete();
         return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
     }
+    // ✅ Fetch all trainers
+    public function fetchTrainers()
+    {
+        $trainers = Trainer::select('id', 'name', 'email', 'qualification', 'specialization', 'country', 'profile_image')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'trainers' => $trainers
+        ]);
+    }
+
+    // ✅ Add a new trainer
+    public function addTrainer(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:trainers,email',
+            'password' => 'required|string|min:6',
+            'qualification' => 'nullable|string|max:255',
+            'specialization' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        Trainer::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'qualification' => $validated['qualification'] ?? null,
+            'specialization' => $validated['specialization'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'approved' => false,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Trainer added successfully'
+        ]);
+    }
+
+    // ✅ Update trainer details
+    public function updateTrainer(Request $request, $id)
+    {
+        $trainer = Trainer::find($id);
+
+        if (!$trainer) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Trainer not found'
+            ]);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:trainers,email,' . $trainer->id,
+            'qualification' => 'nullable|string|max:255',
+            'specialization' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:100',
+        ]);
+
+        $trainer->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Trainer updated successfully'
+        ]);
+    }
+
+    // ✅ Delete trainer
+    public function deleteTrainer($id)
+    {
+        $trainer = Trainer::find($id);
+
+        if (!$trainer) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Trainer not found'
+            ]);
+        }
+
+        $trainer->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Trainer deleted successfully'
+        ]);
+    }
+    
+
+    // ✅ Approve or Reject a course
+    public function updateStatus(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected',
+        ]);
+
+        $course->status = $request->status;
+        $course->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course status updated successfully.',
+            'status' => $course->status,
+        ]);
+    }
+
+    // ✅ Delete a course
+    public function destroy($id)
+    {
+        $course = Course::findOrFail($id);
+
+        // Optionally delete related lessons, files, etc.
+        $course->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course deleted successfully.',
+        ]);
+    }
 }
 
 

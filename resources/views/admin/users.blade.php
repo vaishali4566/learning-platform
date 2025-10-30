@@ -113,9 +113,9 @@
     </div>
 </div>
 
-<!-- 🔔 Toast -->
+<!-- 🔔 Toast Notification -->
 <div id="toast"
-     class="hidden fixed bottom-6 right-6 bg-[#121A2E] text-white px-5 py-3 rounded-lg shadow-lg border-l-4 border-[#00C2FF] transition transform duration-300">
+     class="hidden fixed bottom-6 right-6 bg-[#d5d7de] text-[#171717] px-5 py-3 rounded-md shadow-lg border-l-4 border-[#00C2FF] transition-all duration-300 transform translate-y-3 opacity-0 z-[9999]">
     <span id="toastMessage"></span>
 </div>
 
@@ -133,26 +133,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     const toast = document.getElementById("toast");
     const toastMessage = document.getElementById("toastMessage");
 
+    // 🟢 Toast Function
     function showToast(message, type = 'info') {
         toastMessage.textContent = message;
-        toast.classList.remove('hidden');
+        toast.classList.remove('hidden', 'opacity-0', 'translate-y-3');
         toast.classList.remove('border-[#00C2FF]', 'border-green-400', 'border-red-500');
 
-        if (type === 'success') toast.classList.add('border-green-400');
-        else if (type === 'error') toast.classList.add('border-red-500');
-        else toast.classList.add('border-[#00C2FF]');
+        toast.classList.add(type === 'success' ? 'border-green-400' :
+                            type === 'error' ? 'border-red-500' : 'border-[#00C2FF]');
 
-        setTimeout(() => toast.classList.add('opacity-0', 'translate-y-2'), 3000);
         setTimeout(() => {
-            toast.classList.add('hidden');
-            toast.classList.remove('opacity-0', 'translate-y-2');
-        }, 3500);
+            toast.classList.add('opacity-0', 'translate-y-3');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
     }
 
     // 🟢 Fetch Users
     const fetchUsers = async () => {
         try {
-            const response = await fetch("{{ route('admin.users.fetch') }}");
+            const response = await fetch(`{{ route('admin.users.fetch') }}`, {
+                headers: { 'Accept': 'application/json' }
+            });
             const data = await response.json();
 
             if (data.status === 'success') {
@@ -166,29 +167,32 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <td class="px-6 py-3 text-sm font-medium">${user.name}</td>
                         <td class="px-6 py-3 text-sm">${user.email}</td>
                         <td class="px-6 py-3 text-sm">${user.country ?? '-'}</td>
-                        <td class="px-6 py-3 text-right">
+                        <td class="px-6 py-3 text-right space-x-2">
                             <button data-id="${user.id}" data-name="${user.name}" data-email="${user.email}" data-country="${user.country ?? ''}"
                                 class="editBtn px-3 py-1 text-sm bg-[#2E3B63] hover:bg-[#0071BC] rounded-md">Edit</button>
+                            <button data-id="${user.id}" class="deleteBtn px-3 py-1 text-sm bg-red-600/70 hover:bg-red-700 rounded-md">Delete</button>
                         </td>
                     </tr>`).join('');
+            } else {
+                showToast("Failed to load users", "error");
             }
-        } catch {
+        } catch (err) {
+            console.error(err);
             showToast("Error loading users", "error");
         }
     };
 
-    // 🟢 Open Add Modal
-    openAddModalBtn.addEventListener("click", () => addModal.classList.remove("hidden"));
-    closeAddModal.addEventListener("click", () => addModal.classList.add("hidden"));
+    // 🟢 Add User
+    openAddModalBtn.onclick = () => addModal.classList.remove("hidden");
+    closeAddModal.onclick = () => addModal.classList.add("hidden");
 
-    // 🟢 Add User Submit
-    addForm.addEventListener("submit", async (e) => {
+    addForm.onsubmit = async e => {
         e.preventDefault();
         const payload = {
-            name: document.getElementById("addName").value,
-            email: document.getElementById("addEmail").value,
-            password: document.getElementById("addPassword").value,
-            country: document.getElementById("addCountry").value,
+            name: addName.value,
+            email: addEmail.value,
+            password: addPassword.value,
+            country: addCountry.value,
             _token: '{{ csrf_token() }}'
         };
 
@@ -207,29 +211,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             showToast(data.message || "Failed to add user", "error");
         }
-    });
+    };
 
-    // 🟢 Open Edit Modal
-    document.addEventListener('click', (e) => {
+    // 🟢 Edit User
+    document.addEventListener('click', e => {
         if (e.target.classList.contains('editBtn')) {
-            const btn = e.target;
-            document.getElementById('editUserId').value = btn.dataset.id;
-            document.getElementById('editName').value = btn.dataset.name;
-            document.getElementById('editEmail').value = btn.dataset.email;
-            document.getElementById('editCountry').value = btn.dataset.country;
+            const btn = e.target.dataset;
+            editUserId.value = btn.id;
+            editName.value = btn.name;
+            editEmail.value = btn.email;
+            editCountry.value = btn.country;
             editModal.classList.remove('hidden');
         }
     });
 
-    closeEditModal.addEventListener('click', () => editModal.classList.add('hidden'));
+    closeEditModal.onclick = () => editModal.classList.add('hidden');
 
-    editForm.addEventListener('submit', async (e) => {
+    editForm.onsubmit = async e => {
         e.preventDefault();
-        const id = document.getElementById('editUserId').value;
+        const id = editUserId.value;
         const payload = {
-            name: document.getElementById('editName').value,
-            email: document.getElementById('editEmail').value,
-            country: document.getElementById('editCountry').value,
+            name: editName.value,
+            email: editEmail.value,
+            country: editCountry.value,
             _token: '{{ csrf_token() }}'
         };
 
@@ -246,6 +250,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             fetchUsers();
         } else {
             showToast("Failed to update user", "error");
+        }
+    };
+
+    // 🟢 Delete User
+    document.addEventListener("click", async e => {
+        if (e.target.classList.contains("deleteBtn")) {
+            const id = e.target.dataset.id;
+            if (!confirm("Are you sure you want to delete this user?")) return;
+
+            try {
+                const res = await fetch(`/admin/users/delete/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast("User deleted successfully", "success");
+                    fetchUsers();
+                } else {
+                    showToast("Failed to delete user", "error");
+                }
+            } catch {
+                showToast("Something went wrong", "error");
+            }
         }
     });
 
