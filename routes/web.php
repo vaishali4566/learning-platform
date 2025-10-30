@@ -157,6 +157,10 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     Route::get('/trainers/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
     Route::get('/courses', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
     Route::get('/courses/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
+    Route::post('/users/update/{id}', [AdminProfileController::class, 'updateUser'])->name('admin.users.update');
+    Route::post('/users/add', [AdminProfileController::class, 'addUser'])->name('admin.users.add');
+     Route::delete('/users/delete/{id}', [AdminUserController::class, 'deleteUser'])->name('admin.users.delete');
+
     // Optional
     
     Route::get('/quizzes', [AdminProfileController::class, 'fetchAllQuizzes'])->name('admin.quizzes.index')->middleware('optional');
@@ -211,4 +215,11 @@ Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->na
 // ======================================================================
 Route::get('/contact', function () {
     return view('contact');
+});
+
+// 🔔 Universal Notifications Routes
+Route::prefix('notifications')->group(function () {
+    Route::post('/create', [NotificationController::class, 'store'])->name('notifications.create');
+    Route::get('/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
+    Route::post('/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });

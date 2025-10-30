@@ -21,31 +21,64 @@
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="home" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">Dashboard</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            <span
+                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
         <a href="{{ route('courses.mycourses') }}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="book-open" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">My Courses</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            <span
+                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
 
         <a href="{{ route('courses.index') }}"
             class="relative group flex items-center gap-1 transition">
             <i data-lucide="library" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
             <span class="group-hover:text-[#00C2FF]">All Courses</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            <span
+                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
         </a>
     </div>
 
     <!-- Right: Notifications + Profile -->
     <div class="flex items-center gap-5">
-        <!-- Notification -->
-        <button class="relative group hover:text-[#00C2FF] transition">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#0E1625] shadow-md"></span>
-        </button>
+        <!-- Notification Dropdown -->
+        <div class="relative group">
+            <button class="relative hover:text-[#00C2FF] transition">
+                <i data-lucide="bell" class="w-5 h-5"></i>
+                <span
+                    class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#0E1625] shadow-md"></span>
+            </button>
+
+            <!-- Notification Panel -->
+            <div class="absolute right-0 mt-3 w-72 bg-[#1C2541]/95 border border-[#26304D] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 backdrop-blur-md z-50">
+                <div class="px-4 py-3 border-b border-[#26304D] font-semibold text-sm text-[#E6EDF7]">
+                    Notifications
+                </div>
+
+                <ul class="max-h-60 overflow-y-auto text-sm">
+                    <!-- Example Notification -->
+                    <li class="px-4 py-2 hover:bg-[#00C2FF]/10 cursor-pointer transition">
+                        🎓 New course “React Mastery” available!
+                    </li>
+                    <li class="px-4 py-2 hover:bg-[#00C2FF]/10 cursor-pointer transition">
+                        🧠 Quiz results for “Node.js Basics” uploaded.
+                    </li>
+                    <li class="px-4 py-2 hover:bg-[#00C2FF]/10 cursor-pointer transition">
+                        🏆 You’ve earned a certificate in “MongoDB Advanced”.
+                    </li>
+                </ul>
+
+                <div class="border-t border-[#26304D]">
+                    <a href="#"
+                        class="block px-4 py-2 text-center text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">
+                        View all
+                    </a>
+                </div>
+            </div>
+        </div>
 
         <!-- Profile Dropdown -->
         <div class="relative group">
@@ -57,7 +90,7 @@
                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                 </button>
 
-                <div class="absolute right-0 mt-2 w-44 bg-[#1C2541]/95 border border-[#26304D] text-[#E6EDF7] rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 backdrop-blur-md">
+                <div class="absolute right-0 mt-2 w-44 bg-[#1C2541]/95 border border-[#26304D] text-[#E6EDF7] rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 backdrop-blur-md z-50">
                     <a href="{{ route('user.profile') }}"
                         class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Profile</a>
                     <a href="#"
