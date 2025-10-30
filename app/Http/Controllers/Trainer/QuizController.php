@@ -6,34 +6,29 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Quiz;
 use App\Models\QuizQuestion;
-use App\Models\QuizAnswer;
 
 class QuizController extends Controller
 {
-    // 1️⃣ Show list of quizzes (dummy)
+    // 🟢 Show all quizzes
     public function index()
     {
-        $quizzes = Quiz::all(); // just fetch all for now
+        $quizzes = Quiz::withCount('questions')->get();
         return view('trainer.quizzes.index', compact('quizzes'));
     }
 
-    // 2️⃣ Show form to create a new quiz
+    // 🟢 Show quiz creation form
     public function create()
     {
         return view('trainer.quizzes.create');
     }
 
-    // 3️⃣ Store new quiz
+    // 🟢 Store new quiz
     public function store(Request $request)
     {
         $request->validate([
             'lesson_id' => 'required|exists:lessons,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-        ], [
-            'lesson_id.required' => 'Lesson ID is required.',
-            'lesson_id.exists' => 'Selected lesson does not exist.',
-            'title.required' => 'Quiz title is required.',
         ]);
 
         $quiz = Quiz::create([
@@ -45,18 +40,22 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('trainer.quizzes.edit', $quiz->id)
-            ->with('success', 'Quiz created. Now add questions.');
+                         ->with('success', 'Quiz created. Now add questions.');
     }
 
-
-
-    // 4️⃣ Show form to edit quiz (add questions)
+    // 🟢 Show quiz edit page with all questions
     public function edit($id)
     {
         $quiz = Quiz::with('questions')->findOrFail($id);
         return view('trainer.quizzes.edit', compact('quiz'));
     }
+    public function showQuestions($quizId)
+    {
+        $quiz = Quiz::with('questions')->findOrFail($quizId);
+        return view('trainer.quizzes.questions', compact('quiz'));
+    }
 
+    // 🟢 Store new question (AJAX)
     public function storeQuestion(Request $request, $quizId)
     {
         $request->validate([
@@ -65,19 +64,9 @@ class QuizController extends Controller
             'options' => 'required|array|size:4',
             'options.*' => 'required|string',
             'correct_option' => 'required|integer|between:0,3',
-        ], [
-            'question_text.required' => 'Question text is required.',
-            'marks.required' => 'Marks for this question are required.',
-            'marks.integer' => 'Marks must be a number.',
-            'marks.min' => 'Marks must be at least 1.',
-            'options.required' => 'All 4 options are required.',
-            'options.size' => 'You must provide exactly 4 options.',
-            'options.*.required' => 'Each option cannot be empty.',
-            'correct_option.required' => 'Please select the correct option index.',
-            'correct_option.between' => 'Correct option must be between 0 and 3.',
         ]);
 
-        QuizQuestion::create([
+        $question = QuizQuestion::create([
             'quiz_id' => $quizId,
             'question_text' => $request->question_text,
             'marks' => $request->marks,
@@ -85,38 +74,60 @@ class QuizController extends Controller
             'correct_option' => $request->correct_option,
         ]);
 
-        return redirect()->back()->with('success', 'Question added successfully.');
+        // Update quiz marks
+        $quiz = Quiz::find($quizId);
+        $totalMarks = $quiz->questions()->sum('marks');
+        $quiz->update([
+            'total_marks' => $totalMarks,
+            'passing_marks' => ceil($totalMarks * 0.33),
+        ]);
+
+        // Return response for AJAX
+        return response()->json([
+            'success' => true,
+            'question' => [
+                'id' => $question->id,
+                'text' => $question->question_text,
+                'marks' => $question->marks,
+            ],
+        ]);
     }
 
-
+    // 🟢 Delete question (AJAX)
     public function deleteQuestion($questionId)
     {
         $question = QuizQuestion::findOrFail($questionId);
         $quizId = $question->quiz_id;
         $question->delete();
 
+        // Update quiz marks
         $quiz = Quiz::find($quizId);
         $totalMarks = $quiz->questions()->sum('marks');
-        $quiz->total_marks = $totalMarks;
-        $quiz->passing_marks = ceil($totalMarks * 0.33);
-        $quiz->save();
+        $quiz->update([
+            'total_marks' => $totalMarks,
+            'passing_marks' => ceil($totalMarks * 0.33),
+        ]);
 
-        return redirect()->back()->with('success', 'Question deleted and total/passing marks updated.');
+        return response()->json(['success' => true]);
     }
+
+    // 🟢 Finalize quiz (AJAX)
     public function finalizeQuiz($quizId)
     {
         $quiz = Quiz::with('questions')->findOrFail($quizId);
 
-        if ($quiz->questions->count() == 0) {
-            return redirect()->back()->withErrors(['quiz' => 'You must add at least one question before finalizing the quiz.']);
+        if ($quiz->questions->isEmpty()) {
+            return response()->json([
+                'errors' => ['quiz' => ['You must add at least one question before finalizing.']]
+            ], 422);
         }
 
         $totalMarks = $quiz->questions->sum('marks');
-        $quiz->total_marks = $totalMarks;
-        $quiz->passing_marks = ceil($totalMarks * 0.33);
-        $quiz->save();
+        $quiz->update([
+            'total_marks' => $totalMarks,
+            'passing_marks' => ceil($totalMarks * 0.33),
+        ]);
 
-        return redirect()->route('trainer.quizzes.edit', $quizId)
-            ->with('success', 'Quiz finalized! Total and passing marks saved.');
+        return response()->json(['success' => 'Quiz finalized successfully!']);
     }
 }

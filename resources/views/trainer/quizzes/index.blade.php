@@ -8,7 +8,7 @@
     <div class="absolute inset-0 bg-gradient-to-t from-[#00C2FF]/10 via-transparent to-[#2F82DB]/5 
                 animate-gradient-slow"></div>
 
-    <!-- Main Container (now aligned at top) -->
+    <!-- Main Container -->
     <div class="relative w-full max-w-5xl bg-[#0E1426]/80 backdrop-blur-xl rounded-2xl shadow-2xl 
                 p-8 border border-[#2F82DB]/20 z-10 self-start mt-8">
 
@@ -39,7 +39,12 @@
                                hover:shadow-lg hover:border-[#00C2FF]/30 transition duration-200">
 
                         <div>
-                            <h2 class="text-lg font-semibold text-white">{{ $quiz->title }}</h2>
+                            <!-- ✅ Clickable Quiz Title -->
+                            <a href="{{ route('trainer.quizzes.questions', $quiz->id) }}"
+                               class="text-lg font-semibold text-[#2eceff] underline hover:text-[#00C2FF] h transition">
+                                {{ $quiz->title }}
+                            </a>
+
                             <p class="text-gray-400 text-xs mt-1">
                                 {{ $quiz->description ?? 'No description available' }}
                             </p>
@@ -78,9 +83,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/trainer/quizzes/' + quizId,
             method: 'DELETE',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
+            data: { _token: '{{ csrf_token() }}' },
             success: function(response) {
                 row.fadeOut(400, function() { $(this).remove(); });
             },

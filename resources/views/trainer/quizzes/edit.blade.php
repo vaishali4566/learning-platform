@@ -96,34 +96,58 @@
 <script>
 $(document).ready(function() {
 
-    // Add Question
+    // 🔹 Add Question (AJAX without reload)
     $('#add-question-form').on('submit', function(e) {
         e.preventDefault();
         let quizId = $('#quizId').val();
+
         $.ajax({
             url: '/trainer/quizzes/' + quizId + '/questions',
             method: 'POST',
             data: $(this).serialize(),
             success: function(res) {
-                if(res.success){
-                    alert('Question added successfully!');
-                    location.reload();
+                if (res.success) {
+                    const q = res.question;
+
+                    // Append new question instantly
+                    $('#questions-list').append(`
+                        <li data-id="${q.id}" class="flex justify-between items-center bg-[#0E1426]/60 border border-white/10 rounded-lg p-3 hover:bg-[#16203A] transition">
+                            <div>
+                                <p class="font-medium text-gray-100">${q.text}</p>
+                                <span class="text-sm text-gray-400">${q.marks} marks</span>
+                            </div>
+                            <button class="delete-btn px-3 py-1.5 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-md hover:opacity-90 transition">
+                                Delete
+                            </button>
+                        </li>
+                    `);
+
+                    // Reset form
+                    $('#add-question-form')[0].reset();
+
+                    // Update marks display
+                    let total = parseInt($('#total-marks').text() || 0);
+                    $('#total-marks').text(total + parseInt(q.marks));
+
+                    alert('✅ Question added successfully!');
                 }
             },
             error: function(xhr) {
-                if(xhr.status === 422){
+                if (xhr.status === 422) {
                     let msg = Object.values(xhr.responseJSON.errors).flat().join("\n");
                     alert(msg);
                 } else {
-                    alert('An unexpected error occurred.');
+                    alert('❌ An unexpected error occurred.');
                 }
             }
         });
     });
 
-    // Delete Question
-    $('.delete-btn').click(function() {
-        if(!confirm('Delete this question?')) return;
+
+    // 🔹 Delete Question (Dynamic)
+    $(document).on('click', '.delete-btn', function() {
+        if (!confirm('Delete this question?')) return;
+
         let li = $(this).closest('li');
         let questionId = li.data('id');
 
@@ -132,31 +156,40 @@ $(document).ready(function() {
             method: 'DELETE',
             data: { _token: '{{ csrf_token() }}' },
             success: function(res) {
-                alert('Question deleted.');
-                location.reload();
+                if (res.success) {
+                    li.remove();
+                    alert('🗑️ Question deleted successfully.');
+
+                    // Optionally update total marks
+                    let current = parseInt($('#total-marks').text() || 0);
+                    let removedMarks = parseInt(li.find('span').text()) || 0;
+                    $('#total-marks').text(Math.max(current - removedMarks, 0));
+                }
             },
             error: function() {
-                alert('Error deleting question.');
+                alert('❌ Error deleting question.');
             }
         });
     });
 
-    // Finalize Quiz
+
+    // 🔹 Finalize Quiz
     $('#finalize-btn').click(function() {
         let quizId = $('#quizId').val();
+
         $.ajax({
             url: '/trainer/quizzes/' + quizId + '/finalize',
             method: 'POST',
             data: { _token: '{{ csrf_token() }}' },
             success: function(res) {
-                alert(res.success || 'Quiz finalized successfully!');
-                location.reload();
+                alert(res.success || '✅ Quiz finalized successfully!');
+                location.reload(); // reload to refresh passing marks
             },
             error: function(xhr) {
-                if(xhr.status === 422 && xhr.responseJSON.errors.quiz){
+                if (xhr.status === 422 && xhr.responseJSON.errors.quiz) {
                     alert(xhr.responseJSON.errors.quiz[0]);
                 } else {
-                    alert('Something went wrong.');
+                    alert('❌ Something went wrong.');
                 }
             }
         });
@@ -164,4 +197,5 @@ $(document).ready(function() {
 
 });
 </script>
+
 @endsection

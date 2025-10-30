@@ -25,15 +25,12 @@ class TrainerLessonController extends Controller
             'title'         => 'required|string|min:3|max:50',
             'content_type'  => 'required|in:video,text,quiz',
             'order_number'  => 'nullable|numeric',
-            'duration'      => 'nullable|string|max:50',
         ];
 
         if ($request->content_type === 'video') {
             $rules['video'] = 'required|mimes:mp4,mov,ogg,webm|max:51200';
         } elseif ($request->content_type === 'text') {
             $rules['text_content'] = 'required|string|min:10';
-        } elseif ($request->content_type === 'quiz') {
-            $rules['quiz_questions'] = 'required|json';
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -52,7 +49,6 @@ class TrainerLessonController extends Controller
                 'title'        => $request->title,
                 'content_type' => $request->content_type,
                 'order_number' => $request->order_number,
-                'duration'     => $request->duration,
             ];
 
             if ($request->content_type === 'video') {
@@ -61,9 +57,7 @@ class TrainerLessonController extends Controller
                 $data['video_url'] = $path;
             } elseif ($request->content_type === 'text') {
                 $data['text_content'] = $request->text_content;
-            } elseif ($request->content_type === 'quiz') {
-                $data['quiz_questions'] = $request->quiz_questions;
-            }
+            } 
 
             $lesson = Lesson::create($data);
 

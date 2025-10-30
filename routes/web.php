@@ -139,12 +139,17 @@ Route::prefix('trainer')->group(function () {
 
 
         // Quizzes
-        Route::get('quizzes', [QuizController::class, 'index'])->name('trainer.quizzes.index');
-        Route::get('quizzes/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
-        Route::post('quizzes/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
-        Route::get('quizzes/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
-        Route::post('quizzes/{quiz}/questions/store', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
-        Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
+        Route::prefix('quizzes')->group(function () {
+            Route::get('/', [QuizController::class, 'index'])->name('trainer.quizzes.index');
+            Route::get('/{id}/questions', [QuizController::class, 'showQuestions'])->name('trainer.quizzes.questions');
+            Route::get('/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
+            Route::post('/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
+            Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
+            Route::post('/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
+            Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
+            Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
+        });
+
     });
 });
 
