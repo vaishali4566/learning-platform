@@ -66,14 +66,16 @@
             @endforelse
         </div>
 
-        <!-- Finalize Quiz -->
-        <div class="text-center mt-10">
-            <button id="finalizeBtn"
-                data-id="{{ $quiz->id }}"
-                class="bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg">
-                Finalize Quiz
-            </button>
-        </div>
+        <!-- ✅ Finalize Quiz Button (Show only if questions exist) -->
+        @if (count($quiz->questions) > 0)
+            <div class="text-center mt-10">
+                <button id="finalizeBtn"
+                    data-id="{{ $quiz->id }}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg">
+                    Finalize Quiz
+                </button>
+            </div>
+        @endif
     </div>
 
     <!-- Add Question Modal -->
@@ -178,16 +180,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Finalize quiz
-    document.getElementById('finalizeBtn').addEventListener('click', async (e) => {
-        const id = e.target.dataset.id;
-        const res = await fetch(`/trainer/quizzes/${id}/finalize`, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+    const finalizeBtn = document.getElementById('finalizeBtn');
+    if (finalizeBtn) {
+        finalizeBtn.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            const res = await fetch(`/trainer/quizzes/${id}/finalize`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            });
+            const result = await res.json();
+            if (result.success) alert(result.success);
+            else alert('Error finalizing quiz.');
         });
-        const result = await res.json();
-        if (result.success) alert(result.success);
-        else alert('Error finalizing quiz.');
-    });
+    }
 });
 </script>
 @endsection

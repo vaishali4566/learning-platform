@@ -83,6 +83,8 @@ Route::prefix('user')->group(function () {
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
         Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
+        Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {
