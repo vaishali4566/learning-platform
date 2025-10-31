@@ -89,7 +89,7 @@
     </div>
 
     {{-- BODY LAYOUT --}}
-    <div class="flex flex-1 pt-16 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden">
         {{-- MAIN CONTENT --}}
         <main id="mainContent" class="flex-1 transition-all duration-300">
             @yield('content')

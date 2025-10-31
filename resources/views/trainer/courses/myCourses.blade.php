@@ -8,7 +8,7 @@
         <h1 class="text-3xl font-bold tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
             My Courses
         </h1>
-        <a href="{{ route('courses.create') }}"
+        <a href="{{ route('trainer.courses.create') }}"
             class="px-5 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white rounded-xl shadow-md hover:shadow-[#00C2FF]/40 hover:translate-y-[-1px] transition-all duration-300 ease-in-out">
             + Create New
         </a>

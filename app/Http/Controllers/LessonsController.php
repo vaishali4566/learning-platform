@@ -11,72 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class LessonsController extends Controller
 {
-    public function create(Request $request)
-    {
-        $rules = [
-            'course_id'     => 'required|exists:courses,id',
-            'title'         => 'required|string|min:3|max:50',
-            'content_type'  => 'required|in:video,text,quiz',
-            'order_number'  => 'nullable|numeric',
-            'duration'      => 'nullable|string|max:50',
-        ];
-
-        if ($request->content_type === 'video') {
-            $rules['video'] = 'required|mimes:mp4,mov,ogg,webm|max:51200';
-        } elseif ($request->content_type === 'text') {
-            $rules['text_content'] = 'required|string|min:10';
-        } elseif ($request->content_type === 'quiz') {
-            $rules['quiz_questions'] = 'required|json';
-        }
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        DB::beginTransaction();
-        try {
-            $data = [
-                'course_id'    => $request->course_id,
-                'title'        => $request->title,
-                'content_type' => $request->content_type,
-                'order_number' => $request->order_number,
-                'duration'     => $request->duration,
-            ];
-
-            if ($request->content_type === 'video') {
-                $file = $request->file('video');
-                $path = $file->store('videos', 'public');
-                $data['video_url'] = $path;
-            } elseif ($request->content_type === 'text') {
-                $data['text_content'] = $request->text_content;
-            } elseif ($request->content_type === 'quiz') {
-                $data['quiz_questions'] = $request->quiz_questions;
-            }
-
-            $lesson = Lesson::create($data);
-
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Lesson created successfully',
-                'data' => $lesson,
-            ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Lesson creation failed: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while uploading lesson details. Please try again later.'
-            ], 500);
-        }
-    }
-
     public function viewLesson($id)
     {
         return view('lessons.view', ['lessonId' => $id]);
@@ -99,55 +33,6 @@ class LessonsController extends Controller
         $lessons = Lesson::where('course_id', $id)->get();
         return response()->json($lessons);
     }
-
-    // use Illuminate\Support\Facades\Response;
-    // use Illuminate\Support\Facades\Storage;
-
-    // public function stream($filename)
-    // {
-    //     $path = storage_path("app/public/videos/{$filename}");
-
-    //     if (!file_exists($path)) {
-    //         abort(404);
-    //     }
-
-    //     $mime = mime_content_type($path);
-    //     $headers = [
-    //         'Content-Type' => $mime,
-    //         'Accept-Ranges' => 'bytes',
-    //     ];
-
-    //     $size = filesize($path);
-    //     $file = fopen($path, 'rb');
-
-    //     $start = 0;
-    //     $end = $size - 1;
-
-    //     if (isset($_SERVER['HTTP_RANGE'])) {
-    //         preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
-    //         $start = intval($matches[1]);
-    //         if (isset($matches[2])) {
-    //             $end = intval($matches[2]);
-    //         }
-    //         fseek($file, $start);
-    //     }
-
-    //     $length = $end - $start + 1;
-    //     $headers['Content-Length'] = $length;
-    //     $headers['Content-Range'] = "bytes $start-$end/$size";
-
-    //     return response()->stream(function () use ($file, $length) {
-    //         $buffer = 1024 * 8;
-    //         $bytesSent = 0;
-    //         while (!feof($file) && $bytesSent < $length) {
-    //             $readLength = min($buffer, $length - $bytesSent);
-    //             echo fread($file, $readLength);
-    //             flush();
-    //             $bytesSent += $readLength;
-    //         }
-    //         fclose($file);
-    //     }, 206, $headers);
-    // }
 
     public function stream($id, Request $request)
     {

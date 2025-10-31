@@ -3,7 +3,7 @@
 @section('content')
 <div id="lesson-app"
     data-course-id="{{ $courseId }}"
-    class="min-h-screen flex bg-[#0A0E19] text-[#E6EDF7] pt-[64px] transition-all duration-300">
+    class="h-full flex bg-[#0A0E19] text-[#E6EDF7] pt-[64px] transition-all duration-300">
 
     <!-- Sidebar -->
     <aside id="lesson-sidebar"
@@ -32,7 +32,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-auto transition-all duration-300">
+    <main class="flex-1 p-3 overflow-auto transition-all duration-300 max-h-full">
         <div
             class="relative bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_25px_rgba(0,194,255,0.08)] p-8 transition hover:shadow-[0_0_35px_rgba(0,194,255,0.12)]">
 
@@ -213,7 +213,6 @@
     }
 </style>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const app = document.getElementById('lesson-app');
@@ -231,7 +230,7 @@
         });
 
         // Fetch lessons dynamically
-        fetch(`/courses/${courseId}/lessons`)
+        fetch(`/trainer/courses/${courseId}/lessons/data`)
             .then(res => res.json())
             .then(lessons => {
                 if (!lessons.length) {
@@ -251,6 +250,7 @@
                     `;
 
                     btn.addEventListener('click', () => {
+
                         loadLesson(lesson.id, lesson.title);
                         document.querySelectorAll('#lesson-list button').forEach(el => el.classList.remove('lesson-active'));
                         btn.classList.add('lesson-active');
@@ -273,7 +273,7 @@
             activeLessonId = lessonId;
 
             lessonTitle.textContent = title;
-            lessonContent.style.opacity = "0.4";
+            // lessonContent.style.opacity = "0.4";
             lessonContent.innerHTML = `
                 <div class="loading-placeholder w-3/4 h-4 rounded"></div>
                 <div class="loading-placeholder w-full h-4 rounded"></div>
@@ -283,14 +283,22 @@
             fetch(`/lessons/${lessonId}/stream`)
                 .then(response => {
                     const contentType = response.headers.get('Content-Type');
+                    console.log("Content-Type:", contentType);
                     if (contentType.includes('application/json')) return response.json();
+
                     lessonContent.innerHTML = `
-                        <div class="flex justify-center">
-                            <video class="w-full max-w-3xl rounded-lg mt-4" controls autoplay>
-                                <source src="/lessons/${lessonId}/stream" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>`;
+            <div class="flex justify-center items-center mt-6 px-4">
+                <div class="relative w-full max-w-5xl h-[65vh] rounded-2xl overflow-hidden border border-[#2B3552] bg-gradient-to-b from-[#0A0E19] to-[#0F172A] shadow-[0_0_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_40px_rgba(56,189,248,0.25)] transition-all duration-300 hover:scale-[1.01]">
+                    <video 
+                        class="w-full h-full object-contain bg-black rounded-2xl" 
+                        controls 
+                        autoplay 
+                        playsinline>
+                        <source src="/lessons/${lessonId}/stream" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>`;
                 })
                 .then(data => {
                     if (!data) return;
@@ -303,6 +311,7 @@
                     lessonContent.innerHTML = `<p class="text-red-400">Error loading lesson content.</p>`;
                     lessonContent.style.opacity = "1";
                 });
+
         }
     });
 </script>

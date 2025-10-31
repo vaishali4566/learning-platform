@@ -31,6 +31,7 @@ use App\Http\Controllers\Trainer\ReportController;
 // Admin Controllers
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Trainer\TrainerLessonController;
 
 // ======================================================================
@@ -127,16 +128,14 @@ Route::prefix('trainer')->group(function () {
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
+            Route::get('{course}/lessons/data',[TrainerLessonController::class, 'lessonsByCourse'])->name('lessons');
 
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
-            Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLesson1'])->name('lessons.view');
+            Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             
         });
-
-        
-
 
         // Quizzes
         Route::get('quizzes', [QuizController::class, 'index'])->name('trainer.quizzes.index');
@@ -186,11 +185,8 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
 // COURSES ROUTES
 // ======================================================================
 Route::group(['prefix' => 'courses'], function () {
-    Route::post('/', [CoursesController::class, 'store']);
-    Route::get('/create', [CoursesController::class, 'create'])->name('courses.create');
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');
-    Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');
     Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
     Route::get('/data', [CoursesController::class, 'getAll']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
@@ -205,11 +201,9 @@ Route::group(['prefix' => 'courses'], function () {
 // LESSONS ROUTES
 // ======================================================================
 Route::group(['prefix' => 'lessons'], function () {
-    Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
-    Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
     Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
     Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}', [LessonsController::class, 'stream']);
+    Route::get('/{id}/stream', [LessonsController::class, 'stream']);
 });
 
 
