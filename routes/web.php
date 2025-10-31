@@ -33,6 +33,8 @@ use App\Http\Controllers\Trainer\ReportController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Trainer\TrainerLessonController;
+use App\Http\Controllers\User\UserCourseController;
+use App\Http\Controllers\User\UserLessonController;
 
 // ======================================================================
 // ROOT REDIRECT
@@ -79,6 +81,13 @@ Route::prefix('user')->group(function () {
         Route::post('/update', [UserController::class, 'updateProfile'])->name('user.update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('user.delete');
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+        Route::prefix('courses')->name('user.courses.')->group(function () {
+            Route::get('/', [UserCourseController::class, 'index'])->name('index');
+            Route::get('/my', [UserCourseController::class, 'myCourses'])->name('my');
+            Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
+            Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
+        });
 
         // Quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
@@ -130,7 +139,6 @@ Route::prefix('trainer')->group(function () {
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
-            Route::get('{course}/lessons/data',[TrainerLessonController::class, 'lessonsByCourse'])->name('lessons');
 
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
@@ -212,7 +220,7 @@ Route::group(['prefix' => 'courses'], function () {
     Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
     Route::get('/data', [CoursesController::class, 'getAll']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
+    Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
     Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);

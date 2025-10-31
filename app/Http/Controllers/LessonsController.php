@@ -23,11 +23,6 @@ class LessonsController extends Controller
         return view('lessons.alllessons1', ['courseId' => $id]);
     }
 
-    public function showLessonForm()
-    {
-        return view('lessons.create');
-    }
-
     public function lessonsByCourse($id)
     {
         $lessons = Lesson::where('course_id', $id)->get();

@@ -84,12 +84,6 @@ class TrainerLessonController extends Controller
         return view('trainer.lessons.index', ['courseId' => $id, 'courseName' => $courseName]);
     }
 
-    public function lessonsByCourse($id)
-    {
-        $lessons = Lesson::where('course_id', $id)->get();
-        return response()->json($lessons);
-    }
-
     public function manage(Course $course)
     {
         $lessons = $course->lessons()->get();
