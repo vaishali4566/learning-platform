@@ -29,7 +29,7 @@
                         
                         <!-- Course Thumbnail -->
                         <div class="relative h-40 overflow-hidden">
-                            <img src="{{ asset('storage/' . $course->image) }}"
+                            <img src="{{ asset('storage/' . $course->thumbnail) }}"
                                 alt="{{ $course->title }}"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0A0E19]/80 via-transparent to-transparent"></div>
