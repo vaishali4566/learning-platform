@@ -84,6 +84,8 @@ Route::prefix('user')->group(function () {
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
         Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
+        Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {
@@ -138,12 +140,17 @@ Route::prefix('trainer')->group(function () {
         });
 
         // Quizzes
-        Route::get('quizzes', [QuizController::class, 'index'])->name('trainer.quizzes.index');
-        Route::get('quizzes/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
-        Route::post('quizzes/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
-        Route::get('quizzes/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
-        Route::post('quizzes/{quiz}/questions/store', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
-        Route::post('quizzes/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
+        Route::prefix('quizzes')->group(function () {
+            Route::get('/', [QuizController::class, 'index'])->name('trainer.quizzes.index');
+            Route::get('/{id}/questions', [QuizController::class, 'showQuestions'])->name('trainer.quizzes.questions');
+            Route::get('/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
+            Route::post('/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
+            Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
+            Route::post('/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
+            Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
+            Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
+        });
+
     });
 });
 
@@ -162,13 +169,28 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     // Data Management
     Route::get('/users', [AdminProfileController::class, 'showUserPage'])->name('admin.users');
     Route::get('/users/fetch', [AdminProfileController::class, 'fetchAllUsers'])->name('admin.users.fetch');
-    Route::get('/trainers', [AdminProfileController::class, 'showTrainerPage'])->name('admin.trainers');
-    Route::get('/trainers/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
-    Route::get('/courses', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
-    Route::get('/courses/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
+    
+    
     Route::post('/users/update/{id}', [AdminProfileController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/users/add', [AdminProfileController::class, 'addUser'])->name('admin.users.add');
-     Route::delete('/users/delete/{id}', [AdminUserController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::delete('/users/delete/{id}', [AdminProfileController::class, 'deleteUser'])->name('admin.users.delete');
+
+    // Trainer Management Routes
+    Route::prefix('trainers')->group(function () {
+        Route::get('/', [AdminProfileController::class, 'showTrainerPage'])->name('admin.trainers');
+        Route::get('/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('admin.trainers.fetch');
+        Route::post('/add', [AdminProfileController::class, 'addTrainer'])->name('admin.trainers.add');
+        Route::post('/update/{id}', [AdminProfileController::class, 'updateTrainer'])->name('admin.trainers.update');
+        Route::delete('/delete/{id}', [AdminProfileController::class, 'deleteTrainer'])->name('admin.trainers.delete');
+    });
+
+    // Course Management Routes
+    Route::prefix('courses')->group(function () {
+        Route::get('/', [AdminProfileController::class, 'showCoursePage'])->name('admin.courses');
+        Route::get('/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('admin.courses.fetch');
+        Route::post('/courses/update-status/{id}', [AdminProfileController::class, 'updateStatus'])->name('admin.courses.updateStatus');
+        Route::delete('/courses/{id}', [AdminProfileController::class, 'destroy'])->name('admin.courses.destroy');
+    });
 
     // Optional
     

@@ -5,7 +5,7 @@
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-8 animate-fade-in">
-        <h1 class="text-3xl font-bold tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
+        <h1 class="text-3xl font-bold tracking-wide">
             My Courses
         </h1>
         <a href="{{ route('trainer.courses.create') }}"
@@ -14,63 +14,73 @@
         </a>
     </div>
 
-    <!-- Course Table -->
+    <!-- Playlist Style Course List -->
     @if(count($courses) > 0)
-    <div class="bg-[#0E1625]/80 backdrop-blur-md border border-[#26304D] rounded-2xl shadow-lg p-6 overflow-x-auto animate-fade-in-up">
-        <table class="min-w-full text-sm border-separate border-spacing-y-2">
-            <thead>
-                <tr class="text-left text-[#8A93A8] text-xs uppercase tracking-wider">
-                    <th class="px-4 py-3">#</th>
-                    <th class="px-4 py-3">Image</th>
-                    <th class="px-4 py-3">Title</th>
-                    <th class="px-4 py-3">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($courses as $index => $course)
-                <tr class="bg-[#101727]/60 border border-[#26304D] rounded-xl hover:bg-[#1A233A]/80 transition-all duration-300 ease-in-out shadow-sm">
-                    <td class="px-4 py-3 rounded-l-xl text-[#A8B3CF]">{{ $index + 1 }}</td>
-                    <td class="px-4 py-3">
-                        <img src="{{ asset('storage/' . $course->image) }}" alt="Course Image"
-                            class="w-16 h-16 object-cover rounded-lg shadow-md border border-[#26304D]" />
-                    </td>
-                    <td class="px-4 py-3 font-medium text-[#E6EDF7]">{{ $course->title }}</td>
-                    <td class="px-4 py-3 rounded-r-xl flex items-center gap-3">
-                        <!-- Explore -->
-                        <a href="{{ route('trainer.courses.explore', $course->id) }}"
-                            class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-md hover:shadow-green-500/40 hover:translate-y-[-1px] transition-all duration-300">
-                            Explore
-                        </a>
+    <div class="bg-[#0E1625]/80 backdrop-blur-md border border-[#26304D] rounded-2xl shadow-lg divide-y divide-[#26304D] animate-fade-in-up">
+        @foreach($courses as $index => $course)
+        <div class="flex items-center justify-between p-4 hover:bg-[#1A233A]/70 transition-all duration-300 ease-in-out relative group">
 
-                        <!-- Update (Redirect to Lessons Page) -->
-                        <a href="{{ route('trainer.courses.lessons.manage', $course->id) }}"
-                            class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-md hover:shadow-blue-500/40 hover:translate-y-[-1px] transition-all duration-300">
-                            Update
-                        </a>
+            <!-- Left: Thumbnail + Info -->
+            <div class="flex items-center gap-4">
+                <img src="{{ asset('storage/' . $course->image) }}" alt="Course Image"
+                    class="w-20 h-20 object-cover rounded-lg border border-[#26304D] shadow-md">
+                <div>
+                    <h3 class="text-lg font-semibold text-[#E6EDF7] line-clamp-1">{{ $course->title }}</h3>
+                    <p class="text-sm text-[#8A93A8]">Course #{{ $index + 1 }}</p>
+                </div>
+            </div>
 
-                        <!-- Delete -->
-                        <button onclick="openDeleteModal({{ $course->id }})"
-                            class="px-3 py-1.5 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg shadow-md hover:shadow-red-500/40 hover:translate-y-[-1px] transition-all duration-300">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            <!-- Right: 3-dot Menu -->
+            <div class="relative group/menu">
+                <button
+                    class="text-[#E6EDF7] hover:text-[#00C2FF] p-2 rounded-full hover:bg-[#1C2541] transition-all duration-300 focus:outline-none">
+                    <!-- Vertical 3 Dots Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6h.01M12 12h.01M12 18h.01" />
+                    </svg>
+                </button>
+
+                <!-- Hover Dropdown -->
+                <div
+                    class="absolute right-0 top-10 w-48 bg-[#0E1625] border border-[#26304D] rounded-xl shadow-lg opacity-0 scale-95 transform transition-all duration-300 ease-in-out
+                           group-hover/menu:opacity-100 group-hover/menu:scale-100 group-hover/menu:translate-y-1 z-50">
+
+                    <ul class="text-sm text-[#E6EDF7] py-1">
+                        <li>
+                            <a href="{{ route('trainer.courses.lessons.manage', $course->id) }}"
+                                class="flex items-center gap-2 px-4 py-2 hover:bg-[#1C2541] hover:text-[#00C2FF] transition-all duration-300">
+                                <!-- Book Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m8-6H4" />
+                                </svg>
+                                Add Lessons
+                            </a>
+                        </li>
+                        <li>
+                            <button onclick="openDeleteModal({{ $course->id }})"
+                                class="flex items-center gap-2 w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-[#1C2541] transition-all duration-300">
+                                <!-- Trash Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
+
     @else
     <!-- Empty State -->
     <div class="flex flex-col items-center justify-center mt-20 text-center animate-fade-in-up">
         <div class="bg-[#0E1625]/80 border border-[#26304D] rounded-2xl shadow-lg p-10 max-w-md">
-            <div class="w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-[#00C2FF]/10 to-[#2F82DB]/10 border border-[#00C2FF]/30 mb-5 mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#00C2FF]" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M12 14l6.16-3.422A12.083 12.083 0 0118 13.5c0 3.59-2.91 6.5-6.5 6.5S5 17.09 5 13.5a12.083 12.083 0 01-.16-2.922L12 14z" />
-                </svg>
-            </div>
             <h2 class="text-2xl font-semibold text-[#E6EDF7] mb-2">No Courses Found</h2>
             <p class="text-[#8A93A8] mb-6">You haven’t created any courses yet. Start by creating your first course and share your knowledge!</p>
             <a href="{{ route('courses.create') }}"
@@ -111,8 +121,8 @@
 </div>
 
 <script>
+    // Delete modal logic
     function openDeleteModal(id) {
-        console.log("course id:", id);
         const modal = document.getElementById('deleteModal');
         const form = document.getElementById('deleteForm');
         form.action = `/trainer/courses/${id}`;

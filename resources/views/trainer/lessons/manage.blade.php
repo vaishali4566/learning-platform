@@ -12,7 +12,7 @@
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6 animate-fade-in">
-        <h1 class="text-3xl font-bold tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
+        <h1 class="text-3xl font-bold tracking-wide ">
             Lessons — {{ $course->title }}
         </h1>
 
@@ -50,10 +50,18 @@
                     <td class="px-4 py-3 text-[#A8B3CF]">{{ ucfirst($lesson->content_type) }}</td>
                     <td class="px-4 py-3 text-[#A8B3CF]">{{ $lesson->order_number }}</td>
                     <td class="px-4 py-3 rounded-r-xl flex items-center gap-3">
-                        <a href="{{ route('trainer.courses.lessons.view', [$course->id]) }}"
-                            class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-md hover:shadow-green-500/40 transition-all duration-300">
-                            Explore
-                        </a>
+                        @if($lesson->content_type === 'quiz')
+                            <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
+                                class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-md hover:shadow-green-500/40 transition-all duration-300">
+                                Add Quiz
+                            </a>
+                        @else
+                            <a href="{{ route('trainer.courses.lessons.view', [$course->id]) }}"
+                                class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-md hover:shadow-green-500/40 transition-all duration-300">
+                                Explore
+                            </a>
+                        @endif
+
 
                         <a href="{{ route('trainer.courses.lessons.create', [$course->id, $lesson->id]) }}"
                             class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-md hover:shadow-blue-500/40 transition-all duration-300">
