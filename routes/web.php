@@ -36,6 +36,10 @@ use App\Http\Controllers\Trainer\TrainerLessonController;
 use App\Http\Controllers\User\UserCourseController;
 use App\Http\Controllers\User\UserLessonController;
 
+// ----------------------------
+// pratice questions Controllers
+// ----------------------------
+use App\Http\Controllers\PracticeTestController;
 // ======================================================================
 // ROOT REDIRECT
 // ======================================================================
@@ -257,3 +261,7 @@ Route::prefix('notifications')->group(function () {
     Route::get('/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
     Route::post('/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
+
+
+Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
+Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');

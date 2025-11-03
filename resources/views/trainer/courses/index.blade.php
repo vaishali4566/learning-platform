@@ -33,10 +33,11 @@
                         <span class="text-[#00C2FF] font-medium">₹{{ $course->price }}</span>
                     </div>
                     <div class="mt-4 space-y-2">
-                        <a href="{{ route('payment.stripe', ['courseId' => $course->id]) }}"
+                        <a href="{{ route('trainer.courses.lessons.view', ['course' => $course->id]) }}"
                             class="block w-full text-center bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white font-medium rounded-md py-2 hover:scale-[1.01] hover:shadow-[0_0_10px_rgba(0,194,255,0.25)] transition">
                             Open
                         </a>
+
                         <a href="{{ route('trainer.courses.explore', $course->id) }}"
                             class="block w-full text-center bg-[#1C2541]/60 border border-[#00C2FF]/20 text-[#E6EDF7] font-medium rounded-md py-2 hover:bg-[#1C2541]/80 hover:border-[#00C2FF]/40 hover:scale-[1.01] transition">
                             Explore
