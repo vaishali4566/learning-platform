@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Trainer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Course;
 
 class TrainerStudentController extends Controller
 {
@@ -17,6 +19,6 @@ class TrainerStudentController extends Controller
             ->where('trainer_id', $trainer->id)
             ->get();
 
-        return view('trainer.students.index', compact('courses'));
+        return view('trainer.students', compact('courses'));
     }
 }
