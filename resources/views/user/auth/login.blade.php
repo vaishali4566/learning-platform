@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Learning project')
+@section('title', 'Globussoft E-Learning')
 
 @section('content')
 <!-- Load Bootstrap Icons CDN (works without installing) -->
