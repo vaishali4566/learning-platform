@@ -76,7 +76,7 @@ class ChatController extends Controller
             $chatRequestsByUser[$otherId] = $req;
         }
 
-        return view('user.chat.index', [
+        return view('chat.index', [
             'users' => $allUsers,
             'chatRequests' => $chatRequestsByUser,
         ]);
@@ -192,6 +192,6 @@ class ChatController extends Controller
         $room = $response->json('room');
         $room_id = $room['_id'] ?? $room['id'] ?? null;
 
-        return view('user.chat.room', compact('receiver', 'room_id'));
+        return view('chat.room', compact('receiver', 'room_id'));
     }
 }

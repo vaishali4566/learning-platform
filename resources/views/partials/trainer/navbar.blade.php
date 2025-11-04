@@ -16,29 +16,6 @@
         </div>
     </div>
 
-    <!-- Middle: Quick Links -->
-    <div class="hidden md:flex items-center gap-6">
-        <a href="{{ route('trainer.dashboard') }}"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="user" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Dashboard</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-
-        <a href="#"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="book-open" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Courses</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-
-        <a href="#"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="library" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">All Courses</span>
-            <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-    </div>
 
     <!-- Right: Notifications + Profile -->
     <div class="flex items-center gap-5">

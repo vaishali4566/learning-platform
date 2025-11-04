@@ -69,19 +69,7 @@
             <span class="sidebar-text">Reports</span>
         </a>
 
-        <!-- Logout -->
-        <form action="{{ route('trainer.logout') }}" method="POST"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-red-900/40 hover:text-red-400">
-            @csrf
-            <button type="submit" class="flex items-center gap-3 w-full text-left">
-                <div
-                    class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-red-500 rounded transition-all duration-300 ease-in-out">
-                </div>
-                <i data-lucide="log-out"
-                    class="w-5 h-5 text-red-500 group-hover:scale-110 transition-all duration-300"></i>
-                <span class="sidebar-text transition-all duration-300">Logout</span>
-            </button>
-        </form>
+        
 
     </nav>
 </aside>
