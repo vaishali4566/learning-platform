@@ -4,14 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 // ----------------------------
-// Web Controllers
+// Web and User Controllers
 // ----------------------------
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\TrainerController;
 use App\Http\Controllers\Web\UserQuizController;
-use App\Http\Controllers\ChatRequestController;
-use App\Http\Controllers\ChatController;
+use App\Http\Controllers\User\UserCourseController;
+use App\Http\Controllers\User\UserLessonController;
 
 // ----------------------------
 // Core Controllers
@@ -21,6 +21,9 @@ use App\Http\Controllers\LessonsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\TelegramController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChatRequestController;
+use App\Http\Controllers\ChatController;
 
 // ----------------------------
 // Trainer Controllers
@@ -29,20 +32,20 @@ use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Trainer\TrainerCourseController;
 use App\Http\Controllers\Trainer\ReportController;
 use App\Http\Controllers\Trainer\TrainerStudentController;
+use App\Http\Controllers\Trainer\TrainerLessonController;
 
 // ----------------------------
 // Admin Controllers
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Trainer\TrainerLessonController;
-use App\Http\Controllers\User\UserCourseController;
-use App\Http\Controllers\User\UserLessonController;
 
 // ----------------------------
 // pratice questions Controllers
 // ----------------------------
 use App\Http\Controllers\PracticeTestController;
+
+
+
 // ======================================================================
 // ROOT REDIRECT
 // ======================================================================
@@ -188,6 +191,12 @@ Route::prefix('trainer')->group(function () {
             Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
         });
 
+        // Payments
+        Route::prefix('payment')->controller(PaymentController::class)->group(function () {
+            Route::get('/{courseId}', 'stripe')->name('payment.stripe.trainer');
+            Route::post('/', 'stripePost')->name('payment.post.trainer');
+        });
+
     });
 });
 
@@ -289,7 +298,7 @@ Route::prefix('notifications')->group(function () {
 
 // 🧩 Common Chat Routes (Accessible to all authenticated users)
 Route::prefix('chat')
-    ->middleware(['auth.any']) // custom middleware (explained below)
+    ->middleware(['auth.any']) // custom middleware 
     ->group(function () {
         Route::get('/', [ChatController::class, 'index'])->name('chat.index');
         Route::get('/room/{id}', [ChatController::class, 'room'])->name('chat.room');

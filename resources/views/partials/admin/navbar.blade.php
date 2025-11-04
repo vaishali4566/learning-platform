@@ -90,9 +90,8 @@
             <!-- Dropdown Trigger -->
             <button id="profileBtn"
                 class="flex items-center gap-2 hover:text-[#00C2FF] transition peer">
-                <img src="{{ Auth::user()->profile_photo_url ?? asset('images/default-avatar.png') }}"
-                    alt="Admin Avatar"
-                    class="w-9 h-9 rounded-full border-2 border-transparent object-cover transition duration-300 hover:border-[#00C2FF] hover:shadow-[0_0_10px_#00C2FF50]" />
+                <img src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
+                        class="w-9 h-9 rounded-full border-2 border-transparent object-cover transition duration-300 group-hover:border-[#00C2FF] group-hover:shadow-[0_0_10px_#00C2FF50]" />
                 <span class="hidden md:inline text-[#E6EDF7]">
                    {{ Auth::user()->name ?? 'Admin' }}
                 </span>
@@ -107,8 +106,7 @@
                 
                 <a href="{{ route('admin.profile') }}"
                     class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Profile</a>
-                <a href="#"
-                    class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Settings</a>
+                
                 <form action="#" method="POST" class="border-t border-[#26304D]">
                     @csrf
                     <button type="submit"
