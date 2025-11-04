@@ -7,6 +7,8 @@ import { connectDB } from "./config/db.js";
 import ChatRoom from "./models/ChatRoom.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import Message from "./models/Message.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 connectDB();
@@ -16,51 +18,107 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", chatRoutes);
 
+// 🗂️ Serve uploaded files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "*" },
 });
 
-io.on("connection", (socket) => {
-  console.log("🟢 New client connected:", socket.id);
+// 🟢 Track online users
+const onlineUsers = new Map();
 
-  socket.on("join", ({ roomId }) => {
-    socket.join(roomId);
-    console.log(`✅ User joined chat room: ${roomId}`);
+io.on("connection", (socket) => {
+  console.log("🟢 [Socket Connected] ID:", socket.id);
+
+  // 👤 When user connects, frontend should emit "userConnected" with userId
+  socket.on("userConnected", (userId) => {
+    onlineUsers.set(userId, socket.id);
+    console.log(`✅ [User Online] userId: ${userId}, socketId: ${socket.id}`);
+    io.emit("userOnline", userId); // notify all clients
   });
 
+  // 🧩 Join room
+  socket.on("join", ({ roomId }) => {
+    console.log(`📥 [Join Request] ${socket.id} joining room: ${roomId}`);
+    socket.join(roomId);
+    console.log(`✅ [Room Joined] ${socket.id} joined ${roomId}`);
+  });
 
+  // 💬 Send message (text or attachment)
   socket.on("sendMessage", async (data) => {
-    try {
-      const { roomId, sender, receiver, message } = data;
+    console.log("💬 [Incoming Message Event]", data);
 
-      if (!roomId || !message) {
-        socket.emit("error", { message: "Missing roomId or message" });
+    try {
+      const { roomId, sender, receiver, message, fileUrl, fileType } = data;
+
+      if (!roomId || (!message && !fileUrl)) {
+        console.log("⚠️ [Validation Error] Missing message or file");
+        socket.emit("error", { message: "Missing message or file" });
         return;
       }
 
-      // 💾 Save message in MongoDB
+      // 💾 Save to DB
+      console.log("🗂 [DB Save Attempt] roomId:", roomId);
       const newMsg = await Message.create({
         roomId,
         sender,
         receiver,
         message,
+        fileUrl: fileUrl || null,
+        fileType: fileType || null,
+        seen: false,
       });
 
-      // 📡 Send message to everyone in that room
-      io.in(roomId).emit("newMessage", newMsg);
+      console.log("✅ [DB Save Success]", newMsg);
 
+      // 📡 Emit message to room
+      io.in(roomId).emit("newMessage", newMsg);
     } catch (err) {
-      console.error("Error saving message:", err);
+      console.error("❌ [Error saving message]:", err);
     }
   });
 
+  // 👁️‍🗨️ Mark message as seen
+  socket.on("messageSeen", async ({ messageId, roomId, seenBy }) => {
+    try {
+      console.log(`👁️ [Seen Event] messageId: ${messageId} by ${seenBy?.id}`);
 
+      const updatedMsg = await Message.findByIdAndUpdate(
+        messageId,
+        { seen: true },
+        { new: true }
+      );
 
+      if (updatedMsg) {
+        io.in(roomId).emit("messageSeenUpdate", updatedMsg);
+      }
+    } catch (err) {
+      console.error("❌ [Error Updating Seen Status]", err);
+    }
+  });
+
+  // 🔴 Disconnect
   socket.on("disconnect", () => {
-    console.log("🔴 Client disconnected");
+    // Find which user disconnected
+    const userId = [...onlineUsers.entries()].find(
+      ([, sId]) => sId === socket.id
+    )?.[0];
+
+    if (userId) {
+      onlineUsers.delete(userId);
+      console.log(`🔴 [User Offline] userId: ${userId}`);
+      io.emit("userOffline", userId); // notify all clients
+    }
+
+    console.log(`🔴 [Socket Disconnected] ${socket.id}`);
   });
 });
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`🚀 Socket.IO running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`🚀 [Server Started] Socket.IO running on port ${PORT}`)
+);

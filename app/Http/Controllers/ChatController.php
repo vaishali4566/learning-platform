@@ -11,18 +11,47 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
+    // ✅ Identify which guard is active (user, trainer, or admin)
+    // ✅ Identify which guard is active (user, trainer, or admin)
+    private function getAuthInfo()
+    {
+        // Try to get logged-in user or trainer
+        $user = Auth::guard('web')->user() ?? Auth::guard('trainer')->user();
+
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+
+        // Detect type based on guard and is_admin flag
+        $type = 'user';
+        if (Auth::guard('trainer')->check()) {
+            $type = 'trainer';
+        } elseif (isset($user->is_admin) && $user->is_admin) {
+            $type = 'admin';
+        }
+
+        return [
+            'model' => $user,
+            'type' => $type,
+        ];
+    }
+
+
+    // ✅ Chat list page
     public function index()
     {
-        $authUser = Auth::user();
+        $auth = $this->getAuthInfo();
+        $authUser = $auth['model'];
+        $authType = $auth['type'];
 
         // Fetch users and trainers
         $users = User::where('id', '!=', $authUser->id)->get(['id', 'name', 'email', 'is_admin']);
         $trainers = Trainer::select('id', 'name', 'email')->get();
 
-        // Merge + Tag
+        // Merge and tag user roles
         $allUsers = $users->map(function ($user) {
             $user->role = $user->is_admin ? 'Admin' : 'User';
-            $user->type = 'user';
+            $user->type = $user->is_admin ? 'admin' : 'user';
             return $user;
         })->merge(
             $trainers->map(function ($trainer) {
@@ -32,15 +61,19 @@ class ChatController extends Controller
             })
         )->sortBy('name')->values();
 
-        // Get chat requests
-        $chatRequests = ChatRequest::where('sender_id', $authUser->id)
-            ->orWhere('receiver_id', $authUser->id)
-            ->get();
+        // Fetch chat requests
+        $chatRequests = ChatRequest::where(function ($q) use ($authUser, $authType) {
+            $q->where('sender_id', $authUser->id)
+              ->where('sender_type', $authType);
+        })->orWhere(function ($q) use ($authUser, $authType) {
+            $q->where('receiver_id', $authUser->id)
+              ->where('receiver_type', $authType);
+        })->get();
 
         $chatRequestsByUser = [];
         foreach ($chatRequests as $req) {
-            $otherUserId = $req->sender_id == $authUser->id ? $req->receiver_id : $req->sender_id;
-            $chatRequestsByUser[$otherUserId] = $req;
+            $otherId = $req->sender_id == $authUser->id ? $req->receiver_id : $req->sender_id;
+            $chatRequestsByUser[$otherId] = $req;
         }
 
         return view('user.chat.index', [
@@ -49,22 +82,30 @@ class ChatController extends Controller
         ]);
     }
 
-    // ✅ Send Request
+    // ✅ Send chat request
     public function sendRequest(Request $request, $id)
     {
-        $senderId = Auth::id();
-        $receiverId = $id;
-        $senderType = 'user';
+        $auth = $this->getAuthInfo();
+        $sender = $auth['model'];
+        $senderType = $auth['type'];
         $receiverType = $request->input('receiver_type', 'user');
+        $receiverId = $id;
 
-        if ($senderId == $receiverId) {
+        if ($sender->id == $receiverId && $senderType == $receiverType) {
             return back()->with('error', 'You cannot send a request to yourself.');
         }
 
-        $existing = ChatRequest::where(function ($q) use ($senderId, $receiverId) {
-            $q->where('sender_id', $senderId)->where('receiver_id', $receiverId);
-        })->orWhere(function ($q) use ($senderId, $receiverId) {
-            $q->where('sender_id', $receiverId)->where('receiver_id', $senderId);
+        // Check if chat request already exists
+        $existing = ChatRequest::where(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
+            $q->where('sender_id', $sender->id)
+              ->where('sender_type', $senderType)
+              ->where('receiver_id', $receiverId)
+              ->where('receiver_type', $receiverType);
+        })->orWhere(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
+            $q->where('sender_id', $receiverId)
+              ->where('sender_type', $receiverType)
+              ->where('receiver_id', $sender->id)
+              ->where('receiver_type', $senderType);
         })->first();
 
         if ($existing) {
@@ -72,51 +113,84 @@ class ChatController extends Controller
         }
 
         ChatRequest::create([
-            'sender_id' => $senderId,
+            'sender_id' => $sender->id,
             'sender_type' => $senderType,
             'receiver_id' => $receiverId,
             'receiver_type' => $receiverType,
             'status' => 'pending',
         ]);
-
         return back()->with('success', 'Chat request sent successfully!');
     }
 
-    // ✅ Accept Request
+    // ✅ Accept chat request
     public function acceptRequest($id)
     {
-        $chatRequest = ChatRequest::findOrFail($id);
+        $auth = $this->getAuthInfo();
+        $receiver = $auth['model'];
+        $receiverType = $auth['type'];
 
-        if ($chatRequest->receiver_id != Auth::id()) {
+        $chatRequest = ChatRequest::findOrFail($id);
+        if ($chatRequest->receiver_id != $receiver->id || $chatRequest->receiver_type != $receiverType) {
             return back()->with('error', 'Unauthorized action.');
         }
 
         $chatRequest->status = 'accepted';
         $chatRequest->save();
 
-        return back()->with('success', 'Chat request accepted successfully!');
-    }
+        // ✅ Create or find chat room on Node.js server
+        $nodeServer = env('NODE_SERVER_URL', 'http://127.0.0.1:4000');
 
-    // ✅ Chat Room Page
-    public function room($id)
-    {
-        $authUser = Auth::user();
-        $receiver = User::findOrFail($id);
-
-        // Call Node.js to create/find room
-        $response = Http::post('http://localhost:4000/api/create-room', [
+        $response = Http::post("$nodeServer/api/create-room", [
             'participants' => [
-                [ 'type' => 'user', 'id' => (int) $authUser->id ],
-                [ 'type' => 'user', 'id' => (int) $receiver->id ],
+                ['type' => $chatRequest->sender_type, 'id' => (int) $chatRequest->sender_id],
+                ['type' => $chatRequest->receiver_type, 'id' => (int) $chatRequest->receiver_id],
             ],
         ]);
 
         if ($response->failed()) {
-            return back()->with('error', 'Failed to create chat room.');
+            return back()->with('error', 'Failed to create chat room on Node server.');
         }
 
         $room = $response->json('room');
-        $room_id = $room['_id'] ?? null;
+        $roomId = $room['_id'] ?? null;
+
+        // ✅ Store room ID in the chat request (optional but useful for reusing)
+        $chatRequest->room_id = $roomId;
+        $chatRequest->save();
+
+        return back()->with('success', 'Chat request accepted and chat room created!');
+    }
+
+    // ✅ Chat room page
+    public function room($id)
+    {
+        $auth = $this->getAuthInfo();
+        $authUser = $auth['model'];
+        $authType = $auth['type'];
+
+        $receiver = User::find($id) ?? Trainer::find($id);
+        if (!$receiver) {
+            return back()->with('error', 'User not found.');
+        }
+
+        $receiverType = $receiver instanceof Trainer ? 'trainer' : ($receiver->is_admin ? 'admin' : 'user');
+
+        $nodeServer = env('NODE_SERVER_URL', 'http://127.0.0.1:4000');
+
+        // ✅ Always create/find room on Node server
+        $response = Http::post("$nodeServer/api/create-room", [
+            'participants' => [
+                ['type' => $authType, 'id' => (int) $authUser->id],
+                ['type' => $receiverType, 'id' => (int) $receiver->id],
+            ],
+        ]);
+
+        if ($response->failed()) {
+            return back()->with('error', 'Failed to create or join chat room.');
+        }
+
+        $room = $response->json('room');
+        $room_id = $room['_id'] ?? $room['id'] ?? null;
 
         return view('user.chat.room', compact('receiver', 'room_id'));
     }

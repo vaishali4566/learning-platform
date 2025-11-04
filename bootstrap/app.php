@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AuthenticateUser;
+use App\Http\Middleware\AuthenticateAny;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'prevent.trainer.back' => \App\Http\Middleware\PreventTrainerBackHistory::class,
             'admin.only' => \App\Http\Middleware\AdminOnly::class,
             'trainer.only' => \App\Http\Middleware\TrainerAuth::class,
-
+            'auth.any' => \App\Http\Middleware\AuthenticateAny::class,
         ]);
         //
     })

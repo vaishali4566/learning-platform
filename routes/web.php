@@ -102,11 +102,11 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}', 'stripe')->name('payment.stripe');
             Route::post('/', 'stripePost')->name('payment.post');
         });
-        Route::prefix('chat')->controller(ChatController::class)->group(function () {
-            Route::get('/', 'index')->name('user.chat.index');                // List all users
-            Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
-            Route::get('/room/{id}', 'room')->name('user.chat.room');              // Open chat room
-        });
+        // Route::prefix('chat')->controller(ChatController::class)->group(function () {
+        //     Route::get('/', 'index')->name('user.chat.index');                // List all users
+        //     Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
+        //     Route::get('/room/{id}', 'room')->name('user.chat.room');              // Open chat room
+        // });
         Route::prefix('chat')->controller(ChatRequestController::class)->group(function () {               
             Route::post('/request/decline/{id}', 'declineRequest')->name('chat.decline');                
             Route::post('/accept/{id}', 'acceptRequest')->name('chat.accept'); 
@@ -280,6 +280,19 @@ Route::prefix('notifications')->group(function () {
     Route::post('/create', [NotificationController::class, 'store'])->name('notifications.create');
     Route::get('/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
     Route::post('/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+});
+
+// 🧩 Common Chat Routes (Accessible to all authenticated users)
+Route::prefix('chat')
+    ->middleware(['auth.any']) // custom middleware (explained below)
+    ->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/room/{id}', [ChatController::class, 'room'])->name('chat.room');
+        Route::post('/request/{id}', [ChatController::class, 'sendRequest'])->name('chat.request');
+
+        Route::get('/requests', [ChatRequestController::class, 'myRequests'])->name('chat.requests');
+        Route::post('/accept/{id}', [ChatRequestController::class, 'acceptRequest'])->name('chat.accept');
+        Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
 });
 
 
