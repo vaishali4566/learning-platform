@@ -34,8 +34,15 @@ use App\Http\Controllers\Trainer\TrainerStudentController;
 // Admin Controllers
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Trainer\TrainerLessonController;
+use App\Http\Controllers\User\UserCourseController;
+use App\Http\Controllers\User\UserLessonController;
 
+// ----------------------------
+// pratice questions Controllers
+// ----------------------------
+use App\Http\Controllers\PracticeTestController;
 // ======================================================================
 // ROOT REDIRECT
 // ======================================================================
@@ -165,12 +172,9 @@ Route::prefix('trainer')->group(function () {
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
-            Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLesson1'])->name('lessons.view');
+            Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             
         });
-
-        
-
 
         // Quizzes
         Route::prefix('quizzes')->group(function () {
@@ -240,15 +244,12 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
 // COURSES ROUTES
 // ======================================================================
 Route::group(['prefix' => 'courses'], function () {
-    Route::post('/', [CoursesController::class, 'store']);
-    Route::get('/create', [CoursesController::class, 'create'])->name('courses.create');
     Route::delete('/{id}', [CoursesController::class, 'delete']);
     Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');
-    Route::put('/trainer/{id}', [CoursesController::class, 'update'])->name('courses.update');
     Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
     Route::get('/data', [CoursesController::class, 'getAll']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/{id}/lessons', [LessonsController::class, 'lessonsByCourse']);
+    Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
     Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
@@ -259,11 +260,9 @@ Route::group(['prefix' => 'courses'], function () {
 // LESSONS ROUTES
 // ======================================================================
 Route::group(['prefix' => 'lessons'], function () {
-    Route::get('/lessonform', [LessonsController::class, 'showLessonForm'])->name('lessons.create');
-    Route::post('/', [LessonsController::class, 'create'])->name('lessons.create');
     Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
     Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}', [LessonsController::class, 'stream']);
+    Route::get('/{id}/stream', [LessonsController::class, 'stream']);
 });
 
 
@@ -302,3 +301,6 @@ Route::prefix('chat')
 });
 
 
+
+Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
+Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');

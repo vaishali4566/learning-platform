@@ -1,4 +1,4 @@
-@extends('layouts.trainer.lesson')
+@extends('layouts.user.lesson')
 
 @section('content')
 <div id="lesson-app"
@@ -230,7 +230,7 @@
         });
 
         // Fetch lessons dynamically
-        fetch(`/trainer/courses/${courseId}/lessons/data`)
+        fetch(`/courses/${courseId}/lessons/data`)
             .then(res => res.json())
             .then(lessons => {
                 if (!lessons.length) {
