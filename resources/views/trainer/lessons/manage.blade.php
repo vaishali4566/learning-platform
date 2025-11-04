@@ -93,7 +93,7 @@
 
             <form id="createLessonForm" enctype="multipart/form-data" class="space-y-4">
                 @csrf
-
+                <input type="hidden" name="course_id" value="{{ $course->id }}">
                 <div>
                     <label class="block text-[#A8B3CF] mb-1">Title <sup class="text-red-500">*</sup></label>
                     <input type="text" name="title" id="modal_title" required
@@ -171,4 +171,116 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ DOM fully loaded");
+
+    const createModal = document.getElementById("createModal");
+    const openCreateModal = document.getElementById("openCreateModal");
+    const openCreateModalEmpty = document.getElementById("openCreateModalEmpty");
+    const closeCreateModal = document.getElementById("closeCreateModal");
+    const closeCreateModalX = document.getElementById("closeCreateModalX");
+
+    const deleteModal = document.getElementById("deleteModal");
+    const cancelDelete = document.getElementById("cancelDelete");
+    const closeDeleteX = document.getElementById("closeDeleteX");
+
+    const createForm = document.getElementById("createLessonForm"); // 👈 form inside modal
+    const saveBtn = document.getElementById("saveLessonBtn"); // 👈 save button
+
+    console.log("🧩 Elements loaded:", { createModal, openCreateModal, openCreateModalEmpty, closeCreateModal, closeCreateModalX, deleteModal, cancelDelete, closeDeleteX, createForm, saveBtn });
+
+    // 🔹 Open Create Modal (header)
+    if (openCreateModal) {
+        openCreateModal.addEventListener("click", () => {
+            console.log("🟢 openCreateModal clicked");
+            createModal.classList.remove("hidden");
+        });
+    }
+
+    // 🔹 Open Create Modal (empty state)
+    if (openCreateModalEmpty) {
+        openCreateModalEmpty.addEventListener("click", () => {
+            console.log("🟢 openCreateModalEmpty clicked");
+            createModal.classList.remove("hidden");
+        });
+    }
+
+    // 🔹 Close Create Modal
+    [closeCreateModal, closeCreateModalX].forEach(btn => {
+        if (btn) btn.addEventListener("click", () => {
+            console.log("🔴 Close modal clicked");
+            createModal.classList.add("hidden");
+        });
+    });
+
+    // 🔹 Delete modal open
+    document.querySelectorAll(".delete-lesson-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            console.log("🟠 Delete clicked for lesson ID:", btn.dataset.id);
+            deleteModal.classList.remove("hidden");
+            deleteModal.dataset.lessonId = btn.dataset.id;
+        });
+    });
+
+    // 🔹 Delete modal close
+    [cancelDelete, closeDeleteX].forEach(btn => {
+        if (btn) btn.addEventListener("click", () => {
+            console.log("🔴 Delete modal closed");
+            deleteModal.classList.add("hidden");
+        });
+    });
+
+    // 🔹 Background click close
+    [createModal, deleteModal].forEach(modal => {
+        if (modal) {
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    console.log("🟡 Background clicked, closing modal");
+                    modal.classList.add("hidden");
+                }
+            });
+        }
+    });
+
+    // ✅ NEW: Debug for form submission
+    if (createForm) {
+        createForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            console.log("🚀 Add Lesson form submitted");
+
+            const formData = new FormData(createForm);
+            console.log("📦 Form data:", Object.fromEntries(formData.entries()));
+
+            try {
+                const res = await fetch(createForm.action, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                console.log("📡 Server response status:", res.status);
+                const data = await res.json();
+                console.log("✅ Server JSON response:", data);
+
+                if (data.success) {
+                    alert("Lesson added successfully!");
+                    createModal.classList.add("hidden");
+                    createForm.reset();
+                    console.log("🎉 Lesson added, refreshing list...");
+                    // loadLessons(); // uncomment if you have this function
+                } else {
+                    console.warn("⚠️ Lesson not added, response:", data);
+                }
+            } catch (error) {
+                console.error("❌ Error while adding lesson:", error);
+            }
+        });
+    } else {
+        console.warn("⚠️ createLessonForm not found in DOM!");
+    }
+});
+</script>
+
+
 @endsection
