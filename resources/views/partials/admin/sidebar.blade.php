@@ -114,3 +114,56 @@
         </form>
     </nav>
 </aside>
+
+<!-- now i want to implement chat feature in which i have a chat icon when i click on this as a user i see user list and then select the user i want to chat and then connect req is sent to another user then other user accept the req then they can chat with one another what is the approch for this in laravel what tech we use explain first without giving code -->
+
+
+<!-- chat_requests
+
+| id | sender_id | receiver_id | status (pending, accepted, rejected) | created_at |
+
+chats
+
+| id | chat_room_id | sender_id | receiver_id | message | created_at |
+
+chat_rooms
+
+| id | user_one_id | user_two_id | created_at | -->
+
+
+<!-- | Step | Description                       | Tech                     |
+| ---- | --------------------------------- | ------------------------ |
+| 1    | User clicks chat icon & sees list | Blade + AJAX             |
+| 2    | Send chat request                 | Controller + Event       |
+| 3    | Receive & accept request          | Laravel Echo + DB update |
+| 4    | Create chat room                  | DB entry                 |
+| 5    | Real-time messaging               | WebSockets + Echo        |
+| 6    | Store chat history                | DB                       | -->
+
+<!-- ChatRequestController
+
+Handles:
+
+Send chat request
+
+Accept chat request
+
+Reject / cancel request
+
+ChatRoomController
+
+Handles:
+
+Get all chat rooms of logged-in user
+
+Find or create chat room between 2 users
+
+ChatController
+
+Handles:
+
+Send message
+
+Fetch messages from a room
+
+Broadcast message via Soketi -->

@@ -10,6 +10,8 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\TrainerController;
 use App\Http\Controllers\Web\UserQuizController;
+use App\Http\Controllers\ChatRequestController;
+use App\Http\Controllers\ChatController;
 
 // ----------------------------
 // Core Controllers
@@ -26,6 +28,7 @@ use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Trainer\TrainerCourseController;
 use App\Http\Controllers\Trainer\ReportController;
+use App\Http\Controllers\Trainer\TrainerStudentController;
 
 // ----------------------------
 // Admin Controllers
@@ -63,6 +66,7 @@ Route::get('/', function () {
 // ======================================================================
 // USER AUTH ROUTES
 // ======================================================================
+
 Route::prefix('user')->group(function () {
     // Guest routes
     Route::middleware(['guest:web', 'prevent.back.history:web'])->group(function () {
@@ -105,8 +109,22 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}', 'stripe')->name('payment.stripe');
             Route::post('/', 'stripePost')->name('payment.post');
         });
+        // Route::prefix('chat')->controller(ChatController::class)->group(function () {
+        //     Route::get('/', 'index')->name('user.chat.index');                // List all users
+        //     Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
+        //     Route::get('/room/{id}', 'room')->name('user.chat.room');              // Open chat room
+        // });
+        Route::prefix('chat')->controller(ChatRequestController::class)->group(function () {               
+            Route::post('/request/decline/{id}', 'declineRequest')->name('chat.decline');                
+            Route::post('/accept/{id}', 'acceptRequest')->name('chat.accept'); 
+            Route::get('/requests', 'myRequests')->name('chat.requests');  
+        });
     });
 });
+
+
+
+
 
 // ======================================================================
 // TRAINER AUTH ROUTES
@@ -134,6 +152,7 @@ Route::prefix('trainer')->group(function () {
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
         Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
         Route::get('/report', [ReportController::class, 'index'])->name('trainer.report');
+        Route::get('/students', [TrainerStudentController::class, 'index'])->name('trainer.students.index');
 
         // Courses
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
@@ -261,6 +280,20 @@ Route::prefix('notifications')->group(function () {
     Route::get('/fetch', [NotificationController::class, 'fetch'])->name('notifications.fetch');
     Route::post('/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
+
+// 🧩 Common Chat Routes (Accessible to all authenticated users)
+Route::prefix('chat')
+    ->middleware(['auth.any']) // custom middleware (explained below)
+    ->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/room/{id}', [ChatController::class, 'room'])->name('chat.room');
+        Route::post('/request/{id}', [ChatController::class, 'sendRequest'])->name('chat.request');
+
+        Route::get('/requests', [ChatRequestController::class, 'myRequests'])->name('chat.requests');
+        Route::post('/accept/{id}', [ChatRequestController::class, 'acceptRequest'])->name('chat.accept');
+        Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
+});
+
 
 
 Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
