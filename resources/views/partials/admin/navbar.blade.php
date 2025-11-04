@@ -18,40 +18,7 @@
         </div>
     </div>
 
-    <!-- Middle: Quick Links -->
-    <div class="hidden md:flex items-center gap-6">
-        <a href="{{route('admin.dashboard')}}"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Dashboard</span>
-            <span
-                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-
-        <a href="{{route('admin.users')}}"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="users" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Users</span>
-            <span
-                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-
-        <a href="{{route('admin.courses')}}"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="book-open-check" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Courses</span>
-            <span
-                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-
-        <a href="#"
-            class="relative group flex items-center gap-1 transition">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#8A93A8] group-hover:text-[#00C2FF]"></i>
-            <span class="group-hover:text-[#00C2FF]">Reports</span>
-            <span
-                class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-        </a>
-    </div>
+    
 
     <!-- Right: Profile Dropdown -->
     <div class="flex items-center gap-5">

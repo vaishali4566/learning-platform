@@ -39,7 +39,15 @@ use App\Http\Controllers\Trainer\TrainerLessonController;
 // ======================================================================
 // ROOT REDIRECT
 // ======================================================================
+// ✅ FIXED web.php home route
 Route::get('/', function () {
+
+    
+    if (Auth::guard('trainer')->check()) {
+        return redirect()->route('trainer.dashboard');
+    }
+
+   
     if (Auth::guard('web')->check()) {
         $user = Auth::guard('web')->user();
         if ($user->is_admin) {
@@ -48,12 +56,10 @@ Route::get('/', function () {
         return redirect()->route('user.dashboard');
     }
 
-    if (Auth::guard('trainer')->check()) {
-        return redirect()->route('trainer.dashboard');
-    }
-
+    // 🔹 Default login
     return redirect()->route('user.login');
 });
+
 
 
 // ======================================================================
@@ -107,11 +113,11 @@ Route::prefix('user')->group(function () {
         //     Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
         //     Route::get('/room/{id}', 'room')->name('user.chat.room');              // Open chat room
         // });
-        Route::prefix('chat')->controller(ChatRequestController::class)->group(function () {               
-            Route::post('/request/decline/{id}', 'declineRequest')->name('chat.decline');                
-            Route::post('/accept/{id}', 'acceptRequest')->name('chat.accept'); 
-            Route::get('/requests', 'myRequests')->name('chat.requests');  
-        });
+        // Route::prefix('chat')->controller(ChatRequestController::class)->group(function () {               
+        //     Route::post('/request/decline/{id}', 'declineRequest')->name('chat.decline');                
+        //     Route::post('/accept/{id}', 'acceptRequest')->name('chat.accept'); 
+        //     Route::get('/requests', 'myRequests')->name('chat.requests');  
+        // });
     });
 });
 

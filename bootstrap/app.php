@@ -4,7 +4,13 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AuthenticateUser;
+use App\Http\Middleware\PreventBackHistory;
+use App\Http\Middleware\PreventTrainerBackHistory;
+use App\Http\Middleware\AdminOnly;
+use App\Http\Middleware\TrainerAuth;
 use App\Http\Middleware\AuthenticateAny;
+
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
