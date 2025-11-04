@@ -8,9 +8,9 @@
         <h1 class="text-3xl font-bold tracking-wide">
             My Courses
         </h1>
-        <a href="{{ route('courses.create') }}"
-           class="px-5 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white rounded-xl shadow-md hover:shadow-[#00C2FF]/40 hover:translate-y-[-1px] transition-all duration-300 ease-in-out">
-           + Create New
+        <a href="{{ route('trainer.courses.create') }}"
+            class="px-5 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white rounded-xl shadow-md hover:shadow-[#00C2FF]/40 hover:translate-y-[-1px] transition-all duration-300 ease-in-out">
+            + Create New
         </a>
     </div>
 
@@ -83,7 +83,7 @@
         <div class="bg-[#0E1625]/80 border border-[#26304D] rounded-2xl shadow-lg p-10 max-w-md">
             <h2 class="text-2xl font-semibold text-[#E6EDF7] mb-2">No Courses Found</h2>
             <p class="text-[#8A93A8] mb-6">You haven’t created any courses yet. Start by creating your first course and share your knowledge!</p>
-            <a href="{{ route('courses.create') }}"
+            <a href="{{ route('trainer.courses.create') }}"
                 class="inline-block px-6 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-semibold rounded-xl shadow-md hover:shadow-[#00C2FF]/40 hover:translate-y-[-1px] transition-all duration-300">
                 + Create Your First Course
             </a>

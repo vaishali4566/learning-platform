@@ -1,4 +1,4 @@
-@extends('layouts.trainer.index')
+@extends('layouts.user.index')
 
 @section('content')
 <div class="relative min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33]">
@@ -34,7 +34,7 @@
                             class="block w-full text-center bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white font-medium rounded-md py-2 hover:scale-[1.01] hover:shadow-[0_0_10px_rgba(0,194,255,0.25)] transition">
                             Buy Now
                         </a>
-                        <a href="{{ route('trainer.courses.explore', $course->id) }}"
+                        <a href="{{ route('user.courses.explore', $course->id) }}"
                             class="block w-full text-center bg-[#1C2541]/60 border border-[#00C2FF]/20 text-[#E6EDF7] font-medium rounded-md py-2 hover:bg-[#1C2541]/80 hover:border-[#00C2FF]/40 hover:scale-[1.01] transition">
                             Explore
                         </a>
@@ -105,22 +105,4 @@
     }
 </style>
 
-<script>
-    fetch('/courses/all')
-        .then(res => res.json())
-        .then(data => {
-            const list = document.getElementById('courses-list');
-            if (list) {
-                list.innerHTML = data.data.map(course => `
-                    <div class="mb-3">
-                        <h4 class="text-[#E6EDF7] font-medium">${course.title}</h4>
-                        <a href="/courses/view/${course.id}"
-                           class="inline-block mt-1 px-3 py-1 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white rounded-md text-sm font-medium hover:scale-[1.01] transition">
-                           View Course
-                        </a>
-                    </div>
-                `).join('');
-            }
-        });
-</script>
 @endsection

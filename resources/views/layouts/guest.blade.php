@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ asset('Globbusoft_learning channel logo.jpg') }}">
     <title>@yield('title', 'Learning Platform')</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -58,7 +59,7 @@
 </head>
 
 <body class="flex flex-col min-h-screen bg-gray-900">
-
+    @include('components.loader')
     <main class="flex flex-1">
         <!-- Left Branding -->
         <div class="hidden md:flex md:w-1/2 bg-animated items-center justify-center p-6">
@@ -112,6 +113,19 @@
         trainerBtn.addEventListener('click', () => {
             window.location.href = "{{ route('trainer.login') }}";
         });
+
+
+  // Keep loader for 3 seconds then hide it
+  window.addEventListener('load', () => {
+      const loader = document.getElementById('page-loader');
+      setTimeout(() => {
+          loader.classList.add('opacity-0');
+          loader.style.transition = 'opacity 1s ease';
+          setTimeout(() => loader.remove(), 1000);
+      }, 3000); // 3000ms = 3 seconds
+  });
+
+
     </script>
 
 </body>
