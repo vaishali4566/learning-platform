@@ -110,4 +110,22 @@ class TrainerController extends Controller
 
         return back()->with('error', 'There was an error deleting your account.');
     }
+
+    // Web/TrainerController.php
+
+    public function addEarning($trainerId, $courseId, $amount, $source = 'course sale')
+    {
+        \App\Models\TrainerEarning::create([
+            'trainer_id' => $trainerId,
+            'course_id' => $courseId,
+            'amount' => $amount,
+            'source' => $source,
+        ]);
+    }
+
+    public function totalEarnings($trainerId)
+    {
+        return \App\Models\TrainerEarning::where('trainer_id', $trainerId)->sum('amount');
+    }
+
 }
