@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Trainer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -107,4 +108,17 @@ class TrainerCourseController extends Controller
             return redirect()->route('trainer.courses.my')->with('error', 'An error occurred while deleting the course. Please try again later.');
         }
     }
+  public function destroy_lessson($courseId, $lessonId)
+{
+    try {
+        $lesson = Lesson::where('course_id', $courseId)->where('id', $lessonId)->firstOrFail();
+        $lesson->delete();
+
+        return response()->json(['success' => true, 'message' => 'Lesson deleted successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Failed to delete lesson']);
+    }
+}
+
+
 }
