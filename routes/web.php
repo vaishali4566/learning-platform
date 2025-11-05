@@ -175,6 +175,8 @@ Route::prefix('trainer')->group(function () {
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
 
+            Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy_lessson'); // lesson  delete route
+
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
