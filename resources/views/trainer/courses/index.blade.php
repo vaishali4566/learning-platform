@@ -41,7 +41,7 @@
 
             <!-- Right: Buttons -->
             <div class="flex items-center gap-3">
-                <a href="{{ route('payment.stripe.trainer', ['courseId' => $course->id]) }}"
+                <a href="{{ route('trainer.courses.index', ['courseId' => $course->id]) }}"
                     class="px-4 py-2 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
                     Buy now
                 </a>

@@ -10,11 +10,25 @@ use Illuminate\Support\Facades\DB;
 
 class UserCourseController extends Controller
 {
-    public function index()
-    {
-        $courses = Course::all();
-        return view('user.courses.index', compact('courses'));
-    }
+   public function index()
+{
+    $userId = Auth::id();
+
+    // ✅ Get purchased course IDs
+    $purchasedCourseIds = DB::table('payments')
+        ->where('user_id', $userId)
+        ->pluck('course_id');
+
+    // ✅ Get purchased courses as models
+    $purchasedCourses = Course::whereIn('id', $purchasedCourseIds)->get();
+
+    // ✅ Get available courses (not purchased)
+    $availableCourses = Course::whereNotIn('id', $purchasedCourseIds)->get();
+
+    return view('user.courses.index', compact('purchasedCourses', 'availableCourses'));
+}
+
+
 
     public function myCourses()
     {

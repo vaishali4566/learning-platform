@@ -13,6 +13,7 @@ use App\Http\Controllers\Web\UserQuizController;
 use App\Http\Controllers\User\UserCourseController;
 use App\Http\Controllers\User\UserLessonController;
 
+
 // ----------------------------
 // Core Controllers
 // ----------------------------
@@ -24,6 +25,7 @@ use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatRequestController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PurchaseController;
 
 // ----------------------------
 // Trainer Controllers
@@ -101,7 +103,7 @@ Route::prefix('user')->group(function () {
 
         Route::prefix('courses')->name('user.courses.')->group(function () {
             Route::get('/', [UserCourseController::class, 'index'])->name('index');
-            Route::get('/my', [UserCourseController::class, 'myCourses'])->name('my');
+            Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
         });
@@ -118,6 +120,7 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}', 'stripe')->name('payment.stripe');
             Route::post('/', 'stripePost')->name('payment.post');
         });
+
         // Route::prefix('chat')->controller(ChatController::class)->group(function () {
         //     Route::get('/', 'index')->name('user.chat.index');                // List all users
         //     Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
