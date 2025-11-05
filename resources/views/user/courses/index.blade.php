@@ -49,45 +49,53 @@
         </div>
 
         {{-- 💎 Available Courses --}}
-        <div>
-            <div class="flex items-center justify-between mb-10">
-                <h2 class="text-3xl font-semibold text-[#00C2FF] flex items-center gap-2">
-                    <i class="fa-solid fa-layer-group"></i> Available Courses
-                </h2>
-            </div>
+<div>
+    <div class="flex items-center justify-between mb-10">
+        <h2 class="text-3xl font-semibold text-[#00C2FF] flex items-center gap-2">
+            <i class="fa-solid fa-layer-group"></i> Available Courses
+        </h2>
+    </div>
 
-            @if($availableCourses->isEmpty())
-                <div class="text-center py-24 bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-lg">
-                    <i class="fa-solid fa-check-circle text-4xl text-green-400 mb-4"></i>
-                    <p class="text-lg text-gray-400">All available courses are purchased 🎉</p>
-                </div>
-            @else
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($availableCourses as $course)
-                        <div class="group bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-lg hover:shadow-[#00C2FF]/20 hover:-translate-y-1 transition-all duration-300 p-6">
-                            <div class="flex items-center gap-4 mb-3">
-                                <img src="{{ asset('storage/' . $course->image) }}" 
-                                     alt="Course Image"
-                                     class="w-20 h-20 object-cover rounded-lg border border-[#1E2B4A] shadow-md">
-                                <div>
-                                    <h3 class="text-lg font-semibold text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
-                                        {{ $course->title }}
-                                    </h3>
-                                    <p class="text-sm text-gray-400 line-clamp-2">
-                                        {{ Str::limit($course->description ?? 'No description available.', 70) }}
-                                    </p>
-                                    <span class="text-[#00C2FF] text-sm font-medium mt-1 block">₹{{ $course->price }}</span>
-                                </div>
-                            </div>
-                            <a href="{{ route('payment.stripe', ['courseId' => $course->id]) }}" 
-                               class="w-full inline-block text-center px-4 py-2 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
-                                Buy Now
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
+    @if($availableCourses->isEmpty())
+        <div class="text-center py-24 bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-lg">
+            <i class="fa-solid fa-check-circle text-4xl text-green-400 mb-4"></i>
+            <p class="text-lg text-gray-400">All available courses are purchased 🎉</p>
         </div>
+    @else
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($availableCourses as $course)
+                <div class="group bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-lg hover:shadow-[#00C2FF]/20 hover:-translate-y-1 transition-all duration-300 p-6">
+                    <div class="flex items-center gap-4 mb-3">
+                        <img src="{{ asset('storage/' . $course->image) }}" 
+                             alt="Course Image"
+                             class="w-20 h-20 object-cover rounded-lg border border-[#1E2B4A] shadow-md">
+                        <div>
+                            <h3 class="text-lg font-semibold text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
+                                {{ $course->title }}
+                            </h3>
+                            <p class="text-sm text-gray-400 line-clamp-2">
+                                {{ Str::limit($course->description ?? 'No description available.', 70) }}
+                            </p>
+                            <span class="text-[#00C2FF] text-sm font-medium mt-1 block">₹{{ $course->price }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-2">
+                        <a href="{{ route('payment.stripe', ['courseId' => $course->id]) }}" 
+                           class="flex-1 text-center px-4 py-2 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
+                            Buy Now
+                        </a>
+                        <a href="{{ route('user.courses.explore', ['courseId' => $course->id]) }}"
+                           class="flex-1 text-center px-4 py-2 bg-[#1C2541]/70 border border-[#00C2FF]/20 text-[#00C2FF] text-sm font-medium rounded-lg hover:bg-[#1C2541]/90 hover:border-[#00C2FF]/40 hover:scale-[1.02] transition-all duration-300">
+                            Explore
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 
     </div>
 </div>

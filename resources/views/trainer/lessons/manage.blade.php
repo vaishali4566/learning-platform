@@ -174,84 +174,86 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ DOM fully loaded");
-
     const createModal = document.getElementById("createModal");
     const openCreateModal = document.getElementById("openCreateModal");
     const openCreateModalEmpty = document.getElementById("openCreateModalEmpty");
     const closeCreateModal = document.getElementById("closeCreateModal");
     const closeCreateModalX = document.getElementById("closeCreateModalX");
 
+    const contentTypeSelect = document.getElementById("modal_content_type");
+    const videoField = document.getElementById("modal_videoField");
+    const textField = document.getElementById("modal_textField");
+    const videoInput = document.getElementById("modal_video");
+    const textInput = document.getElementById("modal_text_content");
+
+    // 🔹 Open Create Modal
+    [openCreateModal, openCreateModalEmpty].forEach(btn => {
+        if(btn){
+            btn.addEventListener("click", () => createModal.classList.remove("hidden"));
+        }
+    });
+
+    // 🔹 Close Create Modal
+    [closeCreateModal, closeCreateModalX].forEach(btn => {
+        if(btn){
+            btn.addEventListener("click", () => createModal.classList.add("hidden"));
+        }
+    });
+
+    // 🔹 Background click to close
+    if(createModal){
+        createModal.addEventListener("click", (e) => {
+            if(e.target === createModal) createModal.classList.add("hidden");
+        });
+    }
+
+    // 🔹 Show/hide fields based on Content Type
+    if(contentTypeSelect){
+        contentTypeSelect.addEventListener("change", () => {
+            const type = contentTypeSelect.value;
+
+            // Hide all fields first
+            videoField.classList.add("hidden");
+            textField.classList.add("hidden");
+
+            // Clear inputs when switching
+            videoInput.value = "";
+            textInput.value = "";
+
+            // Show relevant field
+            if(type === "video") videoField.classList.remove("hidden");
+            if(type === "text") textField.classList.remove("hidden");
+        });
+    }
+
+    // 🔹 Delete modal logic (unchanged)
     const deleteModal = document.getElementById("deleteModal");
     const cancelDelete = document.getElementById("cancelDelete");
     const closeDeleteX = document.getElementById("closeDeleteX");
 
-    const createForm = document.getElementById("createLessonForm"); // 👈 form inside modal
-    const saveBtn = document.getElementById("saveLessonBtn"); // 👈 save button
-
-    console.log("🧩 Elements loaded:", { createModal, openCreateModal, openCreateModalEmpty, closeCreateModal, closeCreateModalX, deleteModal, cancelDelete, closeDeleteX, createForm, saveBtn });
-
-    // 🔹 Open Create Modal (header)
-    if (openCreateModal) {
-        openCreateModal.addEventListener("click", () => {
-            console.log("🟢 openCreateModal clicked");
-            createModal.classList.remove("hidden");
-        });
-    }
-
-    // 🔹 Open Create Modal (empty state)
-    if (openCreateModalEmpty) {
-        openCreateModalEmpty.addEventListener("click", () => {
-            console.log("🟢 openCreateModalEmpty clicked");
-            createModal.classList.remove("hidden");
-        });
-    }
-
-    // 🔹 Close Create Modal
-    [closeCreateModal, closeCreateModalX].forEach(btn => {
-        if (btn) btn.addEventListener("click", () => {
-            console.log("🔴 Close modal clicked");
-            createModal.classList.add("hidden");
-        });
-    });
-
-    // 🔹 Delete modal open
     document.querySelectorAll(".delete-lesson-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            console.log("🟠 Delete clicked for lesson ID:", btn.dataset.id);
             deleteModal.classList.remove("hidden");
             deleteModal.dataset.lessonId = btn.dataset.id;
         });
     });
 
-    // 🔹 Delete modal close
     [cancelDelete, closeDeleteX].forEach(btn => {
-        if (btn) btn.addEventListener("click", () => {
-            console.log("🔴 Delete modal closed");
-            deleteModal.classList.add("hidden");
+        if(btn) btn.addEventListener("click", () => deleteModal.classList.add("hidden"));
+    });
+
+    if(deleteModal){
+        deleteModal.addEventListener("click", e => {
+            if(e.target === deleteModal) deleteModal.classList.add("hidden");
         });
-    });
+    }
 
-    // 🔹 Background click close
-    [createModal, deleteModal].forEach(modal => {
-        if (modal) {
-            modal.addEventListener("click", (e) => {
-                if (e.target === modal) {
-                    console.log("🟡 Background clicked, closing modal");
-                    modal.classList.add("hidden");
-                }
-            });
-        }
-    });
-
-    // ✅ NEW: Debug for form submission
-    if (createForm) {
-        createForm.addEventListener("submit", async (e) => {
+    // 🔹 Form submission (AJAX)
+    const createForm = document.getElementById("createLessonForm");
+    if(createForm){
+        createForm.addEventListener("submit", async e => {
             e.preventDefault();
-            console.log("🚀 Add Lesson form submitted");
-
             const formData = new FormData(createForm);
-            console.log("📦 Form data:", Object.fromEntries(formData.entries()));
 
             try {
                 const res = await fetch(createForm.action, {
@@ -259,27 +261,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: formData,
                 });
 
-                console.log("📡 Server response status:", res.status);
                 const data = await res.json();
-                console.log("✅ Server JSON response:", data);
 
-                if (data.success) {
+                if(data.success){
                     alert("Lesson added successfully!");
                     createModal.classList.add("hidden");
                     createForm.reset();
-                    console.log("🎉 Lesson added, refreshing list...");
-                    // loadLessons(); // uncomment if you have this function
+                    videoField.classList.add("hidden");
+                    textField.classList.add("hidden");
                 } else {
-                    console.warn("⚠️ Lesson not added, response:", data);
+                    console.warn("Lesson not added", data);
                 }
-            } catch (error) {
-                console.error("❌ Error while adding lesson:", error);
+            } catch(error){
+                console.error("Error adding lesson:", error);
             }
         });
-    } else {
-        console.warn("⚠️ createLessonForm not found in DOM!");
     }
 });
+
 </script>
 
 

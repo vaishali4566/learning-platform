@@ -107,7 +107,7 @@
                 <a href="{{ route('admin.profile') }}"
                     class="block px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">Profile</a>
                 
-                <form action="#" method="POST" class="border-t border-[#26304D]">
+                <form action="{{ route('admin.logout') }}" method="POST" class="border-t border-[#26304D]">
                     @csrf
                     <button type="submit"
                         class="w-full text-left px-4 py-2 text-sm hover:bg-[#00C2FF]/10 hover:text-[#00C2FF] transition">
