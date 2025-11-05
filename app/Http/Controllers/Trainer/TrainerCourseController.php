@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+
 class TrainerCourseController extends Controller
 {
     public function index()     //show all courses
@@ -23,57 +24,80 @@ class TrainerCourseController extends Controller
         return view('trainer.courses.create');
     }
 
-    public function store(Request $request) //store new course
-    {
-        $validator = Validator::make($request->all(), [
-            'trainer_id'  => 'required|exists:trainers,id',
-            'title'       => 'required|string|min:5|max:50|unique:courses,title',
-            'description' => 'required|string|min:10|max:255',
-            'price'       => 'required|numeric|min:0',
-            'difficulty'  => 'required|in:beginner,intermediate,advanced',
-            'is_online'   => 'nullable|boolean',
-            'city'        => 'required|string|max:100',
-            'country'     => 'required|string|max:100',
-        ]);
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'title'       => 'required|string|min:5|max:50|unique:courses,title',
+        'description' => 'required|string|min:10|max:255',
+        'price'       => 'required|numeric|min:0',
+        'duration'    => 'nullable|string|max:50',
+        'difficulty'  => 'required|in:beginner,intermediate,advanced',
+        'is_online'   => 'nullable|boolean',
+        'city'        => 'required|string|max:100',
+        'country'     => 'required|string|max:100',
+        'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
 
-        DB::beginTransaction();
-        try {
-            $data = $request->only([
-                'trainer_id',
-                'title',
-                'description',
-                'price',
-                'duration',
-                'difficulty',
-                'is_online',
-                'status',
-                'city',
-                'country'
-            ]);
-            $course = Course::create($data);
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Course created successfully',
-                'data' => $course,
-            ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Course creation failed: ' . $e->getMessage());
-
+    DB::beginTransaction();
+    try {
+        // ✅ Automatically get logged-in trainer ID
+        $trainer = auth('trainer')->user();
+        if (!$trainer) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while uploading course details. Please try again later.'
-            ], 500);
+                'message' => 'Unauthorized: Trainer not logged in.',
+            ], 401);
         }
+
+        $data = $request->only([
+            'title',
+            'description',
+            'price',
+            'duration',
+            'difficulty',
+            'is_online',
+            'status',
+            'city',
+            'country',
+        ]);
+
+        $data['trainer_id'] = $trainer->id; // ✅ Set trainer_id automatically
+
+        // ✅ Handle Thumbnail Upload
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/thumbnails', $filename, 'public');
+            $data['thumbnail'] = $path;
+        }
+
+        $course = Course::create($data);
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course created successfully',
+            'data' => $course,
+        ], 201);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Course creation failed: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while uploading course details. Please try again later.',
+        ], 500);
     }
+}
+
+
 
     public function myCourses() //show courses of authenticated trainer
     {
@@ -83,7 +107,6 @@ class TrainerCourseController extends Controller
         $courses = $trainer->courses;
 
         return view('trainer.courses.myCourses', compact('courses'));
-
     }
 
     public function explore($courseId)
@@ -108,17 +131,15 @@ class TrainerCourseController extends Controller
             return redirect()->route('trainer.courses.my')->with('error', 'An error occurred while deleting the course. Please try again later.');
         }
     }
-  public function destroy_lessson($courseId, $lessonId)
-{
-    try {
-        $lesson = Lesson::where('course_id', $courseId)->where('id', $lessonId)->firstOrFail();
-        $lesson->delete();
+    public function destroy_lessson($courseId, $lessonId)
+    {
+        try {
+            $lesson = Lesson::where('course_id', $courseId)->where('id', $lessonId)->firstOrFail();
+            $lesson->delete();
 
-        return response()->json(['success' => true, 'message' => 'Lesson deleted successfully']);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => 'Failed to delete lesson']);
+            return response()->json(['success' => true, 'message' => 'Lesson deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete lesson']);
+        }
     }
-}
-
-
 }
