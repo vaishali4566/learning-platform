@@ -12,6 +12,7 @@ use Stripe\Stripe;
 use Stripe\Charge;
 use Razorpay\Api\Api;
 use App\Notifications\PurchaseSuccessMail;
+use App\Http\Controllers\Web\TrainerController;
 
 class PaymentController extends Controller
 {
@@ -42,11 +43,6 @@ class PaymentController extends Controller
                 "description" => "Payment for course: " . $course->title,
             ]);
 
-            Log::info("✅ Stripe charge created successfully", [
-                'charge_id' => $charge->id,
-                'status' => $charge->status
-            ]);
-
             // ✅ Create payment record
             $payment = Payment::create([
                 'user_id' => Auth::id(),
@@ -59,8 +55,6 @@ class PaymentController extends Controller
                 'receipt_url' => $charge->receipt_url ?? null,
             ]);
 
-            Log::info("✅ Payment record created", ['payment_id' => $payment->id]);
-
             // ✅ Create purchase record only if payment succeeds
             if ($charge->status === 'succeeded') {
                 $purchase = Purchase::create([
@@ -71,37 +65,34 @@ class PaymentController extends Controller
                     'progress' => 0.00,
                 ]);
 
-                Log::info("✅ Purchase created successfully", ['purchase_id' => $purchase->id]);
+                // ✅ Record trainer earning
+                $trainerController = new TrainerController();
+                $trainerController->addEarning($course->trainer_id, $course->id, $course->price, 'course sale');
 
                 // ✅ Send confirmation mail
                 Auth::user()->notify(new PurchaseSuccessMail(Auth::user(), $course));
 
-                Log::info("📧 Purchase success mail sent to " . Auth::user()->email);
-
-                // ✅ Redirect to purchases page with success message
                 return response()->json([
                     'success' => true,
                     'redirect_url' => route('user.purchases'),
                     'message' => 'Payment successful 🎉',
                 ]);
-
             } else {
-                Log::warning("⚠ Stripe charge failed", ['charge_status' => $charge->status]);
                 return back()->with('error', 'Payment failed. Please try again.');
             }
+
         } catch (\Exception $e) {
-            Log::error('❌ Stripe Payment Error: ' . $e->getMessage());
+            Log::error('Stripe Payment Error: ' . $e->getMessage());
             return back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
     }
-
 
     /** 🔹 Show Razorpay checkout */
     public function razorpayCheckout($courseId)
     {
         $course = Course::findOrFail($courseId);
         $key = env('RAZORPAY_KEY');
-        $amount = $course->price * 100; // paise
+        $amount = $course->price * 100; // in paise
         return view('user.payment.razorpay', compact('key', 'amount', 'course'));
     }
 
@@ -133,7 +124,7 @@ class PaymentController extends Controller
             ]);
 
             // ✅ Create purchase record
-            Purchase::create([
+            $purchase = Purchase::create([
                 'user_id' => Auth::id(),
                 'course_id' => $course->id,
                 'payment_id' => $payment->id,
@@ -141,12 +132,17 @@ class PaymentController extends Controller
                 'progress' => 0.00,
             ]);
 
+            // ✅ Record trainer earning
+            $trainerController = new TrainerController();
+            $trainerController->addEarning($course->trainer_id, $course->id, $course->price, 'course sale');
+
             // ✅ Send confirmation mail
             Auth::user()->notify(new PurchaseSuccessMail(Auth::user(), $course));
 
             return redirect()
                 ->route('user.dashboard')
                 ->with('success', 'Payment successful via Razorpay!');
+
         } catch (\Exception $e) {
             Log::error('Razorpay Payment Error: ' . $e->getMessage());
             return back()->with('error', 'Razorpay payment failed: ' . $e->getMessage());

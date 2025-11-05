@@ -165,6 +165,10 @@ Route::prefix('trainer')->group(function () {
         Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
         Route::get('/report', [ReportController::class, 'index'])->name('trainer.report');
         Route::get('/students', [TrainerStudentController::class, 'index'])->name('trainer.students.index');
+        Route::post('/{trainerId}/earnings/add/{courseId}', [TrainerController::class, 'addEarning'])->name('trainer.earnings.add');
+        Route::get('/{trainerId}/earnings/total', [TrainerController::class, 'totalEarnings'])
+        ->name('trainer.earnings.total');
+
 
         // Courses
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
