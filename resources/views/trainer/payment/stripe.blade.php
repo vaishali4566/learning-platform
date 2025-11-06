@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Course Payment</title>
@@ -22,14 +23,29 @@
         }
 
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .payment-card {
@@ -111,7 +127,9 @@
                     color: '#E6EDF7',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
-                    '::placeholder': { color: '#8E9BB2' },
+                    '::placeholder': {
+                        color: '#8E9BB2'
+                    },
                 },
                 invalid: {
                     color: '#FF6B6B',
@@ -122,9 +140,14 @@
 
         // Handle form submission
         const form = document.getElementById('payment-form');
-        form.addEventListener('submit', async function (e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const { token, error } = await stripe.createToken(card);
+
+            const {
+                token,
+                error
+            } = await stripe.createToken(card);
+
             if (error) {
                 Swal.fire({
                     icon: 'error',
@@ -132,26 +155,54 @@
                     text: error.message,
                     confirmButtonColor: '#00C2FF'
                 });
-            } else {
-                document.getElementById('stripeToken').value = token.id;
-                form.submit();
+                return;
+            }
+
+            // AJAX request
+            try {
+                const response = await fetch("{{ route('payment.post.trainer') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        stripeToken: token.id,
+                        course_id: "{{ $course->id }}"
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Payment Successful',
+                        text: result.message,
+                        confirmButtonText: 'Go to My Courses',
+                        confirmButtonColor: '#00C2FF'
+                    }).then(() => {
+                        window.location.href = result.redirect_url;
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: result.message || 'Something went wrong.',
+                        confirmButtonColor: '#00C2FF'
+                    });
+                }
+
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: err.message,
+                    confirmButtonColor: '#00C2FF'
+                });
             }
         });
-
-        // SweetAlert on success
-        @if(session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Payment Successful',
-            text: '{{ session("success") }}',
-            confirmButtonText: 'Go Home',
-            confirmButtonColor: '#00C2FF',
-            timer: 8000,
-            timerProgressBar: true,
-        }).then(() => {
-            window.location.href = '/';
-        });
-        @endif
     </script>
 </body>
+
 </html>
