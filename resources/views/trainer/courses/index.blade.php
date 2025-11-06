@@ -16,7 +16,7 @@
             <div class="bg-[#101B2E] border border-[#1E2B4A] rounded-2xl p-5 hover:shadow-lg hover:shadow-[#00C2FF]/10 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
 
                 <!-- Thumbnail -->
-                <img src="{{ asset('storage/' . $course->image) }}" alt="Course Image"
+                <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course Image"
                      class="w-full h-40 object-cover rounded-xl mb-4 border border-[#1E2B4A]">
 
                 <!-- Title + Description -->
