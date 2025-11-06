@@ -25,26 +25,38 @@ const upload = multer({ storage });
 router.post("/create-room", async (req, res) => {
   try {
     const { participants } = req.body;
+    console.log("📥 [Create Room] Request:", participants);
+
+    // Fix: normalize id to string
+    const normalizedParticipants = participants.map((p) => ({
+      id: String(p.id),
+      type: p.type,
+    }));
+
+    console.log("🧩 [Normalized Participants]", normalizedParticipants);
 
     const existingRoom = await ChatRoom.findOne({
       participants: {
-        $all: participants.map((p) => ({
+        $all: normalizedParticipants.map((p) => ({
           $elemMatch: { type: p.type, id: p.id },
         })),
       },
     });
 
     if (existingRoom) {
+      console.log("✅ [Existing Room Found]", existingRoom._id);
       return res.json({ room: existingRoom });
     }
 
-    const newRoom = await ChatRoom.create({ participants });
+    const newRoom = await ChatRoom.create({ participants: normalizedParticipants });
+    console.log("🆕 [New Room Created]", newRoom._id);
     res.status(201).json({ room: newRoom });
   } catch (err) {
-    console.error(err);
+    console.error("❌ [Room Creation Error]", err);
     res.status(500).json({ message: "Error creating room" });
   }
 });
+
 
 // ✅ Get all messages of a room
 router.get("/messages/:roomId", async (req, res) => {

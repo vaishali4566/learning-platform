@@ -43,9 +43,34 @@ class PaymentController extends Controller
                 "description" => "Payment for course: " . $course->title,
             ]);
 
+            // 🔹 Detect whether user or trainer is buying
+            if (auth('trainer')->check()) {
+                $buyer = auth('trainer')->user();
+                $buyerType = 'trainer';
+                $buyerId = $buyer->id;
+
+                // ❌ Prevent trainer from buying own course
+                if ($course->trainer_id == $buyerId) {
+                    return back()->with('error', 'You cannot buy your own course.');
+                }
+
+                $paymentData = [
+                    'trainer_id' => $buyerId,
+                    'buyer_type' => $buyerType,
+                ];
+            } else {
+                $buyer = Auth::user();
+                $buyerType = 'user';
+                $buyerId = $buyer->id;
+
+                $paymentData = [
+                    'user_id' => $buyerId,
+                    'buyer_type' => $buyerType,
+                ];
+            }
+
             // ✅ Create payment record
-            $payment = Payment::create([
-                'user_id' => Auth::id(),
+            $payment = Payment::create(array_merge($paymentData, [
                 'course_id' => $course->id,
                 'transaction_id' => $charge->id,
                 'amount' => $course->price,
@@ -53,24 +78,31 @@ class PaymentController extends Controller
                 'payment_method' => 'stripe',
                 'status' => $charge->status === 'succeeded' ? 'success' : 'failed',
                 'receipt_url' => $charge->receipt_url ?? null,
-            ]);
+            ]));
 
             // ✅ Create purchase record only if payment succeeds
             if ($charge->status === 'succeeded') {
-                $purchase = Purchase::create([
-                    'user_id' => Auth::id(),
+                $purchaseData = [
                     'course_id' => $course->id,
                     'payment_id' => $payment->id,
                     'status' => 'completed',
                     'progress' => 0.00,
-                ]);
+                ];
+
+                if ($buyerType === 'trainer') {
+                    $purchaseData['trainer_id'] = $buyerId;
+                } else {
+                    $purchaseData['user_id'] = $buyerId;
+                }
+
+                Purchase::create($purchaseData);
 
                 // ✅ Record trainer earning
                 $trainerController = new TrainerController();
                 $trainerController->addEarning($course->trainer_id, $course->id, $course->price, 'course sale');
 
                 // ✅ Send confirmation mail
-                Auth::user()->notify(new PurchaseSuccessMail(Auth::user(), $course));
+                $buyer->notify(new PurchaseSuccessMail($buyer, $course));
 
                 return response()->json([
                     'success' => true,
@@ -111,9 +143,34 @@ class PaymentController extends Controller
 
             $course = Course::findOrFail($request->course_id);
 
+            // 🔹 Detect buyer (user or trainer)
+            if (auth('trainer')->check()) {
+                $buyer = auth('trainer')->user();
+                $buyerType = 'trainer';
+                $buyerId = $buyer->id;
+
+                // ❌ Prevent trainer from buying their own course
+                if ($course->trainer_id == $buyerId) {
+                    return back()->with('error', 'You cannot buy your own course.');
+                }
+
+                $buyerColumns = [
+                    'trainer_id' => $buyerId,
+                    'buyer_type' => $buyerType,
+                ];
+            } else {
+                $buyer = Auth::user();
+                $buyerType = 'user';
+                $buyerId = $buyer->id;
+
+                $buyerColumns = [
+                    'user_id' => $buyerId,
+                    'buyer_type' => $buyerType,
+                ];
+            }
+
             // ✅ Create payment record
-            $payment = Payment::create([
-                'user_id' => Auth::id(),
+            $payment = Payment::create(array_merge($buyerColumns, [
                 'course_id' => $course->id,
                 'transaction_id' => $paymentData['id'],
                 'amount' => $paymentData['amount'] / 100,
@@ -121,23 +178,30 @@ class PaymentController extends Controller
                 'payment_method' => 'razorpay',
                 'status' => 'success',
                 'receipt_url' => null,
-            ]);
+            ]));
 
             // ✅ Create purchase record
-            $purchase = Purchase::create([
-                'user_id' => Auth::id(),
+            $purchaseData = [
                 'course_id' => $course->id,
                 'payment_id' => $payment->id,
                 'status' => 'completed',
                 'progress' => 0.00,
-            ]);
+            ];
+
+            if ($buyerType === 'trainer') {
+                $purchaseData['trainer_id'] = $buyerId;
+            } else {
+                $purchaseData['user_id'] = $buyerId;
+            }
+
+            Purchase::create($purchaseData);
 
             // ✅ Record trainer earning
             $trainerController = new TrainerController();
             $trainerController->addEarning($course->trainer_id, $course->id, $course->price, 'course sale');
 
             // ✅ Send confirmation mail
-            Auth::user()->notify(new PurchaseSuccessMail(Auth::user(), $course));
+            $buyer->notify(new PurchaseSuccessMail($buyer, $course));
 
             return redirect()
                 ->route('user.dashboard')

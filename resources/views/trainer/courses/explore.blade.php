@@ -61,10 +61,12 @@
                 <p class="text-2xl font-semibold text-white mb-2">₹<span id="course-price">—</span></p>
                 <p class="text-[#A1A9C4] text-sm mb-4">Full lifetime access · Certificate of completion</p>
 
-                <button id="buy-now-btn"
-                    class="w-full bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
+                <a id="buy-now-btn"
+                href="{{ route('payment.stripe.trainer', ['courseId' => $course->id]) }}"
+                class="w-full inline-block text-center bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
                     Buy Now
-                </button>
+                </a>
+
 
                 <p id="buy-status" class="text-sm font-medium text-green-400 hidden text-center mt-3">
                     Purchase successful!
@@ -141,8 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 buyStatus.classList.remove('hidden');
             })
             .catch(error => {
+                // Instead of alert, just reset button text
                 buyBtn.textContent = 'Buy Now';
-                alert('Purchase failed. Please try again.');
                 console.error(error);
             })
             .finally(() => {
@@ -151,4 +153,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 @endsection

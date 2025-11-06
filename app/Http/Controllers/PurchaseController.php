@@ -7,15 +7,31 @@ use Illuminate\Support\Facades\Auth;
 
 class PurchaseController extends Controller
 {
-    // ✅ Show all purchases for logged-in user
+    // ✅ Show purchases for logged-in user or trainer
     public function index()
     {
+        // 🔹 If trainer
+        if (Auth::guard('trainer')->check()) {
+            $trainerId = Auth::guard('trainer')->id();
+
+            // Only courses **purchased by this trainer** (exclude courses they created)
+            $purchases = Purchase::with('course', 'payment')
+                ->where('trainer_id', $trainerId)
+                ->whereHas('course', function ($query) use ($trainerId) {
+                    $query->where('trainer_id', '!=', $trainerId);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return view('trainer.courses.myPurchasedCourses', compact('purchases'));
+        }
+
+        // 🔹 Default: user
         $purchases = Purchase::with('course', 'payment')
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ✅ Matches: resources/views/user/courses/myCourses.blade.php
         return view('user.courses.myCourses', compact('purchases'));
     }
 }

@@ -48,39 +48,43 @@ io.on("connection", (socket) => {
     console.log(`✅ [Room Joined] ${socket.id} joined ${roomId}`);
   });
 
-  // 💬 Send message (text or attachment)
   socket.on("sendMessage", async (data) => {
-    console.log("💬 [Incoming Message Event]", data);
+  console.log("💬 [Incoming Message Event]", JSON.stringify(data, null, 2));
 
-    try {
-      const { roomId, sender, receiver, message, fileUrl, fileType } = data;
+  try {
+    const { roomId, sender, receiver, message, fileUrl, fileType } = data;
 
-      if (!roomId || (!message && !fileUrl)) {
-        console.log("⚠️ [Validation Error] Missing message or file");
-        socket.emit("error", { message: "Missing message or file" });
-        return;
-      }
-
-      // 💾 Save to DB
-      console.log("🗂 [DB Save Attempt] roomId:", roomId);
-      const newMsg = await Message.create({
-        roomId,
-        sender,
-        receiver,
-        message,
-        fileUrl: fileUrl || null,
-        fileType: fileType || null,
-        seen: false,
-      });
-
-      console.log("✅ [DB Save Success]", newMsg);
-
-      // 📡 Emit message to room
-      io.in(roomId).emit("newMessage", newMsg);
-    } catch (err) {
-      console.error("❌ [Error saving message]:", err);
+    if (!roomId || (!message && !fileUrl)) {
+      console.log("⚠️ [Validation Error] Missing message or file or roomId:", roomId);
+      socket.emit("error", { message: "Missing message or file" });
+      return;
     }
-  });
+
+    console.log("🧾 Sender:", sender, "Receiver:", receiver);
+
+    // 💾 Save to DB
+    const newMsg = await Message.create({
+      roomId,
+      sender,
+      receiver,
+      message,
+      fileUrl: fileUrl || null,
+      fileType: fileType || null,
+      seen: false,
+    });
+
+    console.log("✅ [DB Save Success]", newMsg._id);
+
+    // 📡 Emit message to room
+    const roomClients = io.sockets.adapter.rooms.get(roomId);
+    console.log("👥 [Room Clients]", roomId, roomClients ? [...roomClients] : "❌ None");
+
+    io.in(roomId).emit("newMessage", newMsg);
+  } catch (err) {
+    console.error("❌ [Error saving message]:", err);
+  }
+});
+
 
   // 👁️‍🗨️ Mark message as seen
   socket.on("messageSeen", async ({ messageId, roomId, seenBy }) => {

@@ -286,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td class="px-6 py-3 text-[#9BA3B8]">${index}</td>
                         <td class="px-6 py-3 font-medium text-[#E6EDF7]">${lesson.title}</td>
                         <td class="px-6 py-3 text-[#A8B3CF]">${lesson.content_type.charAt(0).toUpperCase()+lesson.content_type.slice(1)}</td>
-                        <td class="px-6 py-3 text-[#A8B3CF]">${lesson.order_number}</td>
                         <td class="px-6 py-3 text-center">
                             <div class="flex justify-center items-center gap-2">
                                 ${lesson.content_type === 'quiz'

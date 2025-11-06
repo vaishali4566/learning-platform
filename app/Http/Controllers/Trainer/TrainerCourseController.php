@@ -13,16 +13,29 @@ use Illuminate\Support\Facades\Validator;
 
 class TrainerCourseController extends Controller
 {
-    public function index()     //show all courses
+    public function index() // show all courses for trainer
     {
-        $courses = Course::all();
-        return view('trainer.courses.index', compact('courses'));
+        $trainerId = Auth::guard('trainer')->id();
+
+        // ✅ My Courses (created by this trainer)
+        $myCourses = Course::where('trainer_id', $trainerId)->get();
+
+        // ✅ Available Courses (created by others)
+        $availableCourses = Course::where('trainer_id', '!=', $trainerId)->get();
+
+        return view('trainer.courses.index', compact('myCourses', 'availableCourses'));
     }
 
-    public function create()    //show form to create a course
+
+    public function explore($courseId)
     {
-        return view('trainer.courses.create');
+        $course = Course::with('trainer')->findOrFail($courseId);
+        return view('trainer.courses.explore', [
+            'course' => $course,
+            'courseId' => $courseId
+        ]);
     }
+
 
 public function store(Request $request)
 {
@@ -107,11 +120,6 @@ public function store(Request $request)
         $courses = $trainer->courses;
 
         return view('trainer.courses.myCourses', compact('courses'));
-    }
-
-    public function explore($courseId)
-    {
-        return view('trainer.courses.explore', ['courseId' => $courseId]);
     }
 
     public function destroy(Course $course)

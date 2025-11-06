@@ -32,9 +32,9 @@
         const gateway = document.querySelector('input[name="gateway"]:checked').value;
         const courseId = '{{ $courseId }}';
         if (gateway === 'stripe') {
-            window.location.href = `/user/payment/${courseId}/stripe`;
+            window.location.href = `/trainer/payment/${courseId}/stripe`;
         } else {
-            window.location.href = `/user/payment/${courseId}/razorpay`;
+            window.location.href = `/trainer/payment/${courseId}/razorpay`;
         }
     });
 </script>
