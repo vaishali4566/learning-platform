@@ -1,7 +1,51 @@
-@extends('layouts.user.index')
+@php
+use App\Models\User;
+use App\Models\Trainer;
 
-@section('title', 'Chat Room')
+// 🔹 Detect which guard is active
+if (auth()->guard('trainer')->check()) {
+    $layout = 'layouts.trainer.index';
+    $authType = 'trainer';
+    $authId = auth()->guard('trainer')->id();
+} elseif (auth()->check() && auth()->user()->is_admin) {
+    $layout = 'layouts.admin.index';
+    $authType = 'admin';
+    $authId = auth()->id();
+} elseif (auth()->check()) {
+    $layout = 'layouts.user.index';
+    $authType = 'user';
+    $authId = auth()->id();
+} else {
+    $layout = 'layouts.user.index';
+    $authType = 'guest';
+    $authId = null;
+}
 
+// ✅ Detect receiver type safely
+if ($receiver instanceof Trainer) {
+    $receiverType = 'trainer';
+} elseif ($receiver instanceof User && !empty($receiver->is_admin) && $receiver->is_admin == 1) {
+    $receiverType = 'admin';
+} elseif ($receiver instanceof User) {
+    $receiverType = 'user';
+} else {
+    $receiverType = 'user';
+}
+
+// 🔍 Debugging info
+\Log::info('Chat Debug', [
+    'auth_id' => $authId,
+    'auth_type' => $authType,
+    'receiver_class' => get_class($receiver),
+    'receiver_attrs' => $receiver->toArray(),
+    'detected_receiver_type' => $receiverType,
+]);
+@endphp
+
+
+
+
+@extends($layout)
 @section('content')
 <div class="max-w-4xl mx-auto mt-10 bg-[#0D1117] rounded-2xl shadow-2xl border border-[#1F2937] overflow-hidden flex flex-col h-[85vh]">
 
@@ -22,10 +66,10 @@
     {{-- 🔹 Chat Messages Area --}}
     <div id="chat-box"
          data-room-id="{{ $room_id ?? '' }}"
-         data-user-id="{{ Auth::id() }}"
+         data-user-id="{{ Auth::guard('trainer')->check() ? Auth::guard('trainer')->id() : Auth::id() }}"
          data-user-type="{{ Auth::guard('trainer')->check() ? 'trainer' : (Auth::user() && Auth::user()->is_admin ? 'admin' : 'user') }}"
          data-receiver-id="{{ $receiver->id }}"
-         data-receiver-type="{{ $receiver instanceof \App\Models\Trainer ? 'trainer' : ($receiver->is_admin ? 'admin' : 'user') }}"
+         data-receiver-type="{{ $receiverType }}"
          class="flex-1 overflow-y-auto px-6 py-4 space-y-3 bg-[#0D1117] custom-scrollbar">
     </div>
 
@@ -102,6 +146,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const message = input.value.trim();
         const file = fileInput.files[0];
         if (!message && !file) return;
+
+        console.log("🚀 [SEND MESSAGE CLICKED]", {
+      roomId,
+      userId,
+      userType,
+      receiverId,
+      receiverType,
+      message,
+      file
+    });
 
         window.sendMessage(roomId, userId, userType, receiverId, receiverType, message, file);
         input.value = "";

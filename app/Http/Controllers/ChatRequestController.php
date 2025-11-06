@@ -68,8 +68,27 @@ class ChatRequestController extends Controller
     {
         $chatRequest = ChatRequest::findOrFail($id);
 
+        // 🧠 Identify correct logged-in guard
+        $authId = auth()->guard('trainer')->check() 
+            ? auth()->guard('trainer')->id()
+            : auth()->id();
+
+        \Log::debug('💬 Accept Request Debug', [
+            'authId' => $authId,
+            'receiver_id' => $chatRequest->receiver_id,
+            'sender_id' => $chatRequest->sender_id,
+            'status' => $chatRequest->status,
+            'sender_type' => $chatRequest->sender_type,
+            'receiver_type' => $chatRequest->receiver_type,
+        ]);
+
         // 🧠 Ensure only receiver can accept
-        if ($chatRequest->receiver_id !== Auth::id()) {
+        if ($chatRequest->receiver_id !== $authId) {
+            \Log::warning('❌ Unauthorized accept attempt', [
+                'chatRequestId' => $chatRequest->id,
+                'authId' => $authId,
+                'receiver_id' => $chatRequest->receiver_id,
+            ]);
             return redirect()->back()->with('error', 'Unauthorized access.');
         }
 
@@ -87,20 +106,21 @@ class ChatRequestController extends Controller
             ]);
 
             if ($response->failed()) {
+                \Log::error('❌ Node.js room creation failed', ['response' => $response->body()]);
                 return back()->with('error', 'Failed to create chat room.');
             }
 
             $roomData = $response->json();
-            // Optionally save room ID
-            // $chatRequest->update(['room_id' => $roomData['room']['_id'] ?? null]);
+            \Log::info('✅ Chat request accepted successfully', ['roomData' => $roomData]);
 
             return back()->with('success', 'Chat request accepted successfully.');
 
         } catch (\Exception $e) {
+            \Log::error('🔥 Error connecting to chat server', ['error' => $e->getMessage()]);
             return back()->with('error', 'Error connecting to chat server.');
         }
-
     }
+
 
     /**
      * 📋 Get all pending requests for the logged-in user
