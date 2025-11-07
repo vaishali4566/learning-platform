@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainer;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,18 +14,34 @@ use Illuminate\Support\Facades\Validator;
 
 class TrainerCourseController extends Controller
 {
-    public function index() // show all courses for trainer
+    public function index()
     {
         $trainerId = Auth::guard('trainer')->id();
 
-        // ✅ My Courses (created by this trainer)
+        // ✅ 1. My Courses (created by this trainer)
         $myCourses = Course::where('trainer_id', $trainerId)->get();
 
-        // ✅ Available Courses (created by others)
-        $availableCourses = Course::where('trainer_id', '!=', $trainerId)->get();
+        // ✅ 2. Purchased Courses (courses trainer has purchased)
+        $purchasedCourses = Purchase::with('course')
+            ->where('trainer_id', $trainerId)
+            ->get();
 
-        return view('trainer.courses.index', compact('myCourses', 'availableCourses'));
+        // ✅ Get all purchased course IDs to exclude from available list
+        $purchasedCourseIds = $purchasedCourses->pluck('course_id')->toArray();
+
+        // ✅ 3. Available Courses (created by others & not purchased)
+        $availableCourses = Course::where('trainer_id', '!=', $trainerId)
+            ->whereNotIn('id', $purchasedCourseIds)
+            ->get();
+
+        // ✅ Return all three sets to the view
+        return view('trainer.courses.index', compact(
+            'myCourses',
+            'availableCourses',
+            'purchasedCourses'
+        ));
     }
+
 
 
     public function explore($courseId)
