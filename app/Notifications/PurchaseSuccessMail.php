@@ -2,22 +2,21 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Models\User;
-use App\Models\Course;
 
-class PurchaseSuccessMail extends Notification
+class PurchaseSuccessMail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $user;
-    protected $course;
+    public $buyer;
+    public $course;
 
-    public function __construct(User $user, Course $course)
+    public function __construct($buyer, $course)
     {
-        $this->user = $user;
+        $this->buyer = $buyer;
         $this->course = $course;
     }
 
@@ -28,11 +27,23 @@ class PurchaseSuccessMail extends Notification
 
     public function toMail($notifiable)
     {
+        $name = $this->buyer->name ?? $this->buyer->trainer_name ?? 'Learner';
+        $email = $this->buyer->email ?? $this->buyer->trainer_email;
+
         return (new MailMessage)
-                    ->subject('Course Purchase Successful')
-                    ->greeting('Hello ' . $this->user->name)
-                    ->line('You have successfully purchased the course: ' . $this->course->title)
-                    ->action('Go to Dashboard', url(route('user.dashboard')))
-                    ->line('Thank you for learning with us!');
+            ->subject('Purchase Successful!')
+            ->greeting("Hello {$name},")
+            ->line("You have successfully purchased **{$this->course->title}**.")
+            ->line("Price: ₹{$this->course->price}")
+            ->action('View Course', $this->getRedirectUrl())
+            ->line('Thank you for learning with us!');
+    }
+
+    private function getRedirectUrl()
+    {
+        if (method_exists($this->buyer, 'isTrainer') || get_class($this->buyer) === 'App\Models\Trainer') {
+            return route('trainer.courses.my.purchases');
+        }
+        return route('user.courses.my');
     }
 }

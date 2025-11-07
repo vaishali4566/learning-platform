@@ -8,33 +8,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Purchase extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'user_id',
         'course_id',
         'payment_id',
+        'user_id',
+        'trainer_id',   
         'status',
         'progress',
     ];
 
-    protected $casts = [
-        'status' => 'string',
-        'progress' => 'float',
-    ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function course(): BelongsTo
+    public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
-    public function payment(): BelongsTo
+    public function payment()
     {
         return $this->belongsTo(Payment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function trainer()
+    {
+        return $this->belongsTo(Trainer::class);
     }
 }
