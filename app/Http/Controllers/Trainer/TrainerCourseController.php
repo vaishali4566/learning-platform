@@ -36,6 +36,10 @@ class TrainerCourseController extends Controller
         ]);
     }
 
+    public function create(){
+        return view('trainer.courses.create');
+    }
+
 
 public function store(Request $request)
 {

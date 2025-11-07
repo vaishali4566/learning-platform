@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
@@ -14,9 +13,9 @@ class PurchaseController extends Controller
         if (Auth::guard('trainer')->check()) {
             $trainerId = Auth::guard('trainer')->id();
 
-            // Only courses **purchased by this trainer** (exclude courses they created)
+            // Only purchases made by this trainer (exclude their own courses)
             $purchases = Purchase::with('course', 'payment')
-                ->where('trainer_id', $trainerId)
+                ->where('trainer_id', $trainerId) // direct column
                 ->whereHas('course', function ($query) use ($trainerId) {
                     $query->where('trainer_id', '!=', $trainerId);
                 })
