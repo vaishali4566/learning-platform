@@ -98,6 +98,43 @@
             transform: scale(1.03);
             box-shadow: 0 0 18px rgba(0, 194, 255, 0.35);
         }
+
+        /* Loader Overlay */
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 25, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(6px);
+        }
+
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            border-top: 3px solid #00C2FF;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            color: #E6EDF7;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 
@@ -117,8 +154,15 @@
         </form>
     </div>
 
+    <!-- Loader -->
+    <div id="loader-overlay">
+        <div class="flex flex-col items-center">
+            <div class="loader"></div>
+            <p class="loader-text mt-3">Processing your payment...</p>
+        </div>
+    </div>
+
     <script>
-        // Stripe setup
         const stripe = Stripe("{{ env('STRIPE_PUBLISHED_KEY') }}");
         const elements = stripe.elements();
         const card = elements.create('card', {
@@ -138,17 +182,18 @@
         });
         card.mount('#card-element');
 
-        // Handle form submission
         const form = document.getElementById('payment-form');
+        const loader = document.getElementById('loader-overlay');
+
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const {
-                token,
-                error
-            } = await stripe.createToken(card);
+            loader.style.display = 'flex'; // Show loader
+
+            const { token, error } = await stripe.createToken(card);
 
             if (error) {
+                loader.style.display = 'none';
                 Swal.fire({
                     icon: 'error',
                     title: 'Payment Error',
@@ -158,7 +203,6 @@
                 return;
             }
 
-            // AJAX request
             try {
                 const response = await fetch("{{ route('payment.post.trainer') }}", {
                     method: "POST",
@@ -173,6 +217,7 @@
                 });
 
                 const result = await response.json();
+                loader.style.display = 'none'; // Hide loader
 
                 if (result.success) {
                     Swal.fire({
@@ -194,6 +239,7 @@
                 }
 
             } catch (err) {
+                loader.style.display = 'none';
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',

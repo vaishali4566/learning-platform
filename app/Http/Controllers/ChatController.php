@@ -42,104 +42,73 @@ class ChatController extends Controller
     // ✅ Chat list page
 
 
-public function index()
-{
-    // 🔹 Detect current logged-in user
-    if (auth()->guard('trainer')->check()) {
-        $authUser = auth()->guard('trainer')->user();
-        $authType = 'trainer';
-    } elseif (auth()->check()) {
-        $authUser = auth()->user();
-        $authType = $authUser->is_admin ? 'admin' : 'user';
-    } else {
-        abort(403, 'Unauthorized');
+    public function index()
+    {
+        // Detect current logged-in user
+        if (auth()->guard('trainer')->check()) {
+            $authUser = auth()->guard('trainer')->user();
+            $authType = 'trainer';
+        } elseif (auth()->check()) {
+            $authUser = auth()->user();
+            $authType = $authUser->is_admin ? 'admin' : 'user';
+        } else {
+            abort(403, 'Unauthorized');
+        }
+
+        Log::info('Logged In User', [
+            'id' => $authUser->id,
+            'name' => $authUser->name,
+            'type' => $authType
+        ]);
+
+        // Fetch users
+        $users = User::get(['id', 'name', 'email', 'is_admin'])
+            ->map(function ($user) {
+                $user->role = $user->is_admin ? 'Admin' : 'User';
+                $user->type = $user->is_admin ? 'admin' : 'user';
+                return $user;
+            });
+
+        // Fetch trainers
+        $trainers = Trainer::get(['id', 'name', 'email'])
+            ->map(function ($trainer) {
+                $trainer->role = 'Trainer';
+                $trainer->type = 'trainer';
+                return $trainer;
+            });
+
+        // Merge all
+        $allUsers = $users->concat($trainers)
+            ->filter(fn($u) => !($authType === $u->type && $authUser->id === $u->id))
+            ->sortBy('name')
+            ->values();
+
+        // Fetch chat requests
+        $chatRequests = ChatRequest::where(function ($q) use ($authUser, $authType) {
+            $q->where('sender_id', $authUser->id)->where('sender_type', $authType);
+        })->orWhere(function ($q) use ($authUser, $authType) {
+            $q->where('receiver_id', $authUser->id)->where('receiver_type', $authType);
+        })->get();
+
+        // CORRECT: Add BOTH sender and receiver keys
+        $chatRequestsByUser = [];
+        foreach ($chatRequests as $req) {
+            $chatRequestsByUser[$req->sender_type . '_' . $req->sender_id] = $req;
+            $chatRequestsByUser[$req->receiver_type . '_' . $req->receiver_id] = $req;
+        }
+
+        Log::info('Chat Requests Built', [
+            'authId' => $authUser->id,
+            'authType' => $authType,
+            'keys' => array_keys($chatRequestsByUser),
+            'count' => count($chatRequestsByUser),
+        ]);
+
+        return view('chat.index', [
+            'users' => $allUsers,
+            'chatRequests' => $chatRequestsByUser,
+        ]);
     }
-
-    // 🧩 Debug 1: Log current logged-in user
-    Log::info('🔹 Logged In User', [
-        'id' => $authUser->id,
-        'name' => $authUser->name,
-        'email' => $authUser->email,
-        'type' => $authType
-    ]);
-
-    // 🔹 Fetch all users (Admin + Normal Users)
-    $users = User::get(['id', 'name', 'email', 'is_admin'])
-        ->map(function ($user) {
-            $user->role = $user->is_admin ? 'Admin' : 'User';
-            $user->type = $user->is_admin ? 'admin' : 'user';
-            $user->unique_key = 'user_' . $user->id;
-            return $user;
-        });
-
-    // 🧩 Debug 2: Log users fetched
-    Log::info('📋 All Users', $users->map(fn($u) => [
-        'id' => $u->id,
-        'name' => $u->name,
-        'email' => $u->email,
-        'type' => $u->type
-    ])->toArray());
-
-    // 🔹 Fetch all trainers
-    $trainers = Trainer::get(['id', 'name', 'email'])
-        ->map(function ($trainer) {
-            $trainer->role = 'Trainer';
-            $trainer->type = 'trainer';
-            $trainer->unique_key = 'trainer_' . $trainer->id;
-            return $trainer;
-        });
-
-    // 🧩 Debug 3: Log trainers fetched
-    Log::info('🎓 All Trainers', $trainers->map(fn($t) => [
-        'id' => $t->id,
-        'name' => $t->name,
-        'email' => $t->email,
-        'type' => $t->type
-    ])->toArray());
-
-    // 🔹 Merge all (users + trainers)
-    $allUsers = $users->concat($trainers)
-        ->filter(function ($user) use ($authUser, $authType) {
-            // exclude self only if same type and same id
-            return !(($authType === $user->type) && ($authUser->id === $user->id));
-        })
-        ->sortBy('name')
-        ->values();
-
-    // 🧩 Debug 4: Log merged users
-    Log::info('👥 Merged Users (Final List)', $allUsers->map(fn($u) => [
-        'id' => $u->id,
-        'name' => $u->name,
-        'email' => $u->email,
-        'type' => $u->type,
-    ])->toArray());
-
-    // 🔹 Fetch chat requests related to logged-in user
-    $chatRequests = ChatRequest::where(function ($q) use ($authUser, $authType) {
-        $q->where('sender_id', $authUser->id)
-          ->where('sender_type', $authType);
-    })->orWhere(function ($q) use ($authUser, $authType) {
-        $q->where('receiver_id', $authUser->id)
-          ->where('receiver_type', $authType);
-    })->get();
-
-    // 🔹 Map chat requests by unique key
-    $chatRequestsByUser = [];
-    foreach ($chatRequests as $req) {
-        $otherId = $req->sender_id == $authUser->id ? $req->receiver_id : $req->sender_id;
-        $otherType = $req->sender_id == $authUser->id ? $req->receiver_type : $req->sender_type;
-        $key = $otherType . '_' . $otherId;
-        $chatRequestsByUser[$key] = $req;
-    }
-
-    // 🧩 Debug 5: Log chat requests
-    Log::info('💬 Chat Requests', $chatRequestsByUser);
-
-    return view('chat.index', [
-        'users' => $allUsers,
-        'chatRequests' => $chatRequestsByUser,
-    ]);
-}
 
 
 
