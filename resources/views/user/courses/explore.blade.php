@@ -56,23 +56,31 @@
         <div class="w-full lg:w-80">
             <div class="sticky top-20 bg-[#101B2E]/80 backdrop-blur-lg border border-[#1E2B4A] rounded-2xl p-6 shadow-[0_0_25px_rgba(0,194,255,0.1)] hover:shadow-[0_0_30px_rgba(0,194,255,0.15)] transition-all duration-300">
                 <img id="course-image" src="https://via.placeholder.com/400x200"
-                     alt="Course Image" class="rounded-xl mb-4 w-full h-40 object-cover border border-[#1E2B4A]">
+                    alt="Course Image" class="rounded-xl mb-4 w-full h-40 object-cover border border-[#1E2B4A]">
 
                 <p class="text-2xl font-semibold text-white mb-2">₹<span id="course-price">—</span></p>
                 <p class="text-[#A1A9C4] text-sm mb-4">Full lifetime access · Certificate of completion</p>
 
                 <div class="flex gap-3">
-                    <a href="{{ route('payment.stripe', ['courseId' => $courseId]) }}"
-                       id="buy-now-btn"
-                       class="flex-1 text-center bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
-                        Buy Now
-                    </a>
-                    
+                    @if(!$isPurchased)
+                        <a href="{{ route('payment.stripe', ['courseId' => $courseId]) }}"
+                        id="buy-now-btn"
+                        class="flex-1 text-center bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
+                            Buy Now
+                        </a>
+                    @else
+                        <a href="{{ route('user.courses.view', ['courseId' => $courseId]) }}"
+                        class="flex-1 text-center bg-gradient-to-r from-[#16A34A] to-[#15803D] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-green-500/30 hover:scale-[1.02] transition-all duration-300">
+                            Open Course
+                        </a>
+                    @endif
                 </div>
 
-                <p id="buy-status" class="text-sm font-medium text-green-400 hidden text-center mt-3">
-                    Purchase successful!
-                </p>
+                @if($isPurchased)
+                    <p class="text-sm font-medium text-green-400 text-center mt-3">
+                        You’ve already purchased this course.
+                    </p>
+                @endif
 
                 <div class="border-t border-[#1E2B4A] mt-5 pt-3 text-sm text-[#A1A9C4]">
                     <p><i class="fa-solid fa-play-circle text-[#00C2FF]"></i> 12 Hours on-demand video</p>
@@ -81,6 +89,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 

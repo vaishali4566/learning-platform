@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +44,20 @@ class UserCourseController extends Controller
     }
     
     public function explore($courseId)
-    {
-        return view('user.courses.explore', ['courseId' => $courseId]);
+{
+    $user = Auth::guard('web')->user(); // current logged-in user
+    $isPurchased = false;
+
+    if ($user) {
+        $isPurchased = Purchase::where('user_id', $user->id)
+                        ->where('course_id', $courseId)
+                        ->exists();
     }
+
+    return view('user.courses.explore', [
+        'courseId' => $courseId,
+        'isPurchased' => $isPurchased
+    ]);
+}
+
 }

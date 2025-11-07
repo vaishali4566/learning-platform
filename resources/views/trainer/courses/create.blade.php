@@ -2,78 +2,91 @@
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] text-white py-10 px-6">
-    <div class="max-w-3xl mx-auto bg-[#111B2A] rounded-2xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold mb-6 text-center">Create New Course</h2>
+    <div class="max-w-2xl mx-auto bg-[#101828] rounded-xl shadow-xl border border-[#1E2B4A]/40 p-8">
+        <h2 class="text-2xl font-semibold text-center text-[#00C2FF] mb-6 tracking-wide">
+            <i class="fa-solid fa-plus-circle mr-2"></i> Create New Course
+        </h2>
 
-        <form id="createCourseForm" enctype="multipart/form-data">
+        <form id="createCourseForm" enctype="multipart/form-data" class="space-y-5">
             @csrf
 
             <!-- Title -->
-            <div class="mb-4">
-                <label for="title" class="block font-semibold mb-2">Course Title</label>
-                <input type="text" id="title" name="title" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500" required>
+            <div>
+                <label for="title" class="block text-sm font-medium mb-1 text-gray-300">Course Title</label>
+                <input type="text" id="title" name="title"
+                    class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200"
+                    required>
             </div>
 
             <!-- Description -->
-            <div class="mb-4">
-                <label for="description" class="block font-semibold mb-2">Description</label>
-                <textarea id="description" name="description" rows="4" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500"></textarea>
+            <div>
+                <label for="description" class="block text-sm font-medium mb-1 text-gray-300">Description</label>
+                <textarea id="description" name="description" rows="3"
+                    class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200"></textarea>
             </div>
 
-            <!-- Price -->
-            <div class="mb-4">
-                <label for="price" class="block font-semibold mb-2">Price (₹)</label>
-                <input type="number" step="0.01" id="price" name="price" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500" required>
+            <!-- Price & Duration -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="price" class="block text-sm font-medium mb-1 text-gray-300">Price (₹)</label>
+                    <input type="number" step="0.01" id="price" name="price"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200"
+                        required>
+                </div>
+                <div>
+                    <label for="duration" class="block text-sm font-medium mb-1 text-gray-300">Duration</label>
+                    <input type="text" id="duration" name="duration" placeholder="e.g. 3 hours"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200">
+                </div>
             </div>
 
-            <!-- Duration -->
-            <div class="mb-4">
-                <label for="duration" class="block font-semibold mb-2">Duration</label>
-                <input type="text" id="duration" name="duration" placeholder="e.g. 3 hours, 2 weeks" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500">
-            </div>
-
-            <!-- Difficulty -->
-            <div class="mb-4">
-                <label for="difficulty" class="block font-semibold mb-2">Difficulty</label>
-                <select id="difficulty" name="difficulty" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
-            </div>
-
-            <!-- Thumbnail -->
-            <div class="mb-6">
-                <label for="thumbnail" class="block font-semibold mb-2">Course Thumbnail</label>
-                <input type="file" id="thumbnail" name="thumbnail" accept="image/*"
-                    class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
-                <p class="text-gray-400 text-sm mt-1">Upload an image (JPG, PNG, or JPEG)</p>
+            <!-- Difficulty & Mode -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="difficulty" class="block text-sm font-medium mb-1 text-gray-300">Difficulty</label>
+                    <select id="difficulty" name="difficulty"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="is_online" class="block text-sm font-medium mb-1 text-gray-300">Mode</label>
+                    <select id="is_online" name="is_online"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200">
+                        <option value="1">Online</option>
+                        <option value="0">Offline</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Location -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label for="city" class="block font-semibold mb-2">City</label>
-                    <input type="text" id="city" name="city" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500">
+                    <label for="city" class="block text-sm font-medium mb-1 text-gray-300">City</label>
+                    <input type="text" id="city" name="city"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200">
                 </div>
                 <div>
-                    <label for="country" class="block font-semibold mb-2">Country</label>
-                    <input type="text" id="country" name="country" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500">
+                    <label for="country" class="block text-sm font-medium mb-1 text-gray-300">Country</label>
+                    <input type="text" id="country" name="country"
+                        class="w-full px-3 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] focus:border-[#00C2FF] focus:ring-1 focus:ring-[#00C2FF] outline-none text-sm text-gray-200">
                 </div>
             </div>
 
-            <!-- Mode -->
-            <div class="mb-4">
-                <label for="is_online" class="block font-semibold mb-2">Mode</label>
-                <select id="is_online" name="is_online" class="w-full p-3 rounded-lg bg-[#0D1622] border border-gray-600 focus:outline-none focus:border-blue-500">
-                    <option value="1">Online</option>
-                    <option value="0">Offline</option>
-                </select>
+            <!-- Thumbnail -->
+            <div>
+                <label for="thumbnail" class="block text-sm font-medium mb-1 text-gray-300">Thumbnail</label>
+                <input type="file" id="thumbnail" name="thumbnail" accept="image/*"
+                    class="block w-full text-sm text-gray-300 cursor-pointer file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#00C2FF]/10 file:text-[#00C2FF] file:font-medium hover:file:bg-[#00C2FF]/20 transition">
+                <p class="text-xs text-gray-400 mt-1">JPG, PNG, or JPEG format</p>
             </div>
 
             <!-- Submit -->
-            <div class="text-center">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold transition-all">
+            <div class="pt-4 text-center">
+                <button type="submit"
+                    class="w-full py-3 bg-[#00C2FF] hover:bg-[#00AEE3] text-[#0B1120] font-semibold rounded-lg transition-all text-sm shadow-md">
                     Create Course
                 </button>
             </div>
@@ -81,7 +94,7 @@
     </div>
 </div>
 
-{{-- SweetAlert2 CDN --}}
+{{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -90,16 +103,12 @@ document.getElementById('createCourseForm').addEventListener('submit', async fun
 
     const form = this;
     const formData = new FormData(form);
-
-    // Include trainer_id automatically
     formData.append('trainer_id', "{{ Auth::guard('trainer')->id() }}");
 
     try {
         const response = await fetch("{{ route('trainer.courses.store') }}", {
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             body: formData
         });
 
@@ -111,21 +120,19 @@ document.getElementById('createCourseForm').addEventListener('submit', async fun
                 title: 'Course Created!',
                 text: 'Your new course has been added successfully.',
                 showConfirmButton: false,
-                timer: 1800,
+                timer: 1600,
                 background: '#0A0E19',
                 color: '#E6EDF7',
                 iconColor: '#00C2FF'
             }).then(() => {
-                window.location.href = "{{ route('trainer.courses.my') }}"; 
-                // OR redirect to edit page:
-                // window.location.href = `/trainer/courses/${data.data.id}/edit`;
+                window.location.href = "{{ route('trainer.courses.my') }}";
             });
 
             form.reset();
         } else {
             let msg = 'Please check your inputs.';
             if (data.errors) {
-                msg = Object.values(data.errors).flat().join('\\n');
+                msg = Object.values(data.errors).flat().join('\n');
             }
             Swal.fire({
                 icon: 'error',
