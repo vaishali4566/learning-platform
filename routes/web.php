@@ -176,6 +176,7 @@ Route::prefix('trainer')->group(function () {
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
+            Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
         });
 
         // Quizzes
