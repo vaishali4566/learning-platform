@@ -116,29 +116,19 @@
     </div>
 
     <!-- === Charts Section === -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 📈 Line Chart -->
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] rounded-xl shadow-xl border border-[#26304D] p-6 transition-all duration-300 hover:shadow-[#00C2FF]/20">
-            <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
-                <i data-lucide="trending-up" class="w-5 h-5 text-[#00C2FF]"></i>
-                Student Enrollment Trends
-            </h2>
-            <div class="h-64">
-                <canvas id="enrollmentChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 🥧 Pie Chart -->
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] rounded-xl shadow-xl border border-[#26304D] p-6 transition-all duration-300 hover:shadow-[#00C2FF]/20">
-            <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
-                <i data-lucide="pie-chart" class="w-5 h-5 text-[#00C2FF]"></i>
-                Course Performance Overview
-            </h2>
-            <div class="h-64">
-                <canvas id="courseChart"></canvas>
-            </div>
+<div class="grid grid-cols-1 gap-6">
+    <!-- 📈 Line Chart -->
+    <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] rounded-xl shadow-xl border border-[#26304D] p-6 transition-all duration-300 hover:shadow-[#00C2FF]/20">
+        <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-5 h-5 text-[#00C2FF]"></i>
+            Student Enrollment Trends
+        </h2>
+        <div class="h-64">
+            <canvas id="enrollmentChart"></canvas>
         </div>
     </div>
+</div>
+
     
     <!-- Activity Feed & Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
@@ -201,7 +191,7 @@
     </div>
 
         <!-- Student Performance & Upcoming Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+    <div class="grid grid-cols- lg:grid-cols-2 gap-6 mt-10">
         <!-- Recent Student Activity -->
         <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] rounded-xl shadow-xl border border-[#26304D] p-6">
             <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
@@ -219,8 +209,9 @@
                 @forelse($recentPurchases as $purchase)
                 <div class="flex justify-between items-center bg-[#101727]/40 rounded-lg px-4 py-3 hover:bg-[#101727]/70 transition-all duration-200">
                     <div>
-                        <p class="text-[#E6EDF7] font-medium">{{ $purchase->user->name }}</p>
-                        <p class="text-[#8A93A8] text-sm">Enrolled in {{ $purchase->course->title }}</p>
+                        <p class="text-[#E6EDF7] font-medium">{{ optional($purchase->user)->name ?? 'Unknown User' }}</p>
+<p class="text-[#8A93A8] text-sm">Enrolled in {{ optional($purchase->course)->title ?? 'Unknown Course' }}</p>
+
                     </div>
                     <span class="text-[#16a34a] text-sm">{{ $purchase->created_at->diffForHumans() }}</span>
                 </div>
@@ -339,49 +330,7 @@
             }
         });
 
-        // === Course Performance Chart ===
-        const courseCtx = document.getElementById('courseChart').getContext('2d');
-        const courseData = {
-            labels: ['Web Development', 'Data Science', 'Mobile Apps', 'Design', 'Marketing'],
-            datasets: [{
-                data: [30, 25, 20, 15, 10],
-                backgroundColor: [
-                    '#00C2FF',
-                    '#16a34a',
-                    '#8B5CF6',
-                    '#facc15',
-                    '#f43f5e'
-                ],
-                borderColor: '#101727',
-                borderWidth: 3,
-                hoverOffset: 15
-            }]
-        };
-
-        new Chart(courseCtx, {
-            type: 'doughnut',
-            data: courseData,
-            options: {
-                cutout: '65%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#E6EDF7',
-                            font: { size: 12 },
-                            padding: 15
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(16,23,39,0.95)',
-                        titleColor: '#E6EDF7',
-                        bodyColor: '#E6EDF7',
-                        borderColor: '#00C2FF',
-                        borderWidth: 1
-                    }
-                }
-            }
-        });
+        
     });
 </script>
 @endsection

@@ -6,51 +6,72 @@ use Illuminate\Http\Request;
 use App\Models\ChatRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ChatRequestController extends Controller
 {
     /**
-     * 📤 Send chat request
+     * Send chat request
      */
     public function sendRequest(Request $request)
     {
+        Log::info('sendRequest() Called', [
+            'request_data' => $request->all(),
+            'user_guard' => auth('trainer')->check() ? 'trainer' : 'user',
+            'auth_user' => auth('trainer')->check() ? auth('trainer')->user()?->toArray() : auth()->user()?->toArray(),
+        ]);
+
         $validated = $request->validate([
             'receiver_id' => 'required|integer',
             'receiver_type' => 'required|string|in:user,trainer,admin',
         ]);
 
-        $sender = Auth::user();
+        // SAHI SENDER NIKAL
+        if (auth('trainer')->check()) {
+            $sender = auth('trainer')->user();
+            $senderType = 'trainer';
+        } else {
+            $sender = auth()->user();
+            $senderType = $sender->is_admin ? 'admin' : 'user';
+        }
 
-        // 🧠 Determine sender type
-        $senderType = $sender->is_admin ? 'admin' : 'user';
+        if (!$sender) {
+            Log::error('Sender not authenticated');
+            return back()->with('error', 'Unauthorized.');
+        }
 
-        // 🚫 Prevent sending to *exact same account* (same id and same type)
+        Log::info('Sender Info', [
+            'sender_id' => $sender->id,
+            'sender_type' => $senderType,
+            'receiver_id' => $validated['receiver_id'],
+            'receiver_type' => $validated['receiver_type'],
+        ]);
+
+        // Prevent self-request
         if ($sender->id == $validated['receiver_id'] && $senderType === $validated['receiver_type']) {
+            Log::warning('Self-request blocked');
             return back()->with('error', 'You cannot send a chat request to yourself.');
         }
 
-        // ✅ Allow same email if type is different (user vs trainer)
-        // So no email comparison here at all.
-
-        // 🔍 Check for existing request (in either direction, with type considered)
+        // Check existing request
         $exists = ChatRequest::where(function ($q) use ($sender, $validated, $senderType) {
             $q->where('sender_id', $sender->id)
-              ->where('receiver_id', $validated['receiver_id'])
               ->where('sender_type', $senderType)
+              ->where('receiver_id', $validated['receiver_id'])
               ->where('receiver_type', $validated['receiver_type']);
         })->orWhere(function ($q) use ($sender, $validated, $senderType) {
             $q->where('sender_id', $validated['receiver_id'])
-              ->where('receiver_id', $sender->id)
               ->where('sender_type', $validated['receiver_type'])
+              ->where('receiver_id', $sender->id)
               ->where('receiver_type', $senderType);
         })->first();
 
         if ($exists) {
+            Log::info('Request already exists', ['chat_request_id' => $exists->id]);
             return back()->with('info', 'Chat request already exists.');
         }
 
-        // 💾 Store new chat request
-        ChatRequest::create([
+        $chatRequest = ChatRequest::create([
             'sender_id' => $sender->id,
             'sender_type' => $senderType,
             'receiver_id' => $validated['receiver_id'],
@@ -58,25 +79,45 @@ class ChatRequestController extends Controller
             'status' => 'pending',
         ]);
 
+        Log::info('NEW CHAT REQUEST CREATED', [
+            'id' => $chatRequest->id,
+            'sender' => $senderType . '_' . $sender->id,
+            'receiver' => $validated['receiver_type'] . '_' . $validated['receiver_id'],
+        ]);
+
         return back()->with('success', 'Chat request sent successfully!');
     }
 
     /**
-     * ✅ Accept chat request & create chat room (Node.js MongoDB)
+     * Accept chat request
      */
     public function acceptRequest($id)
     {
         $chatRequest = ChatRequest::findOrFail($id);
 
-        // 🧠 Ensure only receiver can accept
-        if ($chatRequest->receiver_id !== Auth::id()) {
-            return redirect()->back()->with('error', 'Unauthorized access.');
+        $authId = auth('trainer')->check() ? auth('trainer')->id() : auth()->id();
+        $authType = auth('trainer')->check() ? 'trainer' : (auth()->user()?->is_admin ? 'admin' : 'user');
+
+        Log::debug('acceptRequest() Called', [
+            'chat_request_id' => $id,
+            'authId' => $authId,
+            'authType' => $authType,
+            'receiver_id' => $chatRequest->receiver_id,
+            'receiver_type' => $chatRequest->receiver_type,
+        ]);
+
+        if ($chatRequest->receiver_id !== $authId || $chatRequest->receiver_type !== $authType) {
+            Log::warning('Unauthorized accept attempt', [
+                'chat_request_id' => $id,
+                'authId' => $authId,
+                'authType' => $authType,
+            ]);
+            return back()->with('error', 'Unauthorized access.');
         }
 
-        // ✅ Update status
         $chatRequest->update(['status' => 'accepted']);
+        Log::info('Chat request accepted', ['id' => $chatRequest->id]);
 
-        // 🌐 Call Node.js to create chat room
         $nodeServer = env('NODE_SERVER_URL', 'http://localhost:4000');
         try {
             $response = Http::post("$nodeServer/api/create-room", [
@@ -87,54 +128,64 @@ class ChatRequestController extends Controller
             ]);
 
             if ($response->failed()) {
+                Log::error('Node.js room creation failed', ['response' => $response->body()]);
                 return back()->with('error', 'Failed to create chat room.');
             }
 
-            $roomData = $response->json();
-            // Optionally save room ID
-            // $chatRequest->update(['room_id' => $roomData['room']['_id'] ?? null]);
-
-            return back()->with('success', 'Chat request accepted successfully.');
-
+            Log::info('Node.js room created', ['response' => $response->json()]);
+            return back()->with('success', 'Chat request accepted!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error connecting to chat server.');
+            Log::error('Chat server error', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Server error.');
         }
-
     }
 
     /**
-     * 📋 Get all pending requests for the logged-in user
-     */
-    public function myRequests()
-    {
-        $user = Auth::user();
-        $userType = $user->is_admin ? 'admin' : 'user';
-
-        $requests = ChatRequest::where('receiver_id', $user->id)
-            ->where('receiver_type', $userType)
-            ->where('status', 'pending')
-            ->get();
-
-        return response()->json($requests);
-    }
-     /**
-     * ❌ Decline chat request
+     * Decline chat request
      */
     public function declineRequest($id)
     {
         $chatRequest = ChatRequest::findOrFail($id);
 
-        // ✅ Only receiver can decline
-        if ($chatRequest->receiver_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized action.');
+        $authId = auth('trainer')->check() ? auth('trainer')->id() : auth()->id();
+        $authType = auth('trainer')->check() ? 'trainer' : (auth()->user()?->is_admin ? 'admin' : 'user');
+
+        Log::debug('declineRequest() Called', [
+            'chat_request_id' => $id,
+            'authId' => $authId,
+            'authType' => $authType,
+        ]);
+
+        if ($chatRequest->receiver_id !== $authId || $chatRequest->receiver_type !== $authType) {
+            Log::warning('Unauthorized decline attempt');
+            return back()->with('error', 'Unauthorized.');
         }
 
-        // 🗑 Option 1: Delete the record
         $chatRequest->update(['status' => 'declined']);
+        Log::info('Chat request declined', ['id' => $chatRequest->id]);
+        return back()->with('success', 'Chat request declined.');
+    }
 
-        // 🟡 Option 2 (alternative): Just mark declined instead of delete
-        // $chatRequest->update(['status' => 'declined']);
+    /**
+     * Get pending requests (for AJAX)
+     */
+    public function myRequests()
+    {
+        $authId = auth('trainer')->check() ? auth('trainer')->id() : auth()->id();
+        $authType = auth('trainer')->check() ? 'trainer' : (auth()->user()?->is_admin ? 'admin' : 'user');
 
-        return back()->with('success', 'Chat request declined successfully.');
+        $requests = ChatRequest::where('receiver_id', $authId)
+            ->where('receiver_type', $authType)
+            ->where('status', 'pending')
+            ->get();
+
+        Log::info('myRequests() Called', [
+            'authId' => $authId,
+            'authType' => $authType,
+            'count' => $requests->count(),
+            'requests' => $requests->toArray(),
+        ]);
+
+        return response()->json($requests);
     }
 }

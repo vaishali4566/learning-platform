@@ -120,17 +120,6 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}', 'stripe')->name('payment.stripe');
             Route::post('/', 'stripePost')->name('payment.post');
         });
-
-        // Route::prefix('chat')->controller(ChatController::class)->group(function () {
-        //     Route::get('/', 'index')->name('user.chat.index');                // List all users
-        //     Route::post('/request/{id}', 'sendRequest')->name('user.chat.request'); // Send chat request
-        //     Route::get('/room/{id}', 'room')->name('user.chat.room');              // Open chat room
-        // });
-        // Route::prefix('chat')->controller(ChatRequestController::class)->group(function () {               
-        //     Route::post('/request/decline/{id}', 'declineRequest')->name('chat.decline');                
-        //     Route::post('/accept/{id}', 'acceptRequest')->name('chat.accept'); 
-        //     Route::get('/requests', 'myRequests')->name('chat.requests');  
-        // });
     });
 });
 
@@ -178,6 +167,8 @@ Route::prefix('trainer')->group(function () {
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
+
+            Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
 
             Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy_lessson'); // lesson  delete route
 

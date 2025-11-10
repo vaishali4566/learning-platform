@@ -18,9 +18,7 @@
         <!-- Dashboard -->
         <a href="{{ route('trainer.dashboard') }}"
             class="group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('trainer.dashboard')
-                ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]'
-                : '' }}">
+            {{ request()->routeIs('trainer.dashboard') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#00C2FF] transition-all duration-300 group-hover:scale-110"></i>
             <span class="sidebar-text transition-all duration-300">Dashboard</span>
@@ -40,8 +38,17 @@
             class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
             {{ request()->routeIs('trainer.courses.my') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
-            <i data-lucide="library" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
+            <i data-lucide="book" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">My Courses</span>
+        </a>
+
+        <!-- Purchased Courses -->
+        <a href="{{ route('trainer.courses.my.purchases') }}"
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('trainer.courses.my.purchases') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
+            <i data-lucide="shopping-cart" class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
+            <span class="sidebar-text">Purchased Courses</span>
         </a>
 
         <!-- Create Course -->
@@ -55,7 +62,8 @@
 
         <!-- Students -->
         <a href="{{ route('trainer.students.index') }}"
-            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('trainer.students.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="users" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Students</span>
@@ -63,13 +71,12 @@
 
         <!-- Reports -->
         <a href="{{ route('trainer.report') }}"
-            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
+            class="group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
+            {{ request()->routeIs('trainer.report') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300 ease-in-out"></div>
             <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#3A6EA5] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Reports</span>
         </a>
-
-        
 
     </nav>
 </aside>
