@@ -30,10 +30,11 @@
 
                         <!-- Buttons -->
                         <div class="flex justify-between items-center mt-5 border-t border-[#1E2B4A] pt-3">
-                            <a href="{{ route('trainer.courses.explore', $purchase->course->id) }}"
-                               class="flex items-center gap-1 text-sm text-[#00C2FF] hover:underline transition">
-                                <i class="fa-solid fa-book-open"></i> Open Course
-                            </a>
+                            <a href="{{ route('trainer.courses.lessons.view', ['course' => $purchase->course->id]) }}"
+   class="flex items-center gap-1 text-sm text-[#00C2FF] hover:underline transition">
+    <i class="fa-solid fa-book-open"></i> Open Course
+</a>
+
 
                             <a href="{{ route('trainer.courses.explore', $purchase->course->id) }}"
                                class="text-gray-400 text-sm hover:text-[#00C2FF] transition">

@@ -209,8 +209,9 @@
                 @forelse($recentPurchases as $purchase)
                 <div class="flex justify-between items-center bg-[#101727]/40 rounded-lg px-4 py-3 hover:bg-[#101727]/70 transition-all duration-200">
                     <div>
-                        <p class="text-[#E6EDF7] font-medium">{{ $purchase->user->name }}</p>
-                        <p class="text-[#8A93A8] text-sm">Enrolled in {{ $purchase->course->title }}</p>
+                        <p class="text-[#E6EDF7] font-medium">{{ optional($purchase->user)->name ?? 'Unknown User' }}</p>
+<p class="text-[#8A93A8] text-sm">Enrolled in {{ optional($purchase->course)->title ?? 'Unknown Course' }}</p>
+
                     </div>
                     <span class="text-[#16a34a] text-sm">{{ $purchase->created_at->diffForHumans() }}</span>
                 </div>
