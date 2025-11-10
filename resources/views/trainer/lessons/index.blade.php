@@ -292,7 +292,6 @@
                     <video 
                         class="w-full h-full object-contain bg-black rounded-2xl" 
                         controls 
-                        autoplay 
                         playsinline>
                         <source src="/lessons/${lessonId}/stream" type="video/mp4">
                         Your browser does not support the video tag.
