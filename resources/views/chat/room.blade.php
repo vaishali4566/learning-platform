@@ -124,12 +124,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const res = await fetch(`http://127.0.0.1:4000/api/messages/${roomId}`);
         const data = await res.json();
         if (data?.messages?.length) {
-            data.messages.forEach(msg => window.renderMessage(msg, userId, userType));
+            data.messages.forEach(msg => window.renderMessage(msg, userId, userType, "api")); // ✅ FIXED
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     } catch (err) {
         console.error("Load failed:", err);
     }
+
 
     // AUTO SEND FILE ON SELECT
     fileInput.addEventListener("change", () => {
