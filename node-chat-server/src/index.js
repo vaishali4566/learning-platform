@@ -1,10 +1,10 @@
+// src/server.js
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-import ChatRoom from "./models/ChatRoom.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import Message from "./models/Message.js";
 import path from "path";
@@ -14,111 +14,65 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use("/api", chatRoutes);
 
-// 🗂️ Serve uploaded files
+// RESOLVE UPLOADS PATH FROM ROOT (src/ -> ../uploads)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const uploadsPath = path.join(__dirname, "uploads"); 
+
+console.log("Serving uploads from:", uploadsPath);
+app.use("/uploads", express.static(uploadsPath));
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// API routes
+app.use("/api", chatRoutes);
 
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" },
-});
-
-// 🟢 Track online users
-const onlineUsers = new Map();
+const io = new Server(server, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
-  console.log("🟢 [Socket Connected] ID:", socket.id);
+  console.log("Connected:", socket.id);
 
-  // 👤 When user connects, frontend should emit "userConnected" with userId
   socket.on("userConnected", (userId) => {
-    onlineUsers.set(userId, socket.id);
-    console.log(`✅ [User Online] userId: ${userId}, socketId: ${socket.id}`);
-    io.emit("userOnline", userId); // notify all clients
+    // online tracking
   });
 
-  // 🧩 Join room
   socket.on("join", ({ roomId }) => {
-    console.log(`📥 [Join Request] ${socket.id} joining room: ${roomId}`);
     socket.join(roomId);
-    console.log(`✅ [Room Joined] ${socket.id} joined ${roomId}`);
   });
 
-  // 💬 Send message (text or attachment)
   socket.on("sendMessage", async (data) => {
-    console.log("💬 [Incoming Message Event]", data);
-
     try {
       const { roomId, sender, receiver, message, fileUrl, fileType } = data;
 
-      if (!roomId || (!message && !fileUrl)) {
-        console.log("⚠️ [Validation Error] Missing message or file");
-        socket.emit("error", { message: "Missing message or file" });
-        return;
-      }
-
-      // 💾 Save to DB
-      console.log("🗂 [DB Save Attempt] roomId:", roomId);
       const newMsg = await Message.create({
         roomId,
         sender,
         receiver,
-        message,
+        message: message || null,
         fileUrl: fileUrl || null,
         fileType: fileType || null,
         seen: false,
       });
 
-      console.log("✅ [DB Save Success]", newMsg);
-
-      // 📡 Emit message to room
       io.in(roomId).emit("newMessage", newMsg);
     } catch (err) {
-      console.error("❌ [Error saving message]:", err);
+      console.error("Save error:", err);
     }
   });
 
-  // 👁️‍🗨️ Mark message as seen
-  socket.on("messageSeen", async ({ messageId, roomId, seenBy }) => {
-    try {
-      console.log(`👁️ [Seen Event] messageId: ${messageId} by ${seenBy?.id}`);
-
-      const updatedMsg = await Message.findByIdAndUpdate(
-        messageId,
-        { seen: true },
-        { new: true }
-      );
-
-      if (updatedMsg) {
-        io.in(roomId).emit("messageSeenUpdate", updatedMsg);
-      }
-    } catch (err) {
-      console.error("❌ [Error Updating Seen Status]", err);
-    }
+  socket.on("messageSeen", async ({ messageId, roomId }) => {
+    const updated = await Message.findByIdAndUpdate(messageId, { seen: true }, { new: true });
+    if (updated) io.in(roomId).emit("messageSeenUpdate", updated);
   });
 
-  // 🔴 Disconnect
   socket.on("disconnect", () => {
-    // Find which user disconnected
-    const userId = [...onlineUsers.entries()].find(
-      ([, sId]) => sId === socket.id
-    )?.[0];
-
-    if (userId) {
-      onlineUsers.delete(userId);
-      console.log(`🔴 [User Offline] userId: ${userId}`);
-      io.emit("userOffline", userId); // notify all clients
-    }
-
-    console.log(`🔴 [Socket Disconnected] ${socket.id}`);
+    console.log("Disconnected:", socket.id);
   });
 });
 
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () =>
-  console.log(`🚀 [Server Started] Socket.IO running on port ${PORT}`)
-);
+const PORT = 4000;
+server.listen(PORT, () => console.log(`Server running on ${PORT}`));

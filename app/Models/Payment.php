@@ -14,6 +14,8 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
+        'trainer_id',
+        'buyer_type',
         'course_id',
         'transaction_id',
         'amount',
@@ -31,6 +33,11 @@ class Payment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function trainer(): BelongsTo
+    {
+        return $this->belongsTo(Trainer::class);
     }
 
     public function course(): BelongsTo

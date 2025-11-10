@@ -1,14 +1,83 @@
-@extends('layouts.user.index')
+@php
+    // Detect current logged-in user and layout
+    if(auth()->guard('trainer')->check()) {
+        $authUser = auth()->guard('trainer')->user();
+        $authType = 'trainer';
+        $layout = 'layouts.trainer.index';
+    } elseif(auth()->check() && auth()->user()->is_admin == 1) {
+        $authUser = auth()->user();
+        $authType = 'admin';
+        $layout = 'layouts.admin.index';
+    } elseif(auth()->check()) {
+        $authUser = auth()->user();
+        $authType = 'user';
+        $layout = 'layouts.user.index';
+    } else {
+        $authUser = null;
+        $authType = 'guest';
+        $layout = 'layouts.user.index';
+    }
+
+    $authId = $authUser?->id;
+
+    // Filter out self
+    $filteredUsers = $users->filter(function ($u) use ($authId, $authType) {
+        return !($u && $u->id === $authId && $u->type === $authType);
+    });
+
+    // Initialize sections
+    $friends = collect();
+    $pending = collect();
+    $available = collect();
+
+    foreach ($filteredUsers as $user) {
+        $key = $user->type . '_' . $user->id;
+        $chatRequest = $chatRequests[$key] ?? null;
+        $status = $chatRequest?->status ?? null;
+
+        $isSender = $chatRequest && $chatRequest->sender_id == $authId && $chatRequest->sender_type == $authType;
+        $isReceiver = $chatRequest && $chatRequest->receiver_id == $authId && $chatRequest->receiver_type == $authType;
+
+        if ($status === 'accepted') {
+            $friends->push((object)[
+                'user' => $user,
+                'chatRequest' => $chatRequest,
+                'isSender' => $isSender,
+                'isReceiver' => $isReceiver,
+                'status' => $status
+            ]);
+        } elseif ($status === 'pending') {
+            $pending->push((object)[
+                'user' => $user,
+                'chatRequest' => $chatRequest,
+                'isSender' => $isSender,
+                'isReceiver' => $isReceiver,
+                'status' => $status
+            ]);
+        } else {
+            $available->push((object)[
+                'user' => $user,
+                'chatRequest' => null,
+                'isSender' => false,
+                'isReceiver' => false,
+                'status' => null
+            ]);
+        }
+    }
+@endphp
+
+@extends($layout)
 
 @section('content')
-<div class="min-h-screen bg-[#0E1625] text-[#E6EDF7] p-6">
-
-    <!-- Page Title -->
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold">💬 Chat Users</h2>
+<div class="min-h-screen bg-[#0C111D] text-[#E6EDF7] p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-semibold flex items-center gap-3">
+            Chat
+        </h2>
     </div>
 
-    <!-- Flash Messages -->
+    {{-- Flash messages --}}
     @foreach (['success' => 'green', 'error' => 'red', 'info' => 'yellow'] as $type => $color)
         @if(session($type))
             <div class="bg-{{ $color }}-500/10 border border-{{ $color }}-500 text-{{ $color }}-300 px-4 py-3 rounded-lg mb-4 text-sm">
@@ -17,69 +86,57 @@
         @endif
     @endforeach
 
-    <!-- Users List -->
-    <div class="bg-[#121A2F] border border-[#1F2B4A] rounded-2xl shadow-lg divide-y divide-[#1F2B4A] overflow-hidden">
-        @forelse($users as $user)
-            @php
-                $chatRequest = $chatRequests[$user->id] ?? null;
-                $status = $chatRequest->status ?? null;
-            @endphp
+    <!-- 3 SECTIONS -->
+    <div class="space-y-8">
 
-            <div class="flex items-center justify-between p-4 hover:bg-[#1A2543] transition">
-                <div class="flex items-center gap-4">
-                    <!-- User Avatar -->
-                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#00C3FF]/40 to-[#005A9C]/40 text-white font-semibold text-lg">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                    </div>
-
-                    <!-- User Info -->
-                    <div>
-                        <p class="font-medium text-white">{{ $user->name }}</p>
-                        <p class="text-sm text-gray-400">{{ ucfirst($user->role ?? 'user') }}</p>
-                    </div>
+        <!-- SECTION 1: FRIENDS (Accepted) -->
+        @if($friends->count() > 0)
+            <div class="bg-[#121A2F] border border-[#1F2B4A] rounded-2xl shadow-lg overflow-hidden">
+                <div class="px-6 py-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-b border-[#1F2B4A]">
+                    <h3 class="text-lg font-semibold text-green-400 flex items-center gap-2">
+                        Friends ({{ $friends->count() }})
+                    </h3>
                 </div>
-
-                <!-- Actions -->
-                <div class="flex items-center gap-2">
-                    @if($status === 'accepted')
-                        <a href="{{ route('chat.room', ['id' => $user->id]) }}" 
-                           class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-500 transition duration-200 shadow-sm">
-                            Open Chat
-                        </a>
-
-                    @elseif($status === 'declined')
-                        <span class="text-red-400 font-medium">Declined</span>
-
-                    @elseif($status === 'pending' && $chatRequest && $chatRequest->receiver_id == auth()->id())
-                        <form action="{{ route('chat.accept', $chatRequest->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button class="px-4 py-2 bg-yellow-500 text-black font-medium rounded-lg hover:bg-yellow-400 transition duration-200 shadow-sm">
-                                Accept
-                            </button>
-                        </form>
-                        <form action="{{ route('chat.decline', $chatRequest->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-500 transition duration-200 shadow-sm">
-                                Decline
-                            </button>
-                        </form>
-
-                    @elseif($status === 'pending' && $chatRequest && $chatRequest->sender_id == auth()->id())
-                        <span class="text-blue-400 font-medium">Request Sent ⏳</span>
-
-                    @else
-                        <form action="{{ route('chat.request', $user->id) }}" method="POST">
-                            @csrf
-                            <button class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-400 transition duration-200 shadow-sm">
-                                Send Request
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                @foreach($friends as $item)
+                    @include('chat.partials.user-item', ['item' => $item])
+                @endforeach
             </div>
-        @empty
-            <div class="p-6 text-center text-gray-400">No users available for chat.</div>
-        @endforelse
+        @endif
+
+        <!-- SECTION 2: PENDING REQUESTS -->
+        @if($pending->count() > 0)
+            <div class="bg-[#121A2F] border border-[#1F2B4A] rounded-2xl shadow-lg overflow-hidden">
+                <div class="px-6 py-3 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border-b border-[#1F2B4A]">
+                    <h3 class="text-lg font-semibold text-yellow-400 flex items-center gap-2">
+                        Pending Requests ({{ $pending->count() }})
+                    </h3>
+                </div>
+                @foreach($pending as $item)
+                    @include('chat.partials.user-item', ['item' => $item])
+                @endforeach
+            </div>
+        @endif
+
+        <!-- SECTION 3: AVAILABLE TO CONNECT -->
+        @if($available->count() > 0)
+            <div class="bg-[#121A2F] border border-[#1F2B4A] rounded-2xl shadow-lg overflow-hidden">
+                <div class="px-6 py-3 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-b border-[#1F2B4A]">
+                    <h3 class="text-lg font-semibold text-blue-400 flex items-center gap-2">
+                        Available to Connect ({{ $available->count() }})
+                    </h3>
+                </div>
+                @foreach($available as $item)
+                    @include('chat.partials.user-item', ['item' => $item])
+                @endforeach
+            </div>
+        @endif
+
+        @if($friends->count() == 0 && $pending->count() == 0 && $available->count() == 0)
+            <div class="text-center py-16 text-gray-500">
+                <p class="text-lg">No users available</p>
+            </div>
+        @endif
+
     </div>
 </div>
 @endsection

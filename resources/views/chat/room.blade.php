@@ -1,11 +1,54 @@
-@extends('layouts.user.index')
+@php
+use App\Models\User;
+use App\Models\Trainer;
 
-@section('title', 'Chat Room')
+// 🔹 Detect which guard is active
+if (auth()->guard('trainer')->check()) {
+    $layout = 'layouts.trainer.index';
+    $authType = 'trainer';
+    $authId = auth()->guard('trainer')->id();
+} elseif (auth()->check() && auth()->user()->is_admin) {
+    $layout = 'layouts.admin.index';
+    $authType = 'admin';
+    $authId = auth()->id();
+} elseif (auth()->check()) {
+    $layout = 'layouts.user.index';
+    $authType = 'user';
+    $authId = auth()->id();
+} else {
+    $layout = 'layouts.user.index';
+    $authType = 'guest';
+    $authId = null;
+}
 
+// ✅ Detect receiver type safely
+if ($receiver instanceof Trainer) {
+    $receiverType = 'trainer';
+} elseif ($receiver instanceof User && !empty($receiver->is_admin) && $receiver->is_admin == 1) {
+    $receiverType = 'admin';
+} elseif ($receiver instanceof User) {
+    $receiverType = 'user';
+} else {
+    $receiverType = 'user';
+}
+
+// 🔍 Debugging info
+\Log::info('Chat Debug', [
+    'auth_id' => $authId,
+    'auth_type' => $authType,
+    'receiver_class' => get_class($receiver),
+    'receiver_attrs' => $receiver->toArray(),
+    'detected_receiver_type' => $receiverType,
+]);
+@endphp
+
+
+
+@extends($layout)
 @section('content')
 <div class="max-w-4xl mx-auto mt-10 bg-[#0D1117] rounded-2xl shadow-2xl border border-[#1F2937] overflow-hidden flex flex-col h-[85vh]">
 
-    {{-- 🔹 Header --}}
+    {{-- Header --}}
     <div class="flex items-center justify-between px-6 py-4 bg-[#161B22] border-b border-[#1F2937]">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white font-semibold text-lg">
@@ -16,40 +59,32 @@
                 <p id="user-status" class="text-xs text-gray-400">Offline</p>
             </div>
         </div>
-        <div class="text-gray-400 text-sm">Chat Room</div>
+        <div class="text-gray-400 text-sm">Chat Room.{{ $room_id }}</div>
     </div>
 
-    {{-- 🔹 Chat Messages Area --}}
+    {{-- Messages --}}
     <div id="chat-box"
          data-room-id="{{ $room_id ?? '' }}"
-         data-user-id="{{ Auth::id() }}"
+         data-user-id="{{ Auth::guard('trainer')->check() ? Auth::guard('trainer')->id() : Auth::id() }}"
          data-user-type="{{ Auth::guard('trainer')->check() ? 'trainer' : (Auth::user() && Auth::user()->is_admin ? 'admin' : 'user') }}"
          data-receiver-id="{{ $receiver->id }}"
-         data-receiver-type="{{ $receiver instanceof \App\Models\Trainer ? 'trainer' : ($receiver->is_admin ? 'admin' : 'user') }}"
+         data-receiver-type="{{ $receiverType }}"
          class="flex-1 overflow-y-auto px-6 py-4 space-y-3 bg-[#0D1117] custom-scrollbar">
     </div>
 
-    {{-- 🔹 Message Input Area --}}
+    {{-- Input --}}
     <form id="message-form" class="border-t border-[#1F2937] bg-[#161B22] flex items-center px-4 py-3 gap-2">
-        <label for="file-input"
-               class="cursor-pointer bg-[#0D1117] border border-[#2D3748] rounded-xl p-2.5 hover:bg-[#1E293B] transition-all">
-            📎
-        </label>
+        <label for="file-input" class="cursor-pointer bg-[#0D1117] border border-[#2D3748] rounded-xl p-2.5 hover:bg-[#1E293B] transition-all">Attachment</label>
         <input type="file" id="file-input" class="hidden" accept="image/*,.pdf,.doc,.docx,.zip" />
         
-        <input type="text"
-               id="message-input"
-               placeholder="Type your message..."
-               class="flex-grow bg-[#0D1117] text-gray-200 placeholder-gray-500 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600">
+        <input type="text" id="message-input" placeholder="Type your message..." class="flex-grow bg-[#0D1117] text-gray-200 placeholder-gray-500 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600">
         
-        <button type="submit"
-                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md">
+        <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md">
             Send
         </button>
     </form>
 </div>
 
-{{-- ✅ Load Chat Script --}}
 @vite(['resources/js/chat.js'])
 
 <style>
@@ -77,93 +112,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const receiverId = parseInt(chatBox.dataset.receiverId);
     const receiverType = chatBox.dataset.receiverType;
 
-    if (!window.socket) return console.error("❌ Socket not loaded");
+    if (!window.socket) return console.error("Socket not loaded");
 
-    // ✅ Join room
+    // Join room
     const joinRoom = () => window.socket.emit("join", { roomId });
     if (window.socket.connected) joinRoom();
     else window.socket.once("connect", joinRoom);
 
-    // ✅ Load old messages
+    // Load old messages
     try {
         const res = await fetch(`http://127.0.0.1:4000/api/messages/${roomId}`);
         const data = await res.json();
         if (data?.messages?.length) {
-            data.messages.forEach((msg) => renderMessage(msg, userId, userType));
+            data.messages.forEach(msg => window.renderMessage(msg, userId, userType, "api")); // ✅ FIXED
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     } catch (err) {
-        console.error("❌ Load messages failed", err);
+        console.error("Load failed:", err);
     }
 
-    // ✅ Send message or file
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const message = input.value.trim();
-        const file = fileInput.files[0];
-        if (!message && !file) return;
 
-        window.sendMessage(roomId, userId, userType, receiverId, receiverType, message, file);
-        input.value = "";
+    // AUTO SEND FILE ON SELECT
+    fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        window.sendMessage(roomId, userId, userType, receiverId, receiverType, "", file);
         fileInput.value = "";
     });
 
-    // ✅ Render messages
-    function renderMessage(msg, userId, userType) {
-        const div = document.createElement("div");
-        div.classList.add("p-3", "rounded-2xl", "max-w-[70%]", "break-words", "shadow-md", "w-fit", "my-1");
-        const isMine = String(msg.sender.id) === String(userId) && msg.sender.type === userType;
-
-        if (isMine)
-            div.classList.add("bg-gradient-to-r", "from-blue-600", "to-indigo-600", "text-white", "ml-auto", "self-end");
-        else
-            div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
-
-        // 📎 File
-        if (msg.fileUrl) {
-            if (msg.fileType === "image") {
-                const img = document.createElement("img");
-                img.src = `http://127.0.0.1:4000${msg.fileUrl}`;
-                img.classList.add("max-w-[200px]", "rounded-md", "my-1");
-                div.appendChild(img);
-            } else {
-                const link = document.createElement("a");
-                link.href = `http://127.0.0.1:4000${msg.fileUrl}`;
-                link.textContent = "📎 Download Attachment";
-                link.classList.add("underline", "text-sm", "block", "mt-1");
-                div.appendChild(link);
-            }
-        }
-
-        if (msg.message) {
-            const text = document.createElement("div");
-            text.textContent = msg.message;
-            div.appendChild(text);
-        }
-
-        // ✅ Seen indicator
-        if (isMine) {
-            const seen = document.createElement("span");
-            seen.textContent = msg.seen ? "✓ Seen" : "✓ Sent";
-            seen.classList.add("block", "text-xs", "mt-1", "text-gray-300", "seen-tag");
-            div.appendChild(seen);
-        }
-
-        chatBox.appendChild(div);
-    }
-
-    // ✅ Listen for new messages (already handled in chat.js)
-    window.socket.on("newMessage", (msg) => {
-        renderMessage(msg, userId, userType);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        // If I'm the receiver → mark as seen
-        if (String(msg.receiver.id) === String(userId)) {
-            window.socket.emit("messageSeen", {
-                messageId: msg._id,
-                roomId,
-                seenBy: { id: userId, type: userType },
-            });
-        }
+    // SEND TEXT ONLY
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        window.sendMessage(roomId, userId, userType, receiverId, receiverType, message);
+        input.value = "";
     });
 });
 </script>

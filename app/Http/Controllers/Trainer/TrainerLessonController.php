@@ -24,7 +24,7 @@ class TrainerLessonController extends Controller
             'course_id'     => 'required|exists:courses,id',
             'title'         => 'required|string|min:3|max:50',
             'content_type'  => 'required|in:video,text,quiz',
-            'order_number'  => 'nullable|numeric',
+            
         ];
 
         if ($request->content_type === 'video') {
@@ -48,7 +48,7 @@ class TrainerLessonController extends Controller
                 'course_id'    => $request->course_id,
                 'title'        => $request->title,
                 'content_type' => $request->content_type,
-                'order_number' => $request->order_number,
+               
             ];
 
             if ($request->content_type === 'video') {
@@ -83,6 +83,16 @@ class TrainerLessonController extends Controller
         $courseName = Course::find($id)->title;
         return view('trainer.lessons.index', ['courseId' => $id, 'courseName' => $courseName]);
     }
+
+        public function getLessons($courseId)
+        {
+            $lessons = Lesson::where('course_id', $courseId)
+                ->select('id', 'title', 'content_type')
+                ->orderBy('id', 'asc')
+                ->get();
+
+            return response()->json($lessons);
+        }
 
     public function manage(Course $course)
     {
