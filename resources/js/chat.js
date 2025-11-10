@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 // SOCKET SETUP
 const SOCKET_URL = "http://127.0.0.1:4000";
-console.log("SOCKET connecting to:", SOCKET_URL);
+console.log("🌐 SOCKET connecting to:", SOCKET_URL);
 
 const socket = io(SOCKET_URL, {
   transports: ["websocket"],
@@ -16,7 +16,7 @@ window.socket = socket;
 
 // CONNECT
 socket.on("connect", () => {
-  console.log("Socket Connected:", socket.id);
+  console.log("✅ Socket Connected:", socket.id);
   const userIdEl = document.getElementById("chat-box");
   if (userIdEl) {
     const userId = userIdEl.dataset.userId;
@@ -24,8 +24,8 @@ socket.on("connect", () => {
   }
 });
 
-socket.on("disconnect", () => console.warn("Socket Disconnected"));
-socket.on("connect_error", (err) => console.error("Socket Error:", err.message));
+socket.on("disconnect", () => console.warn("⚠️ Socket Disconnected"));
+socket.on("connect_error", (err) => console.error("❌ Socket Error:", err.message));
 
 // UTILITY
 function normalizeRoomId(roomId) {
@@ -36,66 +36,89 @@ function normalizeRoomId(roomId) {
   return String(roomId);
 }
 
-// RENDER MESSAGE (EK BAAR HI)
-function renderMessage(msg, userId, userType) {
+// 🔹 Track all rendered message IDs
+const renderedMessages = new Set();
+
+// RENDER MESSAGE (STRICT DUPLICATE CHECK)
+function renderMessage(msg, userId, userType, source = "unknown") {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
 
-  // DUPLICATE CHECK
-  if (document.querySelector(`[data-msg-id="${msg._id}"]`)) {
-    console.warn("Duplicate message skipped:", msg._id);
+  console.log("🧩 renderMessage called from [" + source + "]", msg);
+
+  // ✅ Consistent msgId generate karo
+  const msgId = String(msg._id || msg.id || `${msg.roomId}-${msg.sender?.id}-${msg.createdAt}`);
+
+  // ✅ Strict duplicate check
+  if (renderedMessages.has(msgId)) {
+    console.warn("⏩ Skipping duplicate render:", msgId, "from", source);
     return;
   }
 
-  console.log("Rendering message:", msg);
+  renderedMessages.add(msgId);
+  console.log("✅ Rendering NEW message [" + msgId + "] from [" + source + "]");
 
   const div = document.createElement("div");
-  div.classList.add("p-3", "rounded-2xl", "max-w-[70%]", "break-words", "shadow-md", "w-fit", "my-1", "flex", "flex-col");
-  div.dataset.msgId = msg._id;
+  div.classList.add(
+    "p-3",
+    "rounded-2xl",
+    "max-w-[70%]",
+    "break-words",
+    "shadow-md",
+    "w-fit",
+    "my-1",
+    "flex",
+    "flex-col"
+  );
+  div.dataset.msgId = msgId;
 
   const isMine = String(msg.sender.id) === String(userId) && msg.sender.type === userType;
 
   if (isMine) {
-    div.classList.add("bg-gradient-to-r", "from-blue-600", "to-indigo-600", "text-white", "ml-auto", "self-end");
+    div.classList.add(
+      "bg-gradient-to-r",
+      "from-blue-600",
+      "to-indigo-600",
+      "text-white",
+      "ml-auto",
+      "self-end"
+    );
   } else {
     div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
   }
 
-  // IMAGE
+  // IMAGE MESSAGE
   if (msg.fileUrl && msg.fileType === "image") {
     const imgContainer = document.createElement("div");
     imgContainer.classList.add("my-2", "rounded-xl", "overflow-hidden");
 
     const fullUrl = `${SOCKET_URL}${msg.fileUrl}`;
-    console.log("Loading image:", fullUrl);
+    console.log("🖼️ Loading image:", fullUrl);
 
     const img = document.createElement("img");
     img.src = fullUrl;
     img.alt = "sent image";
-    img.classList.add("block", "rounded-xl", "max-w-[350px]", "max-h-[350px]", "object-contain", "cursor-pointer", "transition-transform", "duration-200", "hover:scale-[1.03]");
+    img.classList.add(
+      "block",
+      "rounded-xl",
+      "max-w-[350px]",
+      "max-h-[350px]",
+      "object-contain",
+      "cursor-pointer",
+      "transition-transform",
+      "duration-200",
+      "hover:scale-[1.03]"
+    );
 
-    // SIRF EK BAAR LOG
-    let loaded = false;
-    img.onload = () => {
-      if (loaded) return;
-      loaded = true;
-      console.log("Image loaded successfully:", fullUrl);
-    };
-
-    img.onerror = () => {
-      if (loaded) return;
-      loaded = true;
-      console.error("Image failed to load:", fullUrl);
-      // FALLBACK SVG — LEKIN SIRF EK BAAR
-      img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUwIiBoZWlnaHQ9IjM1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIj48L3JlY3Q+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBsb2FkaW5nIGZhaWxlZDwvdGV4dD48L3N2Zz4=";
-    };
-
+    img.onload = () => console.log("✅ Image loaded successfully:", fullUrl);
+    img.onerror = () => console.error("❌ Image failed to load:", fullUrl);
     img.onclick = () => window.open(fullUrl, "_blank");
+
     imgContainer.appendChild(img);
     div.appendChild(imgContainer);
   }
 
-  // FILE (NON-IMAGE)
+  // NON-IMAGE FILE
   else if (msg.fileUrl) {
     const link = document.createElement("a");
     link.href = `${SOCKET_URL}${msg.fileUrl}`;
@@ -105,7 +128,7 @@ function renderMessage(msg, userId, userType) {
     div.appendChild(link);
   }
 
-  // TEXT
+  // TEXT MESSAGE
   if (msg.message) {
     const text = document.createElement("div");
     text.textContent = msg.message;
@@ -113,7 +136,7 @@ function renderMessage(msg, userId, userType) {
     div.appendChild(text);
   }
 
-  // SEEN
+  // SEEN STATUS
   if (isMine) {
     const seen = document.createElement("span");
     seen.textContent = msg.seen ? "Seen" : "Sent";
@@ -123,12 +146,12 @@ function renderMessage(msg, userId, userType) {
 
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
-  console.log("Chat box updated, scroll to bottom.");
+  console.log("📜 Chat box updated, scrolled to bottom.");
 }
 
 // SEND MESSAGE
 export function sendMessage(roomId, senderId, senderType, receiverId, receiverType, message, file = null) {
-  console.log("sendMessage called", { roomId, senderId, senderType, receiverId, receiverType, message, file });
+  console.log("✉️ sendMessage called", { roomId, senderId, senderType, receiverId, receiverType, message, file });
 
   const payload = {
     roomId: normalizeRoomId(roomId),
@@ -138,8 +161,7 @@ export function sendMessage(roomId, senderId, senderType, receiverId, receiverTy
   };
 
   if (file) {
-    console.log("Uploading file:", file.name, file.type, file.size);
-
+    console.log("📤 Uploading file:", file.name, file.type, file.size);
     const formData = new FormData();
     formData.append("roomId", payload.roomId);
     formData.append("sender", JSON.stringify(payload.sender));
@@ -152,14 +174,14 @@ export function sendMessage(roomId, senderId, senderType, receiverId, receiverTy
       body: formData,
     })
       .then(res => {
-        console.log("Upload response status:", res.status);
+        console.log("📥 Upload response status:", res.status);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then(data => {
-        console.log("Upload response JSON:", data);
+        console.log("✅ Upload response JSON:", data);
         if (data.success) {
-          console.log("Emitting sendMessage after upload:", data.message);
+          console.log("🚀 Emitting sendMessage after upload:", data.message);
           window.socket.emit("sendMessage", {
             ...payload,
             fileUrl: data.message.fileUrl,
@@ -167,23 +189,21 @@ export function sendMessage(roomId, senderId, senderType, receiverId, receiverTy
           });
         }
       })
-      .catch(err => console.error("Upload Error:", err));
+      .catch(err => console.error("❌ Upload Error:", err));
   } else {
     window.socket.emit("sendMessage", payload);
   }
 }
 
-// NEW MESSAGE
+// NEW MESSAGE EVENT
 window.socket.on("newMessage", (msg) => {
-  console.log("New message event received:", msg);
-
+  console.log("🆕 [SOCKET] New message event received:", msg);
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
-
   const userId = chatBox.dataset.userId;
   const userType = chatBox.dataset.userType;
 
-  renderMessage(msg, userId, userType);
+  renderMessage(msg, userId, userType, "socket");
 
   if (String(msg.receiver.id) === String(userId) && msg.receiver.type === userType) {
     window.socket.emit("messageSeen", {
@@ -194,7 +214,7 @@ window.socket.on("newMessage", (msg) => {
   }
 });
 
-// ONLINE/OFFLINE
+// ONLINE / OFFLINE STATUS
 window.socket.on("userOnline", () => {
   const status = document.getElementById("user-status");
   if (status) {

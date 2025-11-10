@@ -84,6 +84,16 @@ class TrainerLessonController extends Controller
         return view('trainer.lessons.index', ['courseId' => $id, 'courseName' => $courseName]);
     }
 
+        public function getLessons($courseId)
+        {
+            $lessons = Lesson::where('course_id', $courseId)
+                ->select('id', 'title', 'content_type')
+                ->orderBy('id', 'asc')
+                ->get();
+
+            return response()->json($lessons);
+        }
+
     public function manage(Course $course)
     {
         $lessons = $course->lessons()->get();
