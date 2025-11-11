@@ -1,62 +1,120 @@
 // resources/js/chat.js
 import { io } from "socket.io-client";
 
-// SOCKET SETUP
 const SOCKET_URL = "http://127.0.0.1:4000";
-console.log("🌐 SOCKET connecting to:", SOCKET_URL);
+console.log("🌐 Connecting to Socket Server:", SOCKET_URL);
 
-const socket = io(SOCKET_URL, {
-  transports: ["websocket"],
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-});
+// -------------------- SOCKET INIT --------------------
+if (!window.socket) {
+  window.socket = io(SOCKET_URL, {
+    transports: ["websocket"],
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+}
+const socket = window.socket;
 
-// GLOBAL
-window.socket = socket;
-
-// CONNECT
 socket.on("connect", () => {
   console.log("✅ Socket Connected:", socket.id);
-  const userIdEl = document.getElementById("chat-box");
-  if (userIdEl) {
-    const userId = userIdEl.dataset.userId;
+  const chatBox = document.getElementById("chat-box");
+  const userId = chatBox?.dataset.userId || window.currentUser?.id;
+
+  if (userId) {
     socket.emit("userConnected", userId);
+    console.log("📡 Emitted userConnected for:", userId);
   }
 });
 
 socket.on("disconnect", () => console.warn("⚠️ Socket Disconnected"));
 socket.on("connect_error", (err) => console.error("❌ Socket Error:", err.message));
 
-// UTILITY
+// -------------------- HELPERS --------------------
 function normalizeRoomId(roomId) {
   if (!roomId) return "";
-  if (typeof roomId === "object") {
-    return String(roomId._id ?? roomId.id ?? "");
-  }
+  if (typeof roomId === "object") return String(roomId._id ?? roomId.id ?? "");
   return String(roomId);
 }
 
-// 🔹 Track all rendered message IDs
 const renderedMessages = new Set();
 
-// RENDER MESSAGE (STRICT DUPLICATE CHECK)
-function renderMessage(msg, userId, userType, source = "unknown") {
+// -------------------- NOTIFICATION POPUP --------------------
+let notifContainer = document.getElementById("notification-container");
+if (!notifContainer) {
+  notifContainer = document.createElement("div");
+  notifContainer.id = "notification-container";
+  Object.assign(notifContainer.style, {
+    position: "fixed",
+    top: "1rem",
+    right: "1rem",
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem",
+  });
+  document.body.appendChild(notifContainer);
+}
+
+
+// -------------------- SHOW notification --------------------
+function showNotification(title, body, roomId = null, senderId = null, senderType = null) {
+  console.log("🔔 Showing Notification:", title, body);
+
+  const notif = document.createElement("div");
+  notif.className = `
+    flex items-start gap-3 bg-white/90 backdrop-blur-md border border-gray-200 
+    px-5 py-4 rounded-2xl shadow-xl transition-all duration-300 
+    translate-x-full opacity-0 cursor-pointer hover:shadow-2xl hover:-translate-y-1
+  `;
+
+  notif.innerHTML = `
+    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold shadow-sm">
+      💬
+    </div>
+    <div class="flex-1">
+      <div class="font-semibold text-gray-900 text-sm">${title}</div>
+      <div class="text-gray-600 text-sm mt-1 leading-snug">${body}</div>
+    </div>
+  `;
+
+  notifContainer.appendChild(notif);
+
+  // ✅ On click → go to sender’s chat route
+  notif.onclick = () => {
+    console.log("🧭 Redirecting to chat room:", { roomId, senderId, senderType });
+
+    if (senderId && senderType) {
+      window.location.href = `/chat/room/${senderId}?type=${senderType}`;
+    } else if (roomId) {
+      window.location.href = `/chat/room/${roomId}`;
+    } else {
+      window.location.href = `/chat`;
+    }
+  };
+
+  // Slide-in animation
+  setTimeout(() => {
+    notif.classList.remove("translate-x-full", "opacity-0");
+    notif.classList.add("translate-x-0", "opacity-100");
+  }, 50);
+
+  // Auto remove after 6s
+  setTimeout(() => {
+    notif.classList.add("translate-x-full", "opacity-0");
+    setTimeout(() => notif.remove(), 500);
+  }, 6000);
+}
+
+
+
+
+// -------------------- RENDER MESSAGE --------------------
+function renderMessage(msg, userId, userType) {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
 
-  console.log("🧩 renderMessage called from [" + source + "]", msg);
-
-  // ✅ Consistent msgId generate karo
   const msgId = String(msg._id || msg.id || `${msg.roomId}-${msg.sender?.id}-${msg.createdAt}`);
-
-  // ✅ Strict duplicate check
-  if (renderedMessages.has(msgId)) {
-    console.warn("⏩ Skipping duplicate render:", msgId, "from", source);
-    return;
-  }
-
+  if (renderedMessages.has(msgId)) return;
   renderedMessages.add(msgId);
-  console.log("✅ Rendering NEW message [" + msgId + "] from [" + source + "]");
 
   const div = document.createElement("div");
   div.classList.add(
@@ -73,8 +131,7 @@ function renderMessage(msg, userId, userType, source = "unknown") {
   div.dataset.msgId = msgId;
 
   const isMine = String(msg.sender.id) === String(userId) && msg.sender.type === userType;
-
-  if (isMine) {
+  if (isMine)
     div.classList.add(
       "bg-gradient-to-r",
       "from-blue-600",
@@ -83,20 +140,11 @@ function renderMessage(msg, userId, userType, source = "unknown") {
       "ml-auto",
       "self-end"
     );
-  } else {
-    div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
-  }
+  else div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
 
-  // IMAGE MESSAGE
   if (msg.fileUrl && msg.fileType === "image") {
-    const imgContainer = document.createElement("div");
-    imgContainer.classList.add("my-2", "rounded-xl", "overflow-hidden");
-
-    const fullUrl = `${SOCKET_URL}${msg.fileUrl}`;
-    console.log("🖼️ Loading image:", fullUrl);
-
     const img = document.createElement("img");
-    img.src = fullUrl;
+    img.src = `${SOCKET_URL}${msg.fileUrl}`;
     img.alt = "sent image";
     img.classList.add(
       "block",
@@ -109,26 +157,10 @@ function renderMessage(msg, userId, userType, source = "unknown") {
       "duration-200",
       "hover:scale-[1.03]"
     );
-
-    img.onload = () => console.log("✅ Image loaded successfully:", fullUrl);
-    img.onerror = () => console.error("❌ Image failed to load:", fullUrl);
-    img.onclick = () => window.open(fullUrl, "_blank");
-
-    imgContainer.appendChild(img);
-    div.appendChild(imgContainer);
+    img.onclick = () => window.open(img.src, "_blank");
+    div.appendChild(img);
   }
 
-  // NON-IMAGE FILE
-  else if (msg.fileUrl) {
-    const link = document.createElement("a");
-    link.href = `${SOCKET_URL}${msg.fileUrl}`;
-    link.textContent = "Download Attachment";
-    link.classList.add("underline", "text-sm", "block", "mt-1");
-    link.target = "_blank";
-    div.appendChild(link);
-  }
-
-  // TEXT MESSAGE
   if (msg.message) {
     const text = document.createElement("div");
     text.textContent = msg.message;
@@ -136,32 +168,43 @@ function renderMessage(msg, userId, userType, source = "unknown") {
     div.appendChild(text);
   }
 
-  // SEEN STATUS
-  if (isMine) {
-    const seen = document.createElement("span");
-    seen.textContent = msg.seen ? "Seen" : "Sent";
-    seen.classList.add("block", "text-xs", "mt-1", "text-gray-300", "seen-tag");
-    div.appendChild(seen);
-  }
-
   chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  console.log("📜 Chat box updated, scrolled to bottom.");
 }
 
-// SEND MESSAGE
-export function sendMessage(roomId, senderId, senderType, receiverId, receiverType, message, file = null) {
-  console.log("✉️ sendMessage called", { roomId, senderId, senderType, receiverId, receiverType, message, file });
+// -------------------- SCROLL HELPERS --------------------
+function scrollToBottom(force = false) {
+  const chatBox = document.getElementById("chat-box");
+  if (!chatBox) return;
+
+  const isNearBottom =
+    chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 200;
+
+  if (force || isNearBottom) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+}
+
+// -------------------- SEND MESSAGE --------------------
+export function sendMessage(
+  roomId,
+  senderId,
+  senderType,
+  receiverId,
+  receiverType,
+  message,
+  file = null
+) {
+  const senderName = window.currentUser?.name || "Unknown";
+  const receiverName = window.currentReceiver?.name || "Unknown";
 
   const payload = {
     roomId: normalizeRoomId(roomId),
-    sender: { id: senderId, type: senderType },
-    receiver: { id: receiverId, type: receiverType },
+    sender: { id: senderId, type: senderType, name: senderName },
+    receiver: { id: receiverId, type: receiverType, name: receiverName },
     message,
   };
 
   if (file) {
-    console.log("📤 Uploading file:", file.name, file.type, file.size);
     const formData = new FormData();
     formData.append("roomId", payload.roomId);
     formData.append("sender", JSON.stringify(payload.sender));
@@ -169,68 +212,95 @@ export function sendMessage(roomId, senderId, senderType, receiverId, receiverTy
     if (message) formData.append("message", message);
     formData.append("file", file);
 
-    fetch(`${SOCKET_URL}/api/send`, {
-      method: "POST",
-      body: formData,
-    })
-      .then(res => {
-        console.log("📥 Upload response status:", res.status);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        console.log("✅ Upload response JSON:", data);
+    fetch(`${SOCKET_URL}/api/send`, { method: "POST", body: formData })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("📥 File upload response:", data);
         if (data.success) {
-          console.log("🚀 Emitting sendMessage after upload:", data.message);
-          window.socket.emit("sendMessage", {
+          socket.emit("sendMessage", {
             ...payload,
             fileUrl: data.message.fileUrl,
             fileType: data.message.fileType,
           });
+          scrollToBottom(true); // ✅ after sending, stay at bottom
         }
       })
-      .catch(err => console.error("❌ Upload Error:", err));
+      .catch((err) => console.error("❌ Upload Error:", err));
   } else {
-    window.socket.emit("sendMessage", payload);
+    socket.emit("sendMessage", payload);
+    scrollToBottom(true); // ✅ scroll down after sending
   }
 }
 
-// NEW MESSAGE EVENT
-window.socket.on("newMessage", (msg) => {
-  console.log("🆕 [SOCKET] New message event received:", msg);
+// -------------------- SOCKET EVENTS --------------------
+socket.on("newMessage", (msg) => {
+  const chatBox = document.getElementById("chat-box");
+  const userId = chatBox?.dataset.userId || window.currentUser?.id;
+  const userType = chatBox?.dataset.userType || window.currentUser?.type;
+  const currentRoomId = chatBox?.dataset.roomId || window.currentRoomId || null;
+
+  console.log("💬 newMessage received:", {
+    msgId: msg._id,
+    senderId: msg.sender?.id,
+    receiverId: msg.receiver?.id,
+    currentUserId: userId,
+    roomId: msg.roomId,
+    currentRoomId,
+  });
+
+  if (normalizeRoomId(msg.roomId) === normalizeRoomId(currentRoomId)) {
+    renderMessage(msg, userId, userType);
+
+    // ✅ Scroll only if user is near bottom
+    scrollToBottom();
+
+    if (String(msg.receiver.id) === String(userId) && msg.receiver.type === userType) {
+      socket.emit("messageSeen", { messageId: msg._id, roomId: msg.roomId });
+    }
+  }
+});
+
+socket.on("receiveNotification", (data) => {
+  console.log("🔔 Notification event received:", data);
+  showNotification(data.title, data.body, data.roomId, data.from?.id, data.from?.type);
+});
+
+// -------------------- ONLINE/OFFLINE STATUS --------------------
+socket.on("userStatusChange", ({ userId, status }) => {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
-  const userId = chatBox.dataset.userId;
-  const userType = chatBox.dataset.userType;
 
-  renderMessage(msg, userId, userType, "socket");
-
-  if (String(msg.receiver.id) === String(userId) && msg.receiver.type === userType) {
-    window.socket.emit("messageSeen", {
-      messageId: msg._id,
-      roomId: msg.roomId,
-      seenBy: { id: userId, type: userType },
-    });
+  const receiverId = chatBox.dataset.receiverId;
+  if (String(receiverId) === String(userId)) {
+    const statusElem = document.getElementById("user-status");
+    if (statusElem) {
+      if (status === "online") {
+        statusElem.textContent = "Online";
+        statusElem.className = "text-xs text-green-400 font-medium";
+      } else {
+        statusElem.textContent = "Offline";
+        statusElem.className = "text-xs text-gray-400 font-medium";
+      }
+    }
   }
 });
 
-// ONLINE / OFFLINE STATUS
-window.socket.on("userOnline", () => {
-  const status = document.getElementById("user-status");
-  if (status) {
-    status.textContent = "Online";
-    status.className = "text-xs text-green-400 font-medium";
-  }
-});
-
-window.socket.on("userOffline", () => {
-  const status = document.getElementById("user-status");
-  if (status) {
-    status.textContent = "Offline";
-    status.className = "text-xs text-gray-400 font-medium";
-  }
-});
-
-// GLOBALS
 window.sendMessage = sendMessage;
 window.renderMessage = renderMessage;
+window.showNotification = showNotification;
+window.scrollToBottom = scrollToBottom;
+
+// ✅ When chat loads, always start at bottom
+// ✅ Always open chat at the bottom — after messages render
+window.addEventListener("load", () => {
+  const chatBox = document.getElementById("chat-box");
+  if (!chatBox) return;
+
+  // Wait a short time for Laravel to render old messages
+  setTimeout(() => {
+    chatBox.scrollTop = chatBox.scrollHeight; // instantly go to bottom
+    console.log("⬇️ Scrolled to bottom after load");
+  }, 400); // adjust delay if messages are many (e.g., 600–800ms)
+});
+
+console.log("🟢 Chat.js initialized successfully");
