@@ -184,6 +184,7 @@ class ChatController extends Controller
 
         $room = $response->json('room');
         $roomId = $room['_id'] ?? null;
+        
 
         // ✅ Store room ID in the chat request (optional but useful for reusing)
         $chatRequest->room_id = $roomId;
@@ -243,7 +244,7 @@ class ChatController extends Controller
         }
 
         $room = $response->json('room');
-        $room_id = $room['_id'] ?? $room['id'] ?? null;
+        $room_id = $room['_id']  ?? null;
 
         return view('chat.room', compact('receiver', 'room_id'));
     }

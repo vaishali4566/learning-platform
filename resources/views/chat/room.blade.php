@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fileInput = document.getElementById("file-input");
 
     const roomId = String(chatBox.dataset.roomId || '');
+    window.currentRoomId = roomId
     const userId = parseInt(chatBox.dataset.userId);
     const userType = chatBox.dataset.userType;
     const receiverId = parseInt(chatBox.dataset.receiverId);

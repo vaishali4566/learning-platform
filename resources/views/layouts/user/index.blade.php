@@ -8,6 +8,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
 
     <style>
         /* ===== TRANSITIONS ===== */
@@ -76,10 +78,58 @@
             background-color: #1e293b;
             color: white;
         }
+
+        /* ===== NOTIFICATION CONTAINER ===== */
+        #notification-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 9999;
+        }
+
+        .notification-card {
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            max-width: 300px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s ease;
+        }
+
+        .notification-card.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-card .sender {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-card .message {
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 
 <body class="bg-gray-900 flex flex-col h-screen overflow-hidden">
+
+    {{-- Define current user for chat notifications --}}
+    <script>
+        window.currentUser = {
+            id: "{{ auth()->user()->id }}",
+            name: "{{ auth()->user()->name }}",
+            type: "user"
+        };
+        window.currentRoomId = null; 
+    </script>
 
     {{-- NAVBAR --}}
     <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-gray-800">
@@ -97,6 +147,7 @@
         </main>
     </div>
 
+    {{-- LUCIDE ICONS & SIDEBAR SCRIPT --}}
     <script>
         lucide.createIcons();
 
@@ -111,18 +162,22 @@
             sidebar.classList.toggle('sidebar-expanded', !isNowCollapsed);
 
             if (isNowCollapsed) {
-                // collapse
                 mainContent.classList.replace('ml-64', 'ml-20');
                 sidebarTextElements.forEach(el => el.classList.add('hidden'));
                 sidebarTitle?.classList.add('hidden');
             } else {
-                // expand
                 mainContent.classList.replace('ml-20', 'ml-64');
                 sidebarTextElements.forEach(el => el.classList.remove('hidden'));
                 sidebarTitle?.classList.remove('hidden');
             }
         });
     </script>
-</body>
 
+    {{-- NOTIFICATION CONTAINER --}}
+    <div id="notification-container"></div>
+
+    {{-- CHAT SOCKET & NOTIFICATIONS --}}
+    @vite('resources/js/chat.js')
+
+</body>
 </html>
