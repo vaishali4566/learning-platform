@@ -34,10 +34,6 @@
             <div class="text-center py-24">
                 <i class="fa-solid fa-box-open text-5xl text-gray-500 mb-4"></i>
                 <p class="text-lg text-gray-400">You haven’t purchased any course yet.</p>
-                <a href="{{ route('user.courses.index') }}" 
-                   class="inline-block mt-4 px-6 py-3 bg-[#00C2FF] text-[#0B1120] rounded-lg font-semibold hover:bg-[#00AEE3] transition">
-                   Browse Courses
-                </a>
             </div>
         @else
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
