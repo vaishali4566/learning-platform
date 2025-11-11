@@ -79,6 +79,8 @@ class AuthController extends Controller
             'profile_image' => $profileImagePath,
         ]);
 
+        
+
         return response()->json([
             'status' => 'success',
             'message' => 'User registered successfully',
