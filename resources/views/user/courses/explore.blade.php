@@ -55,7 +55,7 @@
         <!-- Right: Purchase Card -->
         <div class="w-full lg:w-80">
             <div class="sticky top-20 bg-[#101B2E]/80 backdrop-blur-lg border border-[#1E2B4A] rounded-2xl p-6 shadow-[0_0_25px_rgba(0,194,255,0.1)] hover:shadow-[0_0_30px_rgba(0,194,255,0.15)] transition-all duration-300">
-                <img id="course-image" src="https://via.placeholder.com/400x200"
+                 <img src="{{ $course->thumbnail ? asset('storage/'.$course->thumbnail) : 'https://via.placeholder.com/400x200' }}"
                     alt="Course Image" class="rounded-xl mb-4 w-full h-40 object-cover border border-[#1E2B4A]">
 
                 <p class="text-2xl font-semibold text-white mb-2">₹<span id="course-price">—</span></p>

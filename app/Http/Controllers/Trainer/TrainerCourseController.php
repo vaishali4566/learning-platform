@@ -45,13 +45,25 @@ class TrainerCourseController extends Controller
 
 
     public function explore($courseId)
-    {
-        $course = Course::with('trainer')->findOrFail($courseId);
-        return view('trainer.courses.explore', [
-            'course' => $course,
-            'courseId' => $courseId
-        ]);
-    }
+{
+    $course = Course::with('trainer')->findOrFail($courseId);
+    $trainerId = Auth::guard('trainer')->id(); // current trainer
+
+    // Ownership check
+    $isOwned = $course->trainer_id == $trainerId;
+
+    // Purchase check
+    $isPurchased = Purchase::where('trainer_id', $trainerId)
+        ->where('course_id', $courseId)
+        ->exists();
+
+    // Pass data to Blade
+    return view('trainer.courses.explore', [
+        'course' => $course,
+        'isOwned' => $isOwned,
+        'isPurchased' => $isPurchased
+    ]);
+}
 
     public function create(){
         return view('trainer.courses.create');
