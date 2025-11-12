@@ -313,3 +313,6 @@ Route::prefix('chat')
 
 Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
 Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');
+Route::get('/video-call', function () {
+    return view('chat.videoCall');
+});
