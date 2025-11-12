@@ -60,9 +60,7 @@ class UserCourseController extends Controller
         return view('user.courses.explore', [
             'courseId' => $courseId,
             'isPurchased' => $isPurchased,
-            'course' => $course   // ✅ pass the course
+            'course' => $course
         ]);
     }
-
-
 }

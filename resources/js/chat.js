@@ -185,7 +185,7 @@ function scrollToBottom(force = false) {
 }
 
 // -------------------- SEND MESSAGE --------------------
-export function sendMessage(
+export async function sendMessage(
   roomId,
   senderId,
   senderType,
@@ -201,36 +201,53 @@ export function sendMessage(
     roomId: normalizeRoomId(roomId),
     sender: { id: senderId, type: senderType, name: senderName },
     receiver: { id: receiverId, type: receiverType, name: receiverName },
-    message,
+    message: message || "",
   };
 
+  // ---- FILE FLOW: upload via API, then broadcast only ----
   if (file) {
-    const formData = new FormData();
-    formData.append("roomId", payload.roomId);
-    formData.append("sender", JSON.stringify(payload.sender));
-    formData.append("receiver", JSON.stringify(payload.receiver));
-    if (message) formData.append("message", message);
-    formData.append("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("roomId", payload.roomId);
+      formData.append("sender", JSON.stringify(payload.sender));
+      formData.append("receiver", JSON.stringify(payload.receiver));
+      if (message) formData.append("message", message);
 
-    fetch(`${SOCKET_URL}/api/send`, { method: "POST", body: formData })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("📥 File upload response:", data);
-        if (data.success) {
-          socket.emit("sendMessage", {
-            ...payload,
-            fileUrl: data.message.fileUrl,
-            fileType: data.message.fileType,
-          });
-          scrollToBottom(true); // ✅ after sending, stay at bottom
-        }
-      })
-      .catch((err) => console.error("❌ Upload Error:", err));
-  } else {
-    socket.emit("sendMessage", payload);
-    scrollToBottom(true); // ✅ scroll down after sending
+      const res = await fetch(`${SOCKET_URL}/api/send`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data?.success && data.message) {
+        // server already saved to DB, now ask socket server to broadcast the saved message
+        // emit a lightweight broadcast event (server will NOT save again)
+        socket.emit("broadcastMessage", data.message);
+
+        // render locally immediately (optional — socket will also broadcast to us,
+        // but rendering here avoids tiny latency or loss if socket arrives slightly later)
+        const chatBox = document.getElementById("chat-box");
+        const userId = chatBox?.dataset.userId || window.currentUser?.id;
+        const userType = chatBox?.dataset.userType || window.currentUser?.type;
+        renderMessage(data.message, userId, userType);
+        scrollToBottom(true);
+      } else {
+        console.error("Upload failed or invalid response", data);
+      }
+    } catch (err) {
+      console.error("❌ Upload Error:", err);
+    }
+
+    return; // IMPORTANT: stop here, do not fall through to text socket path
   }
+
+  // ---- TEXT FLOW: use existing socket sendMessage path (server saves & broadcasts) ----
+  socket.emit("sendMessage", payload);
+  scrollToBottom(true); // scroll after sending
 }
+
+
 
 // -------------------- SOCKET EVENTS --------------------
 socket.on("newMessage", (msg) => {
