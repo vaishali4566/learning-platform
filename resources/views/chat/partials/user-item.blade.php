@@ -35,10 +35,20 @@
                 </button>
             </form>
 
-        @elseif($item->status === 'pending' && $item->isSender)
+       @elseif($item->status === 'pending' && $item->isSender)
+        <div class="flex items-center gap-2">
             <span class="text-blue-400 font-medium text-sm flex items-center gap-2">
                 Request Sent
             </span>
+            <form action="{{ route('chat.cancel', $item->chatRequest->id) }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="px-3 py-1 bg-red-500 hover:bg-red-400 text-white text-xs font-medium rounded-lg transition">
+                    Cancel
+                </button>
+            </form>
+        </div>
+
 
         @else
             <form action="{{ route('chat.request', ['id' => $item->user->id, 'type' => $item->user->type]) }}" method="POST">

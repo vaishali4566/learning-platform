@@ -114,44 +114,56 @@ class ChatController extends Controller
 
 
     // ✅ Send chat request
-    public function sendRequest(Request $request, $id)
-    {
-        $auth = $this->getAuthInfo();
-        $sender = $auth['model'];
-        $senderType = $auth['type'];
-        $receiverType = $request->input('receiver_type', 'user');
-        $receiverId = $id;
+    public function sendRequest(Request $request, $id, $type = null)
+{
+    $auth = $this->getAuthInfo();
+    $sender = $auth['model'];
+    $senderType = $auth['type'];
 
-        if ($sender->id == $receiverId && $senderType == $receiverType) {
-            return back()->with('error', 'You cannot send a request to yourself.');
-        }
+    // ✅ Get receiverType from URL param or request
+    $receiverType = $type ?? $request->input('receiver_type');
 
-        // Check if chat request already exists
-        $existing = ChatRequest::where(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
-            $q->where('sender_id', $sender->id)
-              ->where('sender_type', $senderType)
-              ->where('receiver_id', $receiverId)
-              ->where('receiver_type', $receiverType);
-        })->orWhere(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
-            $q->where('sender_id', $receiverId)
-              ->where('sender_type', $receiverType)
-              ->where('receiver_id', $sender->id)
-              ->where('receiver_type', $senderType);
-        })->first();
-
-        if ($existing) {
-            return back()->with('info', 'Chat request already exists.');
-        }
-
-        ChatRequest::create([
-            'sender_id' => $sender->id,
-            'sender_type' => $senderType,
-            'receiver_id' => $receiverId,
-            'receiver_type' => $receiverType,
-            'status' => 'pending',
-        ]);
-        return back()->with('success', 'Chat request sent successfully!');
+    if (!$receiverType) {
+        return back()->with('error', 'Receiver type not provided.');
     }
+
+    $receiverId = (int)$id;
+
+    // ✅ FIX: Only block if SAME type & SAME ID
+    if ($sender->id === $receiverId && $senderType === $receiverType) {
+        return back()->with('error', 'You cannot send a request to yourself.');
+    }
+
+    // ✅ Check if chat request already exists (in both directions)
+    $existing = ChatRequest::where(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
+        $q->where('sender_id', $sender->id)
+          ->where('sender_type', $senderType)
+          ->where('receiver_id', $receiverId)
+          ->where('receiver_type', $receiverType);
+    })->orWhere(function ($q) use ($sender, $senderType, $receiverId, $receiverType) {
+        $q->where('sender_id', $receiverId)
+          ->where('sender_type', $receiverType)
+          ->where('receiver_id', $sender->id)
+          ->where('receiver_type', $senderType);
+    })->first();
+
+    if ($existing) {
+        return back()->with('info', 'Chat request already exists.');
+    }
+
+    // ✅ Create the new request
+    ChatRequest::create([
+        'sender_id' => $sender->id,
+        'sender_type' => $senderType,
+        'receiver_id' => $receiverId,
+        'receiver_type' => $receiverType,
+        'status' => 'pending',
+    ]);
+
+    return back()->with('success', 'Chat request sent successfully!');
+}
+
+
 
     // ✅ Accept chat request
     public function acceptRequest($id)
@@ -248,5 +260,32 @@ class ChatController extends Controller
 
         return view('chat.room', compact('receiver', 'room_id'));
     }
+
+    // ✅ Cancel chat request (only sender can cancel)
+    public function cancelRequest($id)
+    {
+        $auth = $this->getAuthInfo();
+        $sender = $auth['model'];
+        $senderType = $auth['type'];
+
+        // Find the chat request
+        $chatRequest = ChatRequest::findOrFail($id);
+
+        // Ensure only sender can cancel
+        if ($chatRequest->sender_id != $sender->id || $chatRequest->sender_type != $senderType) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        // Only allow cancel if status is pending
+        if ($chatRequest->status !== 'pending') {
+            return back()->with('error', 'Cannot cancel an accepted request.');
+        }
+
+        // Delete the chat request
+        $chatRequest->delete();
+
+        return back()->with('success', 'Chat request cancelled successfully!');
+    }
+
 
 }
