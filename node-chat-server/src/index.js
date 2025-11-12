@@ -15,26 +15,23 @@ connectDB();
 
 const app = express();
 
-// RESOLVE UPLOADS PATH FROM ROOT (src/ -> ../uploads)
+// ---------------- PATH SETUP ----------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsPath = path.join(__dirname, "uploads");
-
-console.log("Serving uploads from:", uploadsPath);
 app.use("/uploads", express.static(uploadsPath));
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// API routes
+// ---------------- ROUTES ----------------
 app.use("/api", chatRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// --------------------- ONLINE USER TRACKING ---------------------
-const onlineUsers = new Map(); // userId -> socket.id
+// ---------------- USER STATUS TRACKING ----------------
+const onlineUsers = new Map(); // userId -> socketId
 
 io.on("connection", (socket) => {
   console.log("✅ Connected:", socket.id);
@@ -42,67 +39,69 @@ io.on("connection", (socket) => {
   // Track online users
   socket.on("userConnected", (userId) => {
     if (!userId) return;
-    onlineUsers.set(userId, socket.id);
-    console.log("Online users:", Array.from(onlineUsers.keys()));
+    onlineUsers.set(String(userId), socket.id);
+    console.log("🟢 Online users:", Array.from(onlineUsers.keys()));
 
-    // Notify all clients that this user is online
+    // Broadcast online status
     io.emit("userStatusChange", { userId, status: "online" });
   });
 
   // Join room
   socket.on("join", ({ roomId }) => {
+    if (!roomId) return;
     socket.join(roomId);
+    console.log(`👥 Joined room: ${roomId}`);
   });
 
-  // Send message
+  // ---------------- SEND MESSAGE (TEXT ONLY) ----------------
   socket.on("sendMessage", async (data) => {
-  console.log("📨 Incoming message data:", data);
+    try {
+      const { roomId, sender, receiver, message, fileUrl, fileType } = data;
 
-  try {
-    const { roomId, sender, receiver, message, fileUrl, fileType } = data;
+      // 🚫 If file exists → ignore (handled via /api/send)
+      if (fileUrl || fileType) {
+        console.log("⚠️ Skipping file message — handled by API route.");
+        return;
+      }
 
-    // 🧩 Save the message in DB
-    const newMsg = await Message.create({
-      roomId,
-      sender,
-      receiver,
-      message: message || null,
-      fileUrl: fileUrl || null,
-      fileType: fileType || null,
-      seen: false,
-    });
-
-    // 📨 Emit to all users currently in that room
-    io.in(roomId).emit("newMessage", newMsg);
-
-    // ⚡ Send popup notification to receiver (if online & not in same room)
-    const receiverSocketId = onlineUsers.get(String(receiver.id));
-    const receiverSocket = io.sockets.sockets.get(receiverSocketId);
-
-    if (receiverSocket && !receiverSocket.rooms.has(roomId)) {
-      // 🔔 Send dynamic notification with sender info
-      io.to(receiverSocketId).emit("receiveNotification", {
-        title: `${sender?.name || "Someone"} sent you a message`,
-        body: message || "📎 Sent a file",
-        from: {
-          id: sender?.id,
-          type: sender?.type,
-          name: sender?.name || "Unknown",
-        },
-        roomId, // for reference if needed later
+      // 🧩 Save text message to DB
+      const newMsg = await Message.create({
+        roomId,
+        sender,
+        receiver,
+        message: message || null,
+        fileUrl: null,
+        fileType: null,
+        seen: false,
       });
 
-      console.log(`🔔 Sent notification to user ${receiver.id} from ${sender?.name}`);
+      // 🔁 Emit to users in that room
+      io.in(roomId).emit("newMessage", newMsg);
+
+      // 🔔 Send popup to receiver if online but not in same room
+      const receiverSocketId = onlineUsers.get(String(receiver.id));
+      const receiverSocket = receiverSocketId ? io.sockets.sockets.get(receiverSocketId) : null;
+
+      if (receiverSocket && !receiverSocket.rooms.has(roomId)) {
+        io.to(receiverSocketId).emit("receiveNotification", {
+          title: `${sender?.name || "Someone"} sent you a message`,
+          body: message || "📎 Sent a file",
+          from: {
+            id: sender?.id,
+            type: sender?.type,
+            name: sender?.name || "Unknown",
+          },
+          roomId,
+        });
+      }
+
+      console.log(`💬 Message sent to room ${roomId} by ${sender?.name}`);
+    } catch (err) {
+      console.error("❌ sendMessage error:", err);
     }
-  } catch (err) {
-    console.error("❌ Message save or emit error:", err);
-  }
-});
+  });
 
-
-
-
-  // Message seen
+  // ---------------- MESSAGE SEEN ----------------
   socket.on("messageSeen", async ({ messageId, roomId }) => {
     try {
       const updated = await Message.findByIdAndUpdate(
@@ -116,7 +115,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Disconnect
+  // ---------------- DISCONNECT ----------------
   socket.on("disconnect", () => {
     console.log("⚠️ Disconnected:", socket.id);
 
@@ -131,10 +130,15 @@ io.on("connection", (socket) => {
 
     if (disconnectedUserId) {
       console.log(`🔴 User ${disconnectedUserId} went offline`);
-      io.emit("userStatusChange", { userId: disconnectedUserId, status: "offline" });
+      io.emit("userStatusChange", {
+        userId: disconnectedUserId,
+        status: "offline",
+      });
     }
   });
 });
 
 const PORT = 4000;
-server.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`🚀 Server running on http://127.0.0.1:${PORT}`)
+);

@@ -302,8 +302,8 @@ Route::prefix('chat')
     ->group(function () {
         Route::get('/', [ChatController::class, 'index'])->name('chat.index');
         Route::get('/room/{id}', [ChatController::class, 'room'])->name('chat.room');
-        Route::post('/request/{id}', [ChatController::class, 'sendRequest'])->name('chat.request');
-
+        Route::post('/request/{id}/{type}', [ChatController::class, 'sendRequest'])->name('chat.request');
+        Route::post('/cancel/{id}', [ChatController::class, 'cancelRequest'])->name('chat.cancel');
         Route::get('/requests', [ChatRequestController::class, 'myRequests'])->name('chat.requests');
         Route::post('/accept/{id}', [ChatRequestController::class, 'acceptRequest'])->name('chat.accept');
         Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
