@@ -1,17 +1,21 @@
 import Message from "../models/Message.js";
 
-const onlineUsers = new Map(); // userId -> socketId
+const onlineUsers = new Map(); // key = `${type}_${id}` → socketId
 
 export function registerSocketHandlers(io) {
   io.on("connection", (socket) => {
     console.log("✅ Connected:", socket.id);
 
     // ---------------- USER CONNECTED ----------------
-    socket.on("userConnected", (userId) => {
-      if (!userId) return;
-      onlineUsers.set(String(userId), socket.id);
+    socket.on("userConnected", ({ id, type }) => {
+      if (!id || !type) return;
+
+      const key = `${type}_${id}`;
+      onlineUsers.set(key, socket.id);
+
       console.log("🟢 Online users:", Array.from(onlineUsers.keys()));
-      io.emit("userStatusChange", { userId, status: "online" });
+
+      io.emit("userStatusChange", { id, type, status: "online" });
     });
 
     // ---------------- JOIN ROOM ----------------
@@ -26,8 +30,10 @@ export function registerSocketHandlers(io) {
       try {
         const { roomId, sender, receiver, message, fileUrl, fileType } = data;
 
-        if (fileUrl || fileType) return; // handled by API
+        // If file exists → ignore (handled via API route)
+        if (fileUrl || fileType) return;
 
+        // Save message to DB
         const newMsg = await Message.create({
           roomId,
           sender,
@@ -38,9 +44,12 @@ export function registerSocketHandlers(io) {
           seen: false,
         });
 
+        // Emit to users in that room
         io.in(roomId).emit("newMessage", newMsg);
 
-        const receiverSocketId = onlineUsers.get(String(receiver.id));
+        // Notify receiver if online and not in same room
+        const receiverKey = `${receiver.type}_${receiver.id}`;
+        const receiverSocketId = onlineUsers.get(receiverKey);
         const receiverSocket =
           receiverSocketId && io.sockets.sockets.get(receiverSocketId);
 
@@ -77,25 +86,30 @@ export function registerSocketHandlers(io) {
       }
     });
 
+    // ---------------- CHECK USER STATUS (ADD HERE) ----------------
+    socket.on("checkUserStatus", ({ id, type }) => {
+      const key = `${type}_${id}`;
+      const isOnline = onlineUsers.has(key);
+      socket.emit("userStatusChange", { id, type, status: isOnline ? "online" : "offline" });
+    });
+
     // ---------------- DISCONNECT ----------------
     socket.on("disconnect", () => {
       console.log("⚠️ Disconnected:", socket.id);
 
-      let disconnectedUserId = null;
-      for (let [userId, socketId] of onlineUsers.entries()) {
+      let disconnectedKey = null;
+      for (let [key, socketId] of onlineUsers.entries()) {
         if (socketId === socket.id) {
-          disconnectedUserId = userId;
-          onlineUsers.delete(userId);
+          disconnectedKey = key;
+          onlineUsers.delete(key);
           break;
         }
       }
 
-      if (disconnectedUserId) {
-        console.log(`🔴 User ${disconnectedUserId} went offline`);
-        io.emit("userStatusChange", {
-          userId: disconnectedUserId,
-          status: "offline",
-        });
+      if (disconnectedKey) {
+        const [type, id] = disconnectedKey.split("_");
+        console.log(`🔴 ${type} ${id} went offline`);
+        io.emit("userStatusChange", { id, type, status: "offline" });
       }
     });
   });

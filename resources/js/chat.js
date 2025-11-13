@@ -20,9 +20,11 @@ socket.on("connect", () => {
   const userId = chatBox?.dataset.userId || window.currentUser?.id;
 
   if (userId) {
-    socket.emit("userConnected", userId);
-    console.log("📡 Emitted userConnected for:", userId);
-  }
+  const userType = chatBox?.dataset.userType || window.currentUser?.type || "user";
+  socket.emit("userConnected", { id: userId, type: userType });
+  console.log("📡 Emitted userConnected for:", { id: userId, type: userType });
+}
+
 });
 
 socket.on("disconnect", () => console.warn("⚠️ Socket Disconnected"));
@@ -61,7 +63,7 @@ function showNotification(title, body, roomId = null, senderId = null, senderTyp
 
   const notif = document.createElement("div");
   notif.className = `
-    flex items-start gap-3 bg-white/90 backdrop-blur-md border border-gray-200 
+    relative flex items-start gap-3 bg-white/90 backdrop-blur-md border border-gray-200 
     px-5 py-4 rounded-2xl shadow-xl transition-all duration-300 
     translate-x-full opacity-0 cursor-pointer hover:shadow-2xl hover:-translate-y-1
   `;
@@ -74,9 +76,18 @@ function showNotification(title, body, roomId = null, senderId = null, senderTyp
       <div class="font-semibold text-gray-900 text-sm">${title}</div>
       <div class="text-gray-600 text-sm mt-1 leading-snug">${body}</div>
     </div>
+    <button class="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-bold">&times;</button>
   `;
 
+
   notifContainer.appendChild(notif);
+
+  // ✅ Close button functionality
+  const closeBtn = notif.querySelector("button");
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent triggering notif click redirect
+    notif.remove();
+  });
 
   // ✅ On click → go to sender’s chat route
   notif.onclick = () => {
@@ -103,9 +114,6 @@ function showNotification(title, body, roomId = null, senderId = null, senderTyp
     setTimeout(() => notif.remove(), 500);
   }, 6000);
 }
-
-
-
 
 // -------------------- RENDER MESSAGE --------------------
 function renderMessage(msg, userId, userType) {
@@ -247,8 +255,6 @@ export async function sendMessage(
   scrollToBottom(true); // scroll after sending
 }
 
-
-
 // -------------------- SOCKET EVENTS --------------------
 socket.on("newMessage", (msg) => {
   const chatBox = document.getElementById("chat-box");
@@ -283,12 +289,15 @@ socket.on("receiveNotification", (data) => {
 });
 
 // -------------------- ONLINE/OFFLINE STATUS --------------------
-socket.on("userStatusChange", ({ userId, status }) => {
+socket.on("userStatusChange", ({ id, type, status }) => {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
 
   const receiverId = chatBox.dataset.receiverId;
-  if (String(receiverId) === String(userId)) {
+  const receiverType = chatBox.dataset.receiverType;
+
+  // ✅ Compare using both type + id
+  if (String(receiverId) === String(id) && receiverType === type) {
     const statusElem = document.getElementById("user-status");
     if (statusElem) {
       if (status === "online") {
@@ -301,6 +310,30 @@ socket.on("userStatusChange", ({ userId, status }) => {
     }
   }
 });
+
+// -------------------- CONNECT --------------------
+socket.on("connect", () => {
+  console.log("✅ Socket Connected:", socket.id);
+
+  const chatBox = document.getElementById("chat-box");
+  const userId = chatBox?.dataset.userId || window.currentUser?.id;
+  const userType = chatBox?.dataset.userType || window.currentUser?.type || "user";
+
+  if (userId) {
+    // 🔥 Emit immediately after connect
+    socket.emit("userConnected", { id: userId, type: userType });
+    console.log("📡 Emitted userConnected for:", { id: userId, type: userType });
+
+    // 🔹 Optional: check receiver's current status
+    const receiverId = chatBox?.dataset.receiverId;
+    const receiverType = chatBox?.dataset.receiverType;
+    if (receiverId && receiverType) {
+      socket.emit("checkUserStatus", { id: receiverId, type: receiverType });
+    }
+  }
+});
+
+
 
 window.sendMessage = sendMessage;
 window.renderMessage = renderMessage;
