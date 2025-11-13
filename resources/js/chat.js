@@ -20,11 +20,10 @@ socket.on("connect", () => {
   const userId = chatBox?.dataset.userId || window.currentUser?.id;
 
   if (userId) {
-  const userType = chatBox?.dataset.userType || window.currentUser?.type || "user";
-  socket.emit("userConnected", { id: userId, type: userType });
-  console.log("📡 Emitted userConnected for:", { id: userId, type: userType });
-}
-
+    const userType = chatBox?.dataset.userType || window.currentUser?.type || "user";
+    socket.emit("userConnected", { id: userId, type: userType });
+    console.log("📡 Emitted userConnected for:", { id: userId, type: userType });
+  }
 });
 
 socket.on("disconnect", () => console.warn("⚠️ Socket Disconnected"));
@@ -56,7 +55,6 @@ if (!notifContainer) {
   document.body.appendChild(notifContainer);
 }
 
-
 // -------------------- SHOW notification --------------------
 function showNotification(title, body, roomId = null, senderId = null, senderType = null) {
   console.log("🔔 Showing Notification:", title, body);
@@ -79,17 +77,16 @@ function showNotification(title, body, roomId = null, senderId = null, senderTyp
     <button class="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-bold">&times;</button>
   `;
 
-
   notifContainer.appendChild(notif);
 
-  // ✅ Close button functionality
+  // Close button
   const closeBtn = notif.querySelector("button");
   closeBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent triggering notif click redirect
+    e.stopPropagation();
     notif.remove();
   });
 
-  // ✅ On click → go to sender’s chat route
+  // On click redirect to the chat room
   notif.onclick = () => {
     console.log("🧭 Redirecting to chat room:", { roomId, senderId, senderType });
 
@@ -108,11 +105,18 @@ function showNotification(title, body, roomId = null, senderId = null, senderTyp
     notif.classList.add("translate-x-0", "opacity-100");
   }, 50);
 
-  // Auto remove after 6s
+  // Auto remove
   setTimeout(() => {
     notif.classList.add("translate-x-full", "opacity-0");
     setTimeout(() => notif.remove(), 500);
   }, 6000);
+}
+
+function getTickIcon(seen, delivered) {
+  // seen → double blue, delivered → double gray, else single gray
+  if (seen) return `<span class="tick seen" style="color:#f5f5f5;">&#10003;&#10003;</span>`; // double blue
+  if (delivered) return `<span class="tick delivered" style="color:#929ea6;">&#10003;&#10003;</span>`; // double gray
+  return `<span class="tick single" style="color:#929ea6;">&#10003;</span>`; // single gray
 }
 
 // -------------------- RENDER MESSAGE --------------------
@@ -139,7 +143,7 @@ function renderMessage(msg, userId, userType) {
   div.dataset.msgId = msgId;
 
   const isMine = String(msg.sender.id) === String(userId) && msg.sender.type === userType;
-  if (isMine)
+  if (isMine) {
     div.classList.add(
       "bg-gradient-to-r",
       "from-blue-600",
@@ -148,7 +152,11 @@ function renderMessage(msg, userId, userType) {
       "ml-auto",
       "self-end"
     );
-  else div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
+    // mark element for tick updates
+    div.classList.add("my-sent-msg");
+  } else {
+    div.classList.add("bg-[#1E293B]", "text-gray-200", "mr-auto", "self-start");
+  }
 
   if (msg.fileUrl && msg.fileType === "image") {
     const img = document.createElement("img");
@@ -170,10 +178,27 @@ function renderMessage(msg, userId, userType) {
   }
 
   if (msg.message) {
+    const textWrapper = document.createElement("div");
+    textWrapper.classList.add("flex", "items-end", "gap-1");
+
     const text = document.createElement("div");
     text.textContent = msg.message;
     text.classList.add("whitespace-pre-wrap", "leading-relaxed");
-    div.appendChild(text);
+
+    // Add tick container only for sender's own messages
+    if (isMine) {
+      const tick = document.createElement("span");
+      tick.classList.add("text-xs", "ml-1", "opacity-80");
+      tick.dataset.msgId = msgId;
+      // use msg.seen and msg.delivered flags (fallback to false)
+      tick.innerHTML = getTickIcon(Boolean(msg.seen), Boolean(msg.delivered));
+      textWrapper.appendChild(text);
+      textWrapper.appendChild(tick);
+    } else {
+      textWrapper.appendChild(text);
+    }
+
+    div.appendChild(textWrapper);
   }
 
   chatBox.appendChild(div);
@@ -184,8 +209,7 @@ function scrollToBottom(force = false) {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
 
-  const isNearBottom =
-    chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 200;
+  const isNearBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 200;
 
   if (force || isNearBottom) {
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -230,11 +254,9 @@ export async function sendMessage(
 
       if (data?.success && data.message) {
         // server already saved to DB, now ask socket server to broadcast the saved message
-        // emit a lightweight broadcast event (server will NOT save again)
         socket.emit("broadcastMessage", data.message);
 
-        // render locally immediately (optional — socket will also broadcast to us,
-        // but rendering here avoids tiny latency or loss if socket arrives slightly later)
+        // render locally immediately (set delivered/seen flags if provided)
         const chatBox = document.getElementById("chat-box");
         const userId = chatBox?.dataset.userId || window.currentUser?.id;
         const userType = chatBox?.dataset.userType || window.currentUser?.type;
@@ -247,15 +269,33 @@ export async function sendMessage(
       console.error("❌ Upload Error:", err);
     }
 
-    return; // IMPORTANT: stop here, do not fall through to text socket path
+    return; // stop here
   }
 
   // ---- TEXT FLOW: use existing socket sendMessage path (server saves & broadcasts) ----
   socket.emit("sendMessage", payload);
+
+  // Render locally (optimistic) — ensure delivered=false, seen=false initially
+  const optimistic = {
+    _id: `tmp-${Date.now()}`,
+    roomId: payload.roomId,
+    sender: payload.sender,
+    receiver: payload.receiver,
+    message: payload.message,
+    seen: false,
+    delivered: false,
+    createdAt: new Date().toISOString(),
+  };
+  const chatBox = document.getElementById("chat-box");
+  const userId = chatBox?.dataset.userId || window.currentUser?.id;
+  const userType = chatBox?.dataset.userType || window.currentUser?.type;
+  renderMessage(optimistic, userId, userType);
+
   scrollToBottom(true); // scroll after sending
 }
 
 // -------------------- SOCKET EVENTS --------------------
+// -------------------- NEW MESSAGE (patched to avoid duplicates) --------------------
 socket.on("newMessage", (msg) => {
   const chatBox = document.getElementById("chat-box");
   const userId = chatBox?.dataset.userId || window.currentUser?.id;
@@ -271,15 +311,66 @@ socket.on("newMessage", (msg) => {
     currentRoomId,
   });
 
-  if (normalizeRoomId(msg.roomId) === normalizeRoomId(currentRoomId)) {
-    renderMessage(msg, userId, userType);
+  // Only handle message for the active room
+  if (normalizeRoomId(msg.roomId) !== normalizeRoomId(currentRoomId)) {
+    // Outside current room → show notification only
+    return;
+  }
 
-    // ✅ Scroll only if user is near bottom
-    scrollToBottom();
+  const isMine = String(msg.sender.id) === String(userId) && msg.sender.type === userType;
 
-    if (String(msg.receiver.id) === String(userId) && msg.receiver.type === userType) {
-      socket.emit("messageSeen", { messageId: msg._id, roomId: msg.roomId });
+  // ✅ If it's my message (I sent it), replace the optimistic temp message
+  if (isMine) {
+    const optimisticDiv = chatBox.querySelector(`[data-msg-id^="tmp-"]`);
+    if (optimisticDiv) {
+      const tick = optimisticDiv.querySelector("span[data-msg-id]");
+      if (tick) {
+        tick.dataset.msgId = msg._id;
+        tick.innerHTML = getTickIcon(Boolean(msg.seen), Boolean(msg.delivered));
+      }
+
+      // Update the DOM element attributes
+      optimisticDiv.dataset.msgId = msg._id;
+      renderedMessages.add(String(msg._id));
+      renderedMessages.delete(optimisticDiv.dataset.msgId);
+
+      console.log("🔄 Replaced optimistic message with real DB message:", msg._id);
+      return; // stop here → don't re-render duplicate
     }
+  }
+
+  // ✅ Otherwise (incoming message from other user), render normally
+  renderMessage(msg, userId, userType);
+  scrollToBottom();
+
+  // ✅ If current user is receiver, mark as seen
+  if (String(msg.receiver.id) === String(userId) && msg.receiver.type === userType) {
+    socket.emit("messageSeen", {
+      messageId: msg._id,
+      roomId: msg.roomId,
+      user: { id: userId, type: userType },
+    });
+  }
+});
+
+
+// When server informs message was seen
+socket.on("messageSeenUpdate", (updatedMsg) => {
+  const id = updatedMsg._id || updatedMsg;
+  const tick = document.querySelector(`span[data-msg-id="${id}"]`);
+  if (tick) {
+    // Make it double-blue
+    tick.innerHTML = getTickIcon(true, true);
+    // optional: add animation class
+    tick.classList.add("animate-fade");
+  }
+});
+
+// When server informs message delivered
+socket.on("messageDelivered", ({ messageId }) => {
+  const tick = document.querySelector(`span[data-msg-id="${messageId}"]`);
+  if (tick) {
+    tick.innerHTML = getTickIcon(false, true); // delivered gray
   }
 });
 
@@ -296,7 +387,7 @@ socket.on("userStatusChange", ({ id, type, status }) => {
   const receiverId = chatBox.dataset.receiverId;
   const receiverType = chatBox.dataset.receiverType;
 
-  // ✅ Compare using both type + id
+  // Compare using both type + id
   if (String(receiverId) === String(id) && receiverType === type) {
     const statusElem = document.getElementById("user-status");
     if (statusElem) {
@@ -308,49 +399,83 @@ socket.on("userStatusChange", ({ id, type, status }) => {
         statusElem.className = "text-xs text-gray-400 font-medium";
       }
     }
-  }
-});
 
-// -------------------- CONNECT --------------------
-socket.on("connect", () => {
-  console.log("✅ Socket Connected:", socket.id);
+    // When receiver becomes online, update delivered ticks for messages that belong to this chat
+    if (status === "online") {
+      const chatBox = document.getElementById("chat-box");
+      if (chatBox) {
+        const myUserId = chatBox.dataset.userId || window.currentUser?.id;
+        const myUserType = chatBox.dataset.userType || window.currentUser?.type;
 
-  const chatBox = document.getElementById("chat-box");
-  const userId = chatBox?.dataset.userId || window.currentUser?.id;
-  const userType = chatBox?.dataset.userType || window.currentUser?.type || "user";
-
-  if (userId) {
-    // 🔥 Emit immediately after connect
-    socket.emit("userConnected", { id: userId, type: userType });
-    console.log("📡 Emitted userConnected for:", { id: userId, type: userType });
-
-    // 🔹 Optional: check receiver's current status
-    const receiverId = chatBox?.dataset.receiverId;
-    const receiverType = chatBox?.dataset.receiverType;
-    if (receiverId && receiverType) {
-      socket.emit("checkUserStatus", { id: receiverId, type: receiverType });
+        // Find all my sent messages in DOM and set delivered if not already seen
+        chatBox.querySelectorAll("[data-msg-id]").forEach((el) => {
+          const tick = el.querySelector("span[data-msg-id]");
+          if (tick && el.classList.contains("my-sent-msg")) {
+            // If single tick (not double) then toggle to delivered double gray
+            if (tick.innerHTML.includes("&#10003;") && !tick.innerHTML.includes("&#10003;&#10003;")) {
+              tick.innerHTML = getTickIcon(false, true);
+            }
+          }
+        });
+      }
     }
   }
 });
 
-
-
+// -------------------- EXPORTS & GLOBALS --------------------
 window.sendMessage = sendMessage;
 window.renderMessage = renderMessage;
 window.showNotification = showNotification;
 window.scrollToBottom = scrollToBottom;
 
-// ✅ When chat loads, always start at bottom
-// ✅ Always open chat at the bottom — after messages render
+// -------------------- On page load: join room & sync --------------------
 window.addEventListener("load", () => {
   const chatBox = document.getElementById("chat-box");
   if (!chatBox) return;
 
-  // Wait a short time for Laravel to render old messages
+  // Wait a short time for server-rendered messages to appear
   setTimeout(() => {
-    chatBox.scrollTop = chatBox.scrollHeight; // instantly go to bottom
+    chatBox.scrollTop = chatBox.scrollHeight; // go to bottom
     console.log("⬇️ Scrolled to bottom after load");
-  }, 400); // adjust delay if messages are many (e.g., 600–800ms)
+  }, 400);
+
+  // --- Join the room and trigger server-side seen sync ---
+  const roomId = chatBox.dataset.roomId || window.currentRoomId;
+  const userId = chatBox.dataset.userId || window.currentUser?.id;
+  const userType = chatBox.dataset.userType || window.currentUser?.type;
+
+    if (roomId && userId && userType) {
+    socket.emit("join", { roomId, user: { id: userId, type: userType } });
+    console.log("🪄 Joined room and syncing seen status:", { roomId, userId, userType });
+
+    // ✅ Check receiver’s online status on reload
+    const receiverId = chatBox.dataset.receiverId || window.currentReceiver?.id;
+    const receiverType = chatBox.dataset.receiverType || window.currentReceiver?.type;
+    if (receiverId && receiverType) {
+      console.log("🧭 Checking receiver online status after reload:", { receiverId, receiverType });
+      socket.emit("checkUserStatus", { id: receiverId, type: receiverType });
+    }
+  }
+
+
+  // --- Fetch room messages once to sync tick states after reload ---
+  if (roomId) {
+    fetch(`${SOCKET_URL}/api/room/${roomId}/messages`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.messages)) {
+          data.messages.forEach((msg) => {
+            // If DOM contains a tick for this msg, update it using server flags
+            const tick = document.querySelector(`span[data-msg-id="${msg._id}"]`);
+            if (tick) {
+              tick.innerHTML = getTickIcon(Boolean(msg.seen), Boolean(msg.delivered));
+            }
+          });
+          console.log("🔄 Synced message ticks after reload");
+        }
+      })
+      .catch((err) => console.error("❌ Sync fetch error:", err));
+  }
 });
 
 console.log("🟢 Chat.js initialized successfully");

@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>@yield('title', 'User Dashboard | E-Learning')</title>
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- ✅ Material Icons for chat ticks -->
+
 
 
     <style>
