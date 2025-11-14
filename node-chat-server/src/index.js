@@ -27,7 +27,7 @@ app.use("/api", chatRoutes);
 
 // ---------------- SERVER & SOCKET SETUP ----------------
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+export const io = new Server(server, { cors: { origin: "*" } });
 
 // Import and register socket logic
 registerSocketHandlers(io);

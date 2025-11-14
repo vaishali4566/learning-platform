@@ -375,9 +375,28 @@ socket.on("messageDelivered", ({ messageId }) => {
 });
 
 socket.on("receiveNotification", (data) => {
-  console.log("🔔 Notification event received:", data);
-  showNotification(data.title, data.body, data.roomId, data.from?.id, data.from?.type);
+  const senderName = data.from?.name || "Someone"; // fallback
+  const title = `${senderName} sent you a message`;
+  showNotification(title, data.body, data.roomId, data.from?.id, data.from?.type);
 });
+
+
+socket.on("unfriendUpdate", ({ userId, userType }) => {
+  console.log("❌ Unfriend Update:", userId, userType);
+
+  // Example: show popup notification
+  showNotification("Unfriended", "You are no longer friends");
+
+  // If user is in same chat, disable input
+  if (window.currentReceiver?.id == userId && window.currentReceiver?.type == userType) {
+    const input = document.getElementById("message-input");
+    if (input) {
+      input.disabled = true;
+      input.placeholder = "You are no longer friends.";
+    }
+  }
+});
+
 
 // -------------------- ONLINE/OFFLINE STATUS --------------------
 socket.on("userStatusChange", ({ id, type, status }) => {
@@ -460,7 +479,7 @@ window.addEventListener("load", () => {
 
   // --- Fetch room messages once to sync tick states after reload ---
   if (roomId) {
-    fetch(`${SOCKET_URL}/api/room/${roomId}/messages`, { credentials: "include" })
+    fetch(`${SOCKET_URL}/api/messages/${roomId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.messages)) {
