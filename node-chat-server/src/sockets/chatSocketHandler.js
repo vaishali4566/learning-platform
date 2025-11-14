@@ -1,7 +1,7 @@
-// sockets/handlers.js
+// sockets/chatSockethandlers.js
 import Message from "../models/Message.js";
 
-const onlineUsers = new Map(); // key = `${type}_${id}` → socketId
+export const onlineUsers = new Map(); // key = `${type}_${id}` → socketId
 
 export function registerSocketHandlers(io) {
   io.on("connection", (socket) => {
