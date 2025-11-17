@@ -61,7 +61,8 @@ class TrainerCourseController extends Controller
     return view('trainer.courses.explore', [
         'course' => $course,
         'isOwned' => $isOwned,
-        'isPurchased' => $isPurchased
+        'isPurchased' => $isPurchased,
+        'courseId' => $courseId
     ]);
 }
 
