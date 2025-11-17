@@ -32,8 +32,17 @@ class CourseFeedbackController extends Controller
             'comment'   => 'nullable|string|max:500',
         ]);
 
-        // Attach logged-in user
         $validated['user_id'] = auth()->id();
+
+        // ❗ Prevent duplicate feedback (Laravel-level check)
+        if (CourseFeedback::where('course_id', $validated['course_id'])
+            ->where('user_id', $validated['user_id'])
+            ->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You have already submitted feedback for this course.'
+            ], 409);
+        }
 
         // Create feedback
         $feedback = CourseFeedback::create($validated)->load('user:id,name');
@@ -52,7 +61,6 @@ class CourseFeedbackController extends Controller
         try {
             Http::post("http://127.0.0.1:4000/broadcast-feedback", $payload);
         } catch (\Exception $e) {
-            // Fail silently so user experience is not broken
             \Log::error("Feedback Socket Error: " . $e->getMessage());
         }
 
@@ -60,6 +68,49 @@ class CourseFeedbackController extends Controller
             "status"  => true,
             "message" => "Feedback submitted successfully",
             "data"    => $feedback
+        ]);
+    }
+
+    /**
+     * GET: Rating Summary for dynamic UI
+     */
+    public function summary($courseId)
+    {
+        $feedback = CourseFeedback::where('course_id', $courseId);
+
+        $total   = $feedback->count();
+        $average = round($feedback->avg('rating') ?? 0, 1);
+
+        // Optimized counts query (fast)
+        $counts = $feedback->selectRaw('rating, COUNT(*) as total')
+            ->groupBy('rating')
+            ->pluck('total', 'rating')
+            ->toArray();
+
+        return response()->json([
+            "average" => $average,
+            "total"   => $total,
+            "counts"  => [
+                '5' => $counts[5] ?? 0,
+                '4' => $counts[4] ?? 0,
+                '3' => $counts[3] ?? 0,
+                '2' => $counts[2] ?? 0,
+                '1' => $counts[1] ?? 0,
+            ]
+        ]);
+    }
+
+    /**
+     * GET: Check if logged-in user already gave feedback
+     */
+    public function checkUserFeedback($courseId)
+    {
+        $hasFeedback = CourseFeedback::where('course_id', $courseId)
+            ->where('user_id', auth()->id())
+            ->exists();
+
+        return response()->json([
+            'hasFeedback' => $hasFeedback
         ]);
     }
 }

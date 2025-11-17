@@ -52,47 +52,28 @@
 
                         <!-- Left -->
                         <div>
-                            <p class="text-5xl font-bold text-white">
-                                4.9 <span class="text-2xl text-yellow-400 align-top">/ 5</span>
-                            </p>
+                            <p id="avg-rating" class="text-5xl font-bold text-white">0.0 <span class="text-2xl text-yellow-400 align-top">/ 5</span></p>
 
-                            <div class="flex text-yellow-400 text-2xl mt-1">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                            </div>
+                            <div id="avg-stars" class="flex text-yellow-400 text-2xl mt-1"></div>
 
-                            <p class="text-gray-400 text-sm mt-2">Based on 18 reviews</p>
+                            <p id="total-reviews" class="text-gray-400 text-sm mt-2">Based on 0 reviews</p>
                         </div>
 
                         <!-- Middle -->
                         <div class="flex-1">
                             <div class="space-y-2 text-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-300">5 Stars</span>
-                                    <div class="bg-gray-700 h-2 flex-1 rounded">
-                                        <div class="bg-[#00C2FF] h-2 rounded" style="width: 85%"></div>
-                                    </div>
-                                    <span class="text-gray-400">15</span>
-                                </div>
 
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-300">4 Stars</span>
-                                    <div class="bg-gray-700 h-2 flex-1 rounded">
-                                        <div class="bg-[#00C2FF] h-2 rounded" style="width: 10%"></div>
+                                <template id="rating-row-template">
+                                    <div class="flex items-center gap-3 rating-row">
+                                        <span class="text-gray-300 star-label"></span>
+                                        <div class="bg-gray-700 h-2 flex-1 rounded">
+                                            <div class="bg-[#00C2FF] h-2 rounded progress-bar"></div>
+                                        </div>
+                                        <span class="text-gray-400 count"></span>
                                     </div>
-                                    <span class="text-gray-400">2</span>
-                                </div>
+                                </template>
 
-                                <div class="flex items-center gap-3">
-                                    <span class="text-gray-300">3 Stars</span>
-                                    <div class="bg-gray-700 h-2 flex-1 rounded">
-                                        <div class="bg-[#00C2FF] h-2 rounded" style="width: 5%"></div>
-                                    </div>
-                                    <span class="text-gray-400">1</span>
-                                </div>
+                                <div id="rating-rows"></div>
                             </div>
                         </div>
 
@@ -107,6 +88,7 @@
                         @endif
                     </div>
                 </div>
+
 
                 <!-- FEEDBACK LIST -->
                 <div id="feedback-list" class="space-y-4"></div>
@@ -208,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.socket.on("feedback:new", (fb) => {
             appendFeedbackToUI(fb);
+            loadFeedbackSummary();
         });
     }
 
@@ -279,6 +262,82 @@ document.addEventListener("DOMContentLoaded", () => {
         feedbackList.prepend(div);
     }
 
+    /* ---------------------------------------------------
+   ⭐ LOAD FEEDBACK SUMMARY
+    ------------------------------------------------------*/
+    function loadFeedbackSummary() {
+        fetch(`/user/courses/${courseId}/feedback/summary`)
+            .then(res => res.json())
+            .then(summary => {
+                
+                // Set Average
+                document.getElementById("avg-rating").innerHTML = 
+                    `${summary.average} <span class="text-2xl text-yellow-400 align-top">/ 5</span>`;
+
+                // Average Star Rendering
+                const starContainer = document.getElementById("avg-stars");
+                starContainer.innerHTML = "";
+                const fullStars = Math.floor(summary.average);
+                const halfStar = summary.average % 1 !== 0;
+
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= fullStars) {
+                        starContainer.innerHTML += `<i class="fa-solid fa-star"></i>`;
+                    } else if (i === fullStars + 1 && halfStar) {
+                        starContainer.innerHTML += `<i class="fa-solid fa-star-half-stroke"></i>`;
+                    } else {
+                        starContainer.innerHTML += `<i class="fa-regular fa-star"></i>`;
+                    }
+                }
+
+                // Review Count
+                document.getElementById("total-reviews").innerHTML = 
+                    `Based on ${summary.total} reviews`;
+
+                // Render Rating Bars
+                const rowsContainer = document.getElementById("rating-rows");
+                const template = document.getElementById("rating-row-template");
+
+                rowsContainer.innerHTML = ""; // reset
+
+                for (let star = 5; star >= 1; star--) {
+                    const clone = template.content.cloneNode(true);
+
+                    clone.querySelector(".star-label").innerHTML = `${star} Stars`;
+                    clone.querySelector(".count").innerHTML = summary.counts[star];
+
+                    const percentage = summary.total ? 
+                        (summary.counts[star] / summary.total) * 100 : 0;
+
+                    clone.querySelector(".progress-bar").style.width = `${percentage}%`;
+
+                    rowsContainer.appendChild(clone);
+                }
+            });
+    }
+
+    loadFeedbackSummary();
+
+
+    /* ---------------------------------------------------
+   ⭐ CHECK IF USER ALREADY SUBMITTED FEEDBACK
+    ------------------------------------------------------*/
+    function checkUserFeedback() {
+        fetch(`/user/courses/${courseId}/feedback/check`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.hasFeedback) {
+                    if (openBtn) {
+                        openBtn.classList.add("hidden");   // hide button
+                    }
+                }
+            });
+    }
+
+    checkUserFeedback();
+
+
+
 
     /* ---------------------------------------------------
        ⭐ FEEDBACK MODAL
@@ -348,9 +407,15 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(res => res.json())
         .then(data => {
             if (!data.status) {
-                alert("Error submitting feedback.");
+            if (data.message?.includes("duplicate")) {
+                alert("You have already submitted feedback for this course.");
+                modal.classList.add("hidden");
                 return;
             }
+            alert("Error submitting feedback.");
+            return;
+        }
+
 
             modal.classList.add("hidden");
             document.getElementById("modal-feedback-comment").value = "";
@@ -362,7 +427,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 created_at: new Date().toISOString()
             };
 
-            appendFeedbackToUI(newFb);
+            feedbackList.innerHTML = "";  // clear old list
+            loadFeedback();               // reload from DB
+            loadFeedbackSummary();        // refresh summary
+
 
             // Real-time socket push
             window.socket.emit("feedback:created", {

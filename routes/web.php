@@ -109,6 +109,9 @@ Route::prefix('user')->group(function () {
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
             Route::post('/feedback/store', [CourseFeedbackController::class, 'store'])->name('feedback.store');
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
+            Route::get('/{courseId}/feedback/summary', [CourseFeedbackController::class, 'summary']);
+            Route::get('/{courseId}/feedback/check', [CourseFeedbackController::class, 'checkUserFeedback']);
+
         });
 
         // Quizzes
@@ -180,6 +183,10 @@ Route::prefix('trainer')->group(function () {
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
+
+            
+            Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
+            Route::get('/{courseId}/feedback/summary', [CourseFeedbackController::class, 'summary']);
         });
 
         // Quizzes
