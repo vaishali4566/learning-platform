@@ -36,6 +36,7 @@ const MessageSchema = new mongoose.Schema(
       enum: ["image", "video", "pdf", "doc", "other"],
       default: "other",
     },
+    delivered: { type: Boolean, default: false },
     seen: {
       type: Boolean,
       default: false,

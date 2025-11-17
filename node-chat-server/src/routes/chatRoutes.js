@@ -6,6 +6,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ChatRoom from "../models/ChatRoom.js";
 import Message from "../models/Message.js";
+import {onlineUsers} from "../sockets/chatSocketHandler.js"; 
+import {io} from "../index.js";
+
 
 const router = express.Router();
 
@@ -110,5 +113,64 @@ router.post("/send", upload.single("file"), async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to save message" });
   }
 });
+
+// In your Node server (e.g. server.js)
+// UNFRIEND EVENT
+router.post("/unfriend-event", (req, res) => {
+  try {
+    const { sender_id, sender_type, receiver_id, receiver_type } = req.body;
+
+    if (!sender_id || !sender_type || !receiver_id || !receiver_type) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const senderKey = `${sender_type}_${sender_id}`;
+    const receiverKey = `${receiver_type}_${receiver_id}`;
+
+    // ✅ Emit to sender if online
+    const senderSocket = onlineUsers.get(senderKey);
+    if (senderSocket) {
+      io.to(senderSocket).emit("unfriendUpdate", {
+        userId: receiver_id,
+        userType: receiver_type,
+      });
+    }
+
+    // ✅ Emit to receiver if online
+    const receiverSocket = onlineUsers.get(receiverKey);
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("unfriendUpdate", {
+        userId: sender_id,
+        userType: sender_type,
+      });
+    }
+
+    console.log(`❌ Unfriend event: ${senderKey} ↔ ${receiverKey}`);
+
+    // ✅ Return success JSON
+    res.json({ success: true, message: "Unfriend event emitted" });
+
+  } catch (err) {
+    console.error("UNFRIEND ERROR:", err.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+// =============================
+// POST: Broadcast Feedback
+// =============================
+router.post("/broadcast-feedback", (req, res) => {
+
+    const payload = req.body;
+
+    // Emit feedback event to all users in this course
+    io.to(`course_${payload.courseId}`).emit("feedback:new", payload);
+
+    res.json({ status: true });
+});
+
+
+
 
 export default router;

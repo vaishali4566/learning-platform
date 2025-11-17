@@ -26,6 +26,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatRequestController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CourseFeedbackController;
 
 // ----------------------------
 // Trainer Controllers
@@ -106,6 +107,8 @@ Route::prefix('user')->group(function () {
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
+            Route::post('/feedback/store', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+            Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
         });
 
         // Quizzes
@@ -303,6 +306,7 @@ Route::prefix('chat')
         Route::get('/room/{id}', [ChatController::class, 'room'])->name('chat.room');
         Route::post('/request/{id}/{type}', [ChatController::class, 'sendRequest'])->name('chat.request');
         Route::post('/cancel/{id}', [ChatController::class, 'cancelRequest'])->name('chat.cancel');
+        Route::delete('/unfriend', [ChatController::class, 'unfriend'])->name('unfriend');
         Route::get('/requests', [ChatRequestController::class, 'myRequests'])->name('chat.requests');
         Route::post('/accept/{id}', [ChatRequestController::class, 'acceptRequest'])->name('chat.accept');
         Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
@@ -312,7 +316,6 @@ Route::prefix('chat')
 
 Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
 Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');
-
 Route::get('/video-call', function () {
     return view('chat.videoCall');
 });

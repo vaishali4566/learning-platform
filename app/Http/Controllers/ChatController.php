@@ -287,5 +287,49 @@ class ChatController extends Controller
         return back()->with('success', 'Chat request cancelled successfully!');
     }
 
+    
+
+    public function unfriend(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required|integer',
+            'sender_type' => 'required|string',
+            'receiver_id' => 'required|integer',
+            'receiver_type' => 'required|string',
+        ]);
+
+        $deleted = \DB::table('chat_requests')
+            ->where(function ($query) use ($request) {
+                $query->where('sender_id', $request->sender_id)
+                    ->where('sender_type', $request->sender_type)
+                    ->where('receiver_id', $request->receiver_id)
+                    ->where('receiver_type', $request->receiver_type);
+            })
+            ->orWhere(function ($query) use ($request) {
+                $query->where('sender_id', $request->receiver_id)
+                    ->where('sender_type', $request->receiver_type)
+                    ->where('receiver_id', $request->sender_id)
+                    ->where('receiver_type', $request->sender_type);
+            })
+            ->delete();
+
+        if ($deleted) {
+            try {
+                Http::post('http://127.0.0.1:4000/api/unfriend-event', [
+                    'sender_id' => $request->sender_id,
+                    'sender_type' => $request->sender_type,
+                    'receiver_id' => $request->receiver_id,
+                    'receiver_type' => $request->receiver_type,
+                ]);
+            } catch (\Exception $e) {
+                // Agar Node offline ya fail ho jaye
+                \Log::error("Node unfriend call failed: ".$e->getMessage());
+            }
+
+            return response()->json(['message' => 'Unfriended successfully']);
+        }
+
+        return response()->json(['message' => 'Already unfriended or not found'], 404);
+    }
 
 }

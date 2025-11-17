@@ -9,6 +9,7 @@ import { connectDB } from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import { chatSocketHandler } from "./sockets/chatSocketHandler.js";
 import { videoSocketHandler } from "./sockets/videoSocketHandler.js";
+import { registerSocketHandlers } from "./sockets/chatSocketHandler.js";
 
 dotenv.config();
 connectDB();
@@ -23,12 +24,10 @@ const __dirname = path.dirname(__filename);
 const uploadsPath = path.join(__dirname, "uploads");
 app.use("/uploads", express.static(uploadsPath));
 
-app.use(cors());
-app.use(express.json());
-
 // ---------------- ROUTES ----------------
 app.use("/api", chatRoutes);
 
+// ---------------- SERVER & SOCKET SETUP ----------------
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -130,18 +129,12 @@ io.on("connection", (socket) => {
         break;
       }
     }
+export const io = new Server(server, { cors: { origin: "*" } });
 
-    if (disconnectedUserId) {
-      console.log(`🔴 User ${disconnectedUserId} went offline`);
-      io.emit("userStatusChange", {
-        userId: disconnectedUserId,
-        status: "offline",
-      });
-    }
-  });
-});
+// Import and register socket logic
+registerSocketHandlers(io);
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () =>
   console.log(`🚀 Server running on http://127.0.0.1:${PORT}`)
 );
