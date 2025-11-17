@@ -157,5 +157,20 @@ router.post("/unfriend-event", (req, res) => {
 });
 
 
+// =============================
+// POST: Broadcast Feedback
+// =============================
+router.post("/broadcast-feedback", (req, res) => {
+
+    const payload = req.body;
+
+    // Emit feedback event to all users in this course
+    io.to(`course_${payload.courseId}`).emit("feedback:new", payload);
+
+    res.json({ status: true });
+});
+
+
+
 
 export default router;

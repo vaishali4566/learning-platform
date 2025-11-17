@@ -397,6 +397,13 @@ socket.on("unfriendUpdate", ({ userId, userType }) => {
   }
 });
 
+socket.on("newFeedback", (fb) => {
+  if (fb.courseId === currentCourseId) {
+    displayFeedback(fb); // append to UI
+  }
+});
+
+
 
 // -------------------- ONLINE/OFFLINE STATUS --------------------
 socket.on("userStatusChange", ({ id, type, status }) => {

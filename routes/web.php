@@ -26,6 +26,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatRequestController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CourseFeedbackController;
 
 // ----------------------------
 // Trainer Controllers
@@ -106,6 +107,8 @@ Route::prefix('user')->group(function () {
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
+            Route::post('/feedback/store', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+            Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
         });
 
         // Quizzes

@@ -7,48 +7,49 @@ export function registerSocketHandlers(io) {
   io.on("connection", (socket) => {
     console.log("✅ Connected:", socket.id);
 
+
     // ---------------- USER CONNECTED ----------------
     socket.on("userConnected", async ({ id, type }) => {
-  if (!id || !type) return;
+      if (!id || !type) return;
 
-  const key = `${type}_${id}`;
-  onlineUsers.set(key, socket.id);
+      const key = `${type}_${id}`;
+      onlineUsers.set(key, socket.id);
 
-  console.log("🟢 Online users:", Array.from(onlineUsers.keys()));
+      console.log("🟢 Online users:", Array.from(onlineUsers.keys()));
 
-  // Broadcast status change
-  io.emit("userStatusChange", { id, type, status: "online" });
+      // Broadcast status change
+      io.emit("userStatusChange", { id, type, status: "online" });
 
-  // ✅ NEW LOGIC: Mark undelivered messages as delivered (double gray)
-  try {
-    const undelivered = await Message.find({
-      "receiver.id": String(id),
-      "receiver.type": String(type),
-      delivered: false,
-    });
+      // ✅ NEW LOGIC: Mark undelivered messages as delivered (double gray)
+      try {
+        const undelivered = await Message.find({
+          "receiver.id": String(id),
+          "receiver.type": String(type),
+          delivered: false,
+        });
 
-    if (undelivered.length > 0) {
-      const ids = undelivered.map((m) => m._id);
-      await Message.updateMany(
-        { _id: { $in: ids } },
-        { $set: { delivered: true } }
-      );
+        if (undelivered.length > 0) {
+          const ids = undelivered.map((m) => m._id);
+          await Message.updateMany(
+            { _id: { $in: ids } },
+            { $set: { delivered: true } }
+          );
 
-      // Notify each sender so they see double gray ticks
-      for (const msg of undelivered) {
-        const senderKey = `${msg.sender.type}_${msg.sender.id}`;
-        const senderSocketId = onlineUsers.get(senderKey);
-        if (senderSocketId) {
-          io.to(senderSocketId).emit("messageDelivered", { messageId: msg._id });
+          // Notify each sender so they see double gray ticks
+          for (const msg of undelivered) {
+            const senderKey = `${msg.sender.type}_${msg.sender.id}`;
+            const senderSocketId = onlineUsers.get(senderKey);
+            if (senderSocketId) {
+              io.to(senderSocketId).emit("messageDelivered", { messageId: msg._id });
+            }
+          }
+
+          console.log(`📬 Marked ${undelivered.length} messages as delivered for ${type}_${id}`);
         }
+      } catch (err) {
+        console.error("❌ Delivery sync error on userConnected:", err);
       }
-
-      console.log(`📬 Marked ${undelivered.length} messages as delivered for ${type}_${id}`);
-    }
-  } catch (err) {
-    console.error("❌ Delivery sync error on userConnected:", err);
-  }
-});
+    });
 
 
     // ---------------- JOIN ROOM ----------------
@@ -162,6 +163,14 @@ export function registerSocketHandlers(io) {
       } catch (err) {
         console.error("❌ sendMessage error:", err);
       }
+    });
+
+    // ---------------- COURSE FEEDBACK: JOIN ROOM ----------------
+    socket.on("joinCourse", (courseId) => {
+      if (!courseId) return;
+
+      socket.join(`course_${courseId}`);
+      console.log(`📚 User joined course feedback room: course_${courseId}`);
     });
 
     // ---------------- MESSAGE SEEN ----------------
