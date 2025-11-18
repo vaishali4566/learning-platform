@@ -318,4 +318,4 @@ Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('pr
 Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');
 Route::get('/video-call', function () {
     return view('chat.videoCall');
-});
+})->middleware(['auth.any']);
