@@ -12,8 +12,7 @@
         <!-- Course Header -->
         <div id="course-header"
             class="flex items-center gap-3 mb-6 transition-all duration-300 group-[.sidebar-collapsed]:justify-center">
-            <div
-                id="course-logo"
+            <div id="course-logo"
                 class="relative flex items-center justify-center w-11 h-11 bg-[#0E1625]/80 border border-[#00C2FF]/20 rounded-2xl shadow-[0_0_8px_rgba(0,194,255,0.3)] text-[#00C2FF] cursor-pointer transition-transform hover:scale-110"
                 data-tooltip="{{ $courseName ?? 'Course' }}">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -177,12 +176,8 @@
     }
 
     @keyframes pulse {
-        0%, 100% {
-            opacity: 0.4;
-        }
-        50% {
-            opacity: 1;
-        }
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 1; }
     }
 
     .loading-placeholder {
@@ -208,10 +203,12 @@
         const toggleBtn = document.getElementById('sidebarToggle');
         let activeLessonId = null;
 
+        // Sidebar toggle
         toggleBtn?.addEventListener('click', () => {
             sidebar.classList.toggle('sidebar-collapsed');
         });
 
+        // Load lessons list
         fetch(`/courses/${courseId}/lessons/data`)
             .then(res => res.json())
             .then(lessons => {
@@ -224,7 +221,6 @@
                     const li = document.createElement('li');
                     const btn = document.createElement('button');
                     btn.setAttribute('data-lesson-id', lesson.id);
-
                     btn.innerHTML = `
                         <span class="lesson-number">${index + 1}</span>
                         <span class="lesson-title truncate">${lesson.title}</span>
@@ -240,6 +236,7 @@
                     li.appendChild(btn);
                     lessonList.appendChild(li);
 
+                    // Auto-load first lesson
                     if (index === 0) btn.click();
                 });
             })
@@ -248,6 +245,7 @@
                 console.error(err);
             });
 
+        // Load selected lesson
         function loadLesson(lessonId, title) {
             if (lessonId === activeLessonId) return;
             activeLessonId = lessonId;
@@ -270,7 +268,6 @@
                                 <video 
                                     class="w-full h-full object-contain bg-black rounded-3xl" 
                                     controls 
-                                    autoplay 
                                     playsinline>
                                     <source src="/lessons/${lessonId}/stream" type="video/mp4">
                                     Your browser does not support the video tag.
@@ -281,11 +278,15 @@
                 .then(data => {
                     if (!data) return;
                     if (data.content_type === 'text') {
-                        lessonContent.innerHTML = `<div class="text-[#A1A9C4] leading-relaxed">${data.text_content}</div>`;
+                        lessonContent.innerHTML = `
+                            <div class="text-[#A1A9C4] leading-relaxed">
+                                ${data.text_content}
+                            </div>`;
                     }
                 })
                 .catch(() => {
-                    lessonContent.innerHTML = `<p class="text-red-400">Error loading lesson content.</p>`;
+                    lessonContent.innerHTML = `
+                        <p class="text-red-400">Error loading lesson content.</p>`;
                 });
         }
     });

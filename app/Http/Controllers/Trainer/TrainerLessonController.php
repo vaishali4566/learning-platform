@@ -77,7 +77,6 @@ class TrainerLessonController extends Controller
             ], 500);
         }
     }
-
     public function viewLessons($id)
     {
         $courseName = Course::find($id)->title;
