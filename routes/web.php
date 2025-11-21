@@ -124,16 +124,11 @@ Route::prefix('user')->group(function () {
         Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
 
         // User Practice Test Routes
-         Route::get('/lesson/{lessonId}/practice-test', [UserPracticeTestController::class, 'start'])
-        ->name('user.practice.start');
-        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])
-            ->name('user.practice.start.attempt');
-        Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])
-            ->name('user.practice.test');
-        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])
-            ->name('user.practice.submit');
-        Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])
-            ->name('user.practice.result');
+        Route::get('/lesson/{lessonId}/practice-test', [UserPracticeTestController::class, 'start'])->name('user.practice.start');
+        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])->name('user.practice.start.attempt');
+        Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])->name('user.practice.test');
+        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('user.practice.submit');
+        Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])->name('user.practice.result');
 
 
 

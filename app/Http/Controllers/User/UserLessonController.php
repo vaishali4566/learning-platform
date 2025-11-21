@@ -90,9 +90,8 @@ class UserLessonController extends Controller
         // === NON-VIDEO CONTENT (Text, Practice Test, Quiz) ===
         return response()->json([
             'content_type'     => $lesson->content_type,
-            'practice_test_id' => $lesson->practice_test_id,
             'text_content'     => $lesson->text_content,
-            'quiz_questions'   => $lesson->content_type === 'quiz' ? json_decode($lesson->quiz_questions, true) : null,
+            'quiz_id'          => $lesson->quiz ? $lesson->quiz->id : null,
         ], 200);
     }
 }
