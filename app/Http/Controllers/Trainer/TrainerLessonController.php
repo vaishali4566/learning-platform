@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainer;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -75,10 +76,12 @@ class TrainerLessonController extends Controller
         // === NON-VIDEO CONTENT (Text, Practice Test, Quiz) ===
         return response()->json([
             'content_type'     => $lesson->content_type,
-            'practice_test_id' => $lesson->practice_test_id,
             'text_content'     => $lesson->text_content,
-            'quiz_questions'   => $lesson->content_type === 'quiz' ? json_decode($lesson->quiz_questions, true) : null,
+            'quiz_id'          => $lesson->quiz ? $lesson->quiz->id : null,
+            'practice_id'      => $lesson->practice ? $lesson->practice->id : null,
+            
         ], 200);
+
     }
 
     public function store(Request $request)
@@ -171,12 +174,15 @@ class TrainerLessonController extends Controller
 
     public function viewLessons($id)
     {
-        $courseName = Course::find($id)->title;
+        $course = Course::with(['lessons.quiz'])->findOrFail($id);
+
         return view('trainer.lessons.index', [
-            'courseId' => $id, 
-            'courseName' => $courseName
+            'course' => $course,
+            'courseId' => $course->id,
+            'courseName' => $course->title,
         ]);
     }
+
 
     public function getLessons($courseId)
     {

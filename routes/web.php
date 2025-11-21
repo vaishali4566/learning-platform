@@ -218,6 +218,8 @@ Route::prefix('trainer')->group(function () {
 
             // Import Excel questions (POST)
         Route::post('practice-tests/{id}/import-questions', [PracticeTestController::class, 'importQuestions'])->name('practice-tests.import-questions');
+        Route::get('/practice-tests/{id}/import-questions', [PracticeTestController::class, 'showImportPage']);
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {

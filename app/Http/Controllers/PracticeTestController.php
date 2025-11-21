@@ -24,6 +24,14 @@ class PracticeTestController extends Controller
         return view('trainer.practice-tests.create', compact('lessons'));
     }
 
+    public function showImportPage($id)
+    {
+       $test = PracticeTest::findOrFail($id);
+
+        return view('trainer.practice-tests.edit', compact('test'));
+    }
+
+
     // 3. Store new practice test
     public function store(Request $request)
     {

@@ -32,8 +32,15 @@ class Lesson extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function quiz()
+    {
+        return $this->hasOne(Quiz::class, 'lesson_id');
+    }
+
+
+
     public function practiceTest()
     {
-        return $this->hasOne(PracticeTest::class);
+        return $this->hasOne(PracticeTest::class, 'lesson_id');
     }
 }

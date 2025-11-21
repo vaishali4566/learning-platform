@@ -235,27 +235,58 @@
                     if (data.content_type === 'text') {
                         lessonContent.innerHTML = `<div class="prose prose-invert max-w-none text-[#A1A9C4] leading-relaxed">${data.text_content || 'No content'}</div>`;
                     }
-                    else if (data.content_type === 'practice' && data.practice_test_id) {
-                        lessonContent.innerHTML = `
-                            <div class="bg-white/5 rounded-2xl border border-white/10 p-6 mt-6">
-                                <h3 class="text-2xl font-bold text-[#00C2FF] mb-6 flex items-center gap-3">
-                                    <i data-lucide="check-square"></i> Practice Test
-                                </h3>
-                                <iframe src="/trainer/practice-tests/${data.practice_test_id}/take" 
-                                        class="w-full h-[80vh] border-0 rounded-xl bg-white/10" 
-                                        allowfullscreen></iframe>
-                            </div>`;
-                    }
-                    else if (data.content_type === 'quiz') {
-                        lessonContent.innerHTML = `
-                            <div class="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-                                <h3 class="text-3xl font-bold text-[#00C2FF] mb-6">Quiz Time!</h3>
-                                <p class="text-xl mb-8 text-gray-300">Ready to test your knowledge?</p>
-                                <a href="/quizzes/${lessonId}/questions" class="inline-block px-10 py-5 bg-gradient-to-r from-[#00C2FF] to-[#007BFF] rounded-xl text-lg font-bold hover:scale-105 transition shadow-xl">
-                                    Start Quiz Now
+                    
+
+                    else if (data.content_type === 'practice') {
+                    const practiceUrl = `/trainer/practice-tests`;
+
+                    lessonContent.innerHTML = `
+                        <div class="p-10 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+                            <h3 class="text-3xl font-bold text-[#00C2FF] mb-4 text-center">
+                                Practice-Test Manager
+                            </h3>
+                            <p class="text-gray-300 text-center mb-8 text-lg">
+                                Manage your practice tests and structure with ease.
+                            </p>
+                            <div class="flex justify-center">
+                                <a href="${practiceUrl}"
+                                    class="px-8 py-4 rounded-xl text-base font-semibold 
+                                        bg-[#00C2FF] text-black 
+                                        hover:bg-[#00A9E0] transition">
+                                    Manage Practice Test
                                 </a>
-                            </div>`;
-                    }
+                            </div>
+
+                        </div>
+                    `;
+                }
+                    else if (data.content_type === 'quiz') {
+                    const quizUrl = `/trainer/quizzes/${data.quiz_id}/questions`;
+
+                    lessonContent.innerHTML = `
+                        <div class="p-10 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+                            <h3 class="text-3xl font-bold text-[#00C2FF] mb-4 text-center">
+                                Quiz Manager
+                            </h3>
+                            <p class="text-gray-300 text-center mb-8 text-lg">
+                                Manage your quiz questions and structure with ease.
+                            </p>
+                            <div class="flex justify-center">
+                                <a href="${quizUrl}"
+                                    class="px-8 py-4 rounded-xl text-base font-semibold 
+                                        bg-[#00C2FF] text-black 
+                                        hover:bg-[#00A9E0] transition">
+                                    Manage Quiz
+                                </a>
+                            </div>
+
+                        </div>
+                    `;
+                }
+
+
+
+
                     else {
                         lessonContent.innerHTML = `<p class="text-yellow-400">Content type "${data.content_type}" coming soon!</p>`;
                     }
