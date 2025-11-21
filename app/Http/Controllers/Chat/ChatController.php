@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Log;
 
+namespace App\Http\Controllers\Chat;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Trainer;
 use App\Models\ChatRequest;
@@ -10,10 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 
-
 class ChatController extends Controller
 {
-    // ✅ Identify which guard is active (user, trainer, or admin)
     // ✅ Identify which guard is active (user, trainer, or admin)
     private function getAuthInfo()
     {

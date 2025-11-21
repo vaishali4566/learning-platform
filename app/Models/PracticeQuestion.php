@@ -2,16 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PracticeQuestion extends Model
 {
-    use HasFactory;
-
-    protected $fillable = ['question', 'options', 'correct_answer'];
-
-    protected $casts = [
-        'options' => 'array',
+    protected $fillable = [
+        'practice_test_id',
+        'question_text',
+        'option_a',
+        'option_b',
+        'option_c',
+        'option_d',
+        'correct_option',
+        'explanation'
     ];
+
+    // Relation
+    public function test()
+    {
+        return $this->belongsTo(PracticeTest::class, 'practice_test_id');
+    }
 }

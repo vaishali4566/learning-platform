@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Chat;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ChatRequest;
 use Illuminate\Support\Facades\Auth;

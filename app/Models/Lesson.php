@@ -14,6 +14,7 @@ class Lesson extends Model
         'course_id',
         'title',
         'content_type',
+        'practice_test_id',
         'video_url',
         'text_content',
         'quiz_questions',
@@ -29,5 +30,17 @@ class Lesson extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function quiz()
+    {
+        return $this->hasOne(Quiz::class, 'lesson_id');
+    }
+
+
+
+    public function practiceTest()
+    {
+        return $this->hasOne(PracticeTest::class, 'lesson_id');
     }
 }

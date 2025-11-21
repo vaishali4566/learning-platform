@@ -4,33 +4,34 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 // ----------------------------
-// Web and User Controllers
+// User Controllers
 // ----------------------------
-use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\UserController;
-use App\Http\Controllers\Web\TrainerController;
-use App\Http\Controllers\Web\UserQuizController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\UserQuizController;
 use App\Http\Controllers\User\UserCourseController;
 use App\Http\Controllers\User\UserLessonController;
+use App\Http\Controllers\User\UserPracticeTestController;
 
 
 // ----------------------------
 // Core Controllers
 // ----------------------------
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\LessonsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ChatRequestController;
-use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Chat\ChatRequestController;
+use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CourseFeedbackController;
 
 // ----------------------------
 // Trainer Controllers
 // ----------------------------
+use App\Http\Controllers\Trainer\TrainerController;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Trainer\TrainerCourseController;
 use App\Http\Controllers\Trainer\ReportController;
@@ -111,6 +112,8 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
             Route::get('/{courseId}/feedback/summary', [CourseFeedbackController::class, 'summary']);
             Route::get('/{courseId}/feedback/check', [CourseFeedbackController::class, 'checkUserFeedback']);
+            Route::get('/lessons/{id}/stream', [UserLessonController::class, 'stream'])->name('lessons.stream');
+            Route::get('/{course}/lessons/data', [UserLessonController::class, 'getLessons'])->name('lessons.data');
 
         });
 
@@ -120,6 +123,19 @@ Route::prefix('user')->group(function () {
         Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
         Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
 
+        // User Practice Test Routes
+         Route::get('/lesson/{lessonId}/practice-test', [UserPracticeTestController::class, 'start'])
+        ->name('user.practice.start');
+        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])
+            ->name('user.practice.start.attempt');
+        Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])
+            ->name('user.practice.test');
+        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])
+            ->name('user.practice.submit');
+        Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])
+            ->name('user.practice.result');
+
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {
@@ -128,10 +144,6 @@ Route::prefix('user')->group(function () {
         });
     });
 });
-
-
-
-
 
 // ======================================================================
 // TRAINER AUTH ROUTES
@@ -152,7 +164,7 @@ Route::prefix('trainer')->group(function () {
     });
 
     // Authenticated routes
-    Route::middleware(['authenticate.user:trainer', 'prevent.trainer.back'])->group(function () {
+    Route::middleware(['authenticate.user:trainer'])->group(function () {
         Route::get('/', [TrainerController::class, 'index'])->name('trainer.dashboard');
         Route::get('/profile', [TrainerController::class, 'profile'])->name('trainer.profile');
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
@@ -176,13 +188,14 @@ Route::prefix('trainer')->group(function () {
 
             Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
 
-            Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy_lessson'); // lesson  delete route
+            Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy.lessson'); // lesson  delete route
 
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
+            Route::get('/lessons/{id}/stream', [TrainerLessonController::class, 'stream'])->name('lessons.stream');
 
             
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
@@ -200,6 +213,13 @@ Route::prefix('trainer')->group(function () {
             Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
             Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
         });
+
+        Route::resource('practice-tests', PracticeTestController::class);
+
+            // Import Excel questions (POST)
+        Route::post('practice-tests/{id}/import-questions', [PracticeTestController::class, 'importQuestions'])->name('practice-tests.import-questions');
+        Route::get('/practice-tests/{id}/import-questions', [PracticeTestController::class, 'showImportPage']);
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {
@@ -273,22 +293,11 @@ Route::group(['prefix' => 'courses'], function () {
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
-
-// ======================================================================
-// LESSONS ROUTES
-// ======================================================================
-Route::group(['prefix' => 'lessons'], function () {
-    Route::get('/view/{id}', [LessonsController::class, 'viewLesson'])->name('lesson.view');
-    Route::get('all/{id}', [LessonsController::class, 'viewLesson1'])->name('lessons.alllesson');
-    Route::get('/{id}/stream', [LessonsController::class, 'stream']);
-});
-
-
 // ======================================================================
 // CHATBOT & TELEGRAM
 // ======================================================================
-Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
-Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->name('send.to.telegram');
+Route::post('/chatbot/send', [ChatBotController::class, 'send'])->middleware(['auth.any'])->name('chatbot.send');
+Route::post('/send-to-telegram', [TelegramController::class, 'sendMessage'])->middleware(['auth.any'])->name('send.to.telegram');
 
 
 // ======================================================================
@@ -319,10 +328,7 @@ Route::prefix('chat')
         Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
     });
 
-
-
-Route::get('/practice-test', [PracticeTestController::class, 'index'])->name('practice.index');
-Route::get('/practice-test/questions', [PracticeTestController::class, 'getQuestions'])->name('practice.questions');
 Route::get('/video-call', function () {
     return view('chat.videoCall');
-})->middleware(['auth.any']);
+});
+
