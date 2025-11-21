@@ -205,13 +205,16 @@
             // Remove active class from all
             document.querySelectorAll('#lesson-list button').forEach(b => b.classList.remove('lesson-active'));
             btn.classList.add('lesson-active');
-
-            fetch(`/user/courses/lessons/${lessonId}/stream`, { headers: { 'Accept': 'application/json, video/mp4' } })
+            fetch(`/user/courses/lessons/${lessonId}/stream`)
                 .then(response => {
-                    const contentType = response.headers.get('content-type') || '';
+                    const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
 
-                    
-                    if (contentType.includes('video') || response.status === 200 && !contentType.includes('json')) {
+                    // ---- VIDEO DETECTED ----
+                    if (
+                        contentType.startsWith('video') ||
+                        contentType.includes('mp4') ||
+                        contentType.includes('octet-stream')
+                    ) {
                         lessonContent.innerHTML = `
                             <div class="flex justify-center mt-6">
                                 <div class="relative w-full max-w-5xl h-[65vh] rounded-2xl overflow-hidden bg-black shadow-2xl">
@@ -221,46 +224,64 @@
                                     </video>
                                 </div>
                             </div>`;
-                        return;
+
+                        return null; // IMPORTANT → prevents JSON parser from running
                     }
 
+                    // ---- NON-VIDEO: Return JSON ----
                     return response.json();
                 })
                 .then(data => {
-                    if (!data) return;
+                    if (!data) return; // video already shown
 
+                    // TEXT
                     if (data.content_type === 'text') {
-                        lessonContent.innerHTML = `<div class="prose prose-invert max-w-none text-[#A1A9C4] leading-relaxed">${data.text_content || 'No content'}</div>`;
+                        lessonContent.innerHTML = `
+                            <div class="prose prose-invert max-w-none text-[#A1A9C4]">${data.text_content || 'No content'}</div>`;
                     }
-                    else if (data.content_type === 'practice' && data.practice_test_id) {
+
+                    // PRACTICE TEST
+                    else if (data.content_type === 'practice') {
                         lessonContent.innerHTML = `
                             <div class="bg-white/5 rounded-2xl border border-white/10 p-6 mt-6">
                                 <h3 class="text-2xl font-bold text-[#00C2FF] mb-6 flex items-center gap-3">
-                                    <i data-lucide="check-square"></i> Practice Test
+                                    Practice Test
                                 </h3>
-                                <iframe src="/user/practice-tests/${data.practice_test_id}/take" 
-                                        class="w-full h-[80vh] border-0 rounded-xl bg-white/10" 
-                                        allowfullscreen></iframe>
+                                <iframe src="/user/practice-tests/${data.practice_test_id}/take"
+                                    class="w-full h-[80vh] border-0 rounded-xl bg-white/10"></iframe>
                             </div>`;
                     }
+
+                    // QUIZ
                     else if (data.content_type === 'quiz') {
                         lessonContent.innerHTML = `
-                            <div class="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-                                <h3 class="text-3xl font-bold text-[#00C2FF] mb-6">Quiz Time!</h3>
-                                <p class="text-xl mb-8 text-gray-300">Ready to test your knowledge?</p>
-                                <a href="/quizzes/${lessonId}/questions" class="inline-block px-10 py-5 bg-gradient-to-r from-[#00C2FF] to-[#007BFF] rounded-xl text-lg font-bold hover:scale-105 transition shadow-xl">
-                                    Start Quiz Now
+                            <div class="text-center py-20 rounded-2xl border border-white/10 
+                                         shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+
+                                <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">
+                                    Quiz Time
+                                </h3>
+
+                                <p class="text-lg mb-10 text-[#8A93A8]">
+                                    Test your knowledge with a quick quiz.
+                                </p>
+
+                                <a href="/user/quizzes/${data.quiz_id}"
+                                    class="px-10 py-4 rounded-xl text-lg font-medium
+                                         transition-all 
+                                        bg-[#00C2FF] text-[#101727] shadow-lg
+                                        focus:ring-4 focus:ring-[#00C2FF]/40">
+                                    Start Quiz
                                 </a>
                             </div>`;
                     }
-                    else {
-                        lessonContent.innerHTML = `<p class="text-yellow-400">Content type "${data.content_type}" coming soon!</p>`;
-                    }
+
                 })
                 .catch(err => {
                     console.error(err);
-                    lessonContent.innerHTML = `<p class="text-red-400">Failed to load content. Please try again.</p>`;
+                    lessonContent.innerHTML = `<p class="text-red-400">Failed to load content.</p>`;
                 });
+
         }
     });
 </script>

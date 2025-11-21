@@ -29,7 +29,7 @@ class UserPracticeTestController extends Controller
             abort(404, 'Practice test not found for this lesson.');
         }
 
-        return view('practice.user.start', compact('test'));
+        return view('user.practice.start', compact('test'));
     }
 
     /**
@@ -59,7 +59,8 @@ class UserPracticeTestController extends Controller
         ]);
 
         // redirect to question view - pass attempt id and start at index 0
-        return redirect()->route('user.practice.test', ['id' => $attempt->id, 'q' => 0]);
+        return redirect()->route('user.practice.test', ['attemptId' => $attempt->id, 'q' => 0]);
+
     }
 
     /**
@@ -67,50 +68,61 @@ class UserPracticeTestController extends Controller
      * Route: GET /practice-attempt/{attemptId}/questions?q=0
      */
     public function showTest(Request $request, $attemptId)
-    {
-        $user = Auth::user();
-        $attempt = PracticeAttempt::findOrFail($attemptId);
+{
+    $user = Auth::user();
+    $attempt = PracticeAttempt::findOrFail($attemptId);
 
-        // Ensure attempt belongs to user
-        if ($attempt->user_id !== $user->id) {
-            abort(403);
-        }
-
-        // If already completed, redirect to result
-        if ($attempt->status === 'completed') {
-            return redirect()->route('user.practice.result', $attempt->id);
-        }
-
-        $questions = PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)
-                        ->orderBy('id') // serial order
-                        ->get();
-
-        $total = $questions->count();
-        $qIndex = max(0, (int) $request->query('q', 0));
-        if ($qIndex >= $total) $qIndex = $total - 1;
-
-        $question = $questions->get($qIndex);
-
-        // fetch saved answer if any
-        $saved = PracticeAnswer::where('attempt_id', $attempt->id)
-                    ->where('question_id', $question->id)
-                    ->first();
-
-        // Timer: compute seconds remaining
-        $startedAt = Carbon::parse($attempt->started_at);
-        $endAt = $startedAt->copy()->addMinutes($this->timeLimitMinutes);
-        $now = Carbon::now();
-        $secondsRemaining = max(0, $endAt->diffInSeconds($now, false));
-
-        // If time is over, finalize attempt automatically
-        if ($now->greaterThanOrEqualTo($endAt)) {
-            $this->finalizeAttempt($attempt);
-            return redirect()->route('user.practice.result', $attempt->id)
-                ->with('info', 'Time is up. Test submitted automatically.');
-        }
-
-        return view('practice.user.test', compact('attempt','question','qIndex','total','saved','secondsRemaining'));
+    // Security checks
+    if ($attempt->user_id !== $user->id) {
+        abort(403);
     }
+
+    if ($attempt->status === 'completed') {
+        return redirect()->route('user.practice.result', $attempt->id);
+    }
+
+    $questions = PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)
+                    ->orderBy('id')
+                    ->get();
+
+    $total   = $questions->count();
+    $qIndex  = max(0, (int) $request->query('q', 0));
+    if ($qIndex >= $total) {
+        $qIndex = $total - 1;
+    }
+
+    $question = $questions->get($qIndex);
+
+    // Saved answer
+    $saved = PracticeAnswer::where('attempt_id', $attempt->id)
+                ->where('question_id', $question->id)
+                ->first();
+
+    // ────────────────────── TIMER LOGIC (FIXED) ──────────────────────
+    $startedAt = Carbon::parse($attempt->started_at);
+    $endAt     = $startedAt->copy()->addMinutes($this->timeLimitMinutes); // your time limit
+
+    // If time is already over → finalize immediately
+    if (Carbon::now()->greaterThanOrEqualTo($endAt)) {
+        $this->finalizeAttempt($attempt);
+        return redirect()->route('user.practice.result', $attempt->id)
+            ->with('info', 'Time is up. Test submitted automatically.');
+    }
+
+    // Send exact end time in milliseconds (for JS – no flash!)
+    $endAtTimestamp = $endAt->timestamp * 1000;
+
+    // ───────────────────────────────────────────────────────────────
+
+    return view('user.practice.test', compact(
+        'attempt',
+        'question',
+        'qIndex',
+        'total',
+        'saved',
+        'endAtTimestamp'   // ← only this variable is needed now
+    ));
+}
 
     /**
      * Submit single answer or finish test.
@@ -170,7 +182,11 @@ class UserPracticeTestController extends Controller
             return redirect()->route('user.practice.result', $attempt->id);
         }
 
-        return redirect()->route('user.practice.test', ['id' => $attempt->id, 'q' => $nextIndex]);
+        return redirect()->route('user.practice.test', [
+    'attemptId' => $attempt->id,
+    'q' => $nextIndex
+]);
+
     }
 
     /**
@@ -190,7 +206,7 @@ class UserPracticeTestController extends Controller
             $attempt = $attempt->fresh('answers.question');
         }
 
-        return view('practice.user.result', compact('attempt'));
+        return view('user.practice.result', compact('attempt'));
     }
 
     /**

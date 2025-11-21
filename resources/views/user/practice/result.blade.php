@@ -1,7 +1,7 @@
 @extends('layouts.user.index')
 
 @section('content')
-<div class="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
+<div class="max-w-3xl mx-auto mt-10 p-6  shadow rounded">
 
     <h2 class="text-2xl font-bold mb-4">Your Result</h2>
 
@@ -20,13 +20,13 @@
 
     <h3 class="text-xl font-semibold mt-6 mb-3">Your Answers</h3>
 
-    @foreach($answers as $ans)
+    @foreach($attempt->answers as $ans)
         <div class="p-3 mb-2 border rounded 
-            {{ $ans->is_correct ? 'bg-green-50' : 'bg-red-50' }}">
-            
+            {{ $ans->is_correct ? 'bg-green' : 'bg-red' }}">
+
             <p><strong>Q:</strong> {{ $ans->question->question }}</p>
-            <p><strong>Your Answer:</strong> {{ $ans->selected_option }}</p>
-            <p><strong>Correct:</strong> {{ $ans->question->correct_option }}</p>
+            <p><strong>Your Answer:</strong> {{ strtoupper($ans->selected_option) }}</p>
+            <p><strong>Correct:</strong> {{ strtoupper($ans->question->correct_option) }}</p>
         </div>
     @endforeach
 
