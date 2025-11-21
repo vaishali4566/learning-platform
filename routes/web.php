@@ -56,12 +56,12 @@ use App\Http\Controllers\PracticeTestController;
 // ✅ FIXED web.php home route
 Route::get('/', function () {
 
-    
+
     if (Auth::guard('trainer')->check()) {
         return redirect()->route('trainer.dashboard');
     }
 
-   
+
     if (Auth::guard('web')->check()) {
         $user = Auth::guard('web')->user();
         if ($user->is_admin) {
@@ -174,7 +174,7 @@ Route::prefix('trainer')->group(function () {
         Route::get('/students', [TrainerStudentController::class, 'index'])->name('trainer.students.index');
         Route::post('/{trainerId}/earnings/add/{courseId}', [TrainerController::class, 'addEarning'])->name('trainer.earnings.add');
         Route::get('/{trainerId}/earnings/total', [TrainerController::class, 'totalEarnings'])
-        ->name('trainer.earnings.total');
+            ->name('trainer.earnings.total');
 
 
         // Courses
@@ -226,7 +226,6 @@ Route::prefix('trainer')->group(function () {
             Route::get('/{courseId}', 'stripe')->name('payment.stripe.trainer');
             Route::post('/', 'stripePost')->name('payment.post.trainer');
         });
-
     });
 });
 
@@ -245,8 +244,8 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     // Data Management
     Route::get('/users', [AdminProfileController::class, 'showUserPage'])->name('admin.users');
     Route::get('/users/fetch', [AdminProfileController::class, 'fetchAllUsers'])->name('admin.users.fetch');
-    
-    
+
+
     Route::post('/users/update/{id}', [AdminProfileController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/users/add', [AdminProfileController::class, 'addUser'])->name('admin.users.add');
     Route::delete('/users/delete/{id}', [AdminProfileController::class, 'deleteUser'])->name('admin.users.delete');
@@ -269,7 +268,7 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     });
 
     // Optional
-    
+
     Route::get('/quizzes', [AdminProfileController::class, 'fetchAllQuizzes'])->name('admin.quizzes.index')->middleware('optional');
     Route::get('/reports', [AdminProfileController::class, 'reports'])->name('admin.reports')->middleware('optional');
     Route::get('/settings', [AdminProfileController::class, 'settings'])->name('admin.settings')->middleware('optional');
@@ -327,7 +326,7 @@ Route::prefix('chat')
         Route::get('/requests', [ChatRequestController::class, 'myRequests'])->name('chat.requests');
         Route::post('/accept/{id}', [ChatRequestController::class, 'acceptRequest'])->name('chat.accept');
         Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
-});
+    });
 
 Route::get('/video-call', function () {
     return view('chat.videoCall');

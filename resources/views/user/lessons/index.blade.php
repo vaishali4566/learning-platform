@@ -137,12 +137,8 @@
     }
 
     @keyframes pulse {
-        0%, 100% {
-            opacity: 0.4;
-        }
-        50% {
-            opacity: 1;
-        }
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 1; }
     }
 
     .loading-placeholder {
@@ -167,6 +163,7 @@
         const toggleBtn = document.getElementById('sidebarToggle');
         let activeLessonId = null;
 
+        // Sidebar toggle
         toggleBtn?.addEventListener('click', () => {
             sidebar.classList.toggle('sidebar-collapsed');
         });

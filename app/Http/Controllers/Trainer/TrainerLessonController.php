@@ -171,7 +171,6 @@ class TrainerLessonController extends Controller
             ], 500);
         }
     }
-
     public function viewLessons($id)
     {
         $course = Course::with(['lessons.quiz'])->findOrFail($id);
