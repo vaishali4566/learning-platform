@@ -6,7 +6,7 @@
     <!-- Header -->
     <div class="flex items-center justify-center mb-8 animate-fade-in">
         <h1 class="text-3xl font-bold tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
-            Create a New Lesson
+            Create a New Lessonnnnn
         </h1>
     </div>
 
@@ -42,6 +42,7 @@
                     <option value="video">Video</option>
                     <option value="text">Text</option>
                     <option value="quiz">Quiz</option>
+                    <option value="practice">Practice Test</option>
                 </select>
                 <div id="content_typeError" class="text-red-600 text-sm mt-1 error-message"></div>
             </div>

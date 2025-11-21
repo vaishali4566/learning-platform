@@ -11,17 +11,15 @@ class PreventTrainerBackHistory
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // ✅ If trainer is logged in
+        // If trainer is logged in → don't let him go back to login/register pages
         if (Auth::guard('trainer')->check()) {
-
-            // ⚠️ Only block login/register/user/admin routes — not trainer dashboard
             if (
                 $request->is('trainer/login') ||
                 $request->is('trainer/register') ||
+                $request->is('user') ||
                 $request->is('user/*') ||
-                $request->is('admin/*') ||
-                $request->is('user/login') ||
-                $request->is('user/register')
+                $request->is('admin') ||
+                $request->is('admin/*')
             ) {
                 return redirect()->route('trainer.dashboard');
             }
@@ -29,9 +27,11 @@ class PreventTrainerBackHistory
 
         $response = $next($request);
 
-        // 🚫 Prevent cached back navigation
-        return $response->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
-                        ->header('Pragma', 'no-cache')
-                        ->header('Expires', 'Sat, 01 Jan 1990 00:00:00 GMT');
+        // YE HAI SABSE SAFE TAREEKA — StreamedResponse ke saath bhi kaam karega!
+        $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
+
+        return $response;
     }
 }
