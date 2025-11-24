@@ -35,7 +35,7 @@
                     <tr class="border-b border-[#3A6EA5]/20 hover:bg-[#101727]/40 transition">
 
                         <td class="py-4 px-4">{{ $loop->iteration }}</td>
-                        <td class="py-4 px-4">{{ $q->question }}</td>
+                        <td class="py-4 px-4">{{ $q->question_text }}</td>
 
                         <td class="py-4 px-4">{{ $q->option_a }}</td>
                         <td class="py-4 px-4">{{ $q->option_b }}</td>
