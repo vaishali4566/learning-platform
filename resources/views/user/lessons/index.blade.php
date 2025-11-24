@@ -240,15 +240,29 @@
                             <div class="prose prose-invert max-w-none text-[#A1A9C4]">${data.text_content || 'No content'}</div>`;
                     }
 
-                    // PRACTICE TEST
+                    
+
+                    // PRACTICE
                     else if (data.content_type === 'practice') {
                         lessonContent.innerHTML = `
-                            <div class="bg-white/5 rounded-2xl border border-white/10 p-6 mt-6">
-                                <h3 class="text-2xl font-bold text-[#00C2FF] mb-6 flex items-center gap-3">
-                                    Practice Test
+                            <div class="text-center py-20 rounded-2xl border border-white/10 
+                                         shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+
+                                <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">
+                                    Practice Time
                                 </h3>
-                                <iframe src="/user/practice-tests/${data.practice_test_id}/take"
-                                    class="w-full h-[80vh] border-0 rounded-xl bg-white/10"></iframe>
+
+                                <p class="text-lg mb-10 text-[#8A93A8]">
+                                    Test your knowledge with a quick practice test.
+                                </p>
+
+                                <a href="/user/lesson/${data.id}/practice-test"
+                                    class="px-10 py-4 rounded-xl text-lg font-medium
+                                         transition-all 
+                                        bg-[#00C2FF] text-[#101727] shadow-lg
+                                        focus:ring-4 focus:ring-[#00C2FF]/40">
+                                    Practice Test
+                                </a>
                             </div>`;
                     }
 
