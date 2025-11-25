@@ -145,7 +145,6 @@ public function store(Request $request)
 }
 
 
-
     public function myCourses() //show courses of authenticated trainer
     {
         $trainer = Auth::guard('trainer')->user();

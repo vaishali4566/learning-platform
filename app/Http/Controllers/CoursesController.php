@@ -16,52 +16,6 @@ class CoursesController extends Controller
 {
     
 
-    /**
-     * Display all courses created by the logged-in trainer.
-     * Route: trainer/courses
-     */
-    public function showTrainerCourses()
-    {
-        $trainerId = Auth::guard('trainer')->id() || 1;
-
-        $courses = Course::with('trainer')
-            ->where('trainer_id', $trainerId)
-            ->get();
-
-        return view('courses.trainercourses', compact('courses'));
-    }
-
-    /**
-     * Show course statistics for the trainer — includes number of purchases and total revenue.
-     * Route: trainer/courses/stats
-     */
-    public function coursesWithPurchaseCount()
-    {
-        $trainerId = Auth::guard('trainer')->id() || 1;
-
-        $trainer = Trainer::with([
-            'courses' => function ($query) {
-                $query->withCount('payments')
-                    ->withSum('payments', 'amount');
-            }
-        ])->findOrFail($trainerId);
-
-        return view('courses.courseCount', compact('trainer'));
-    }
-
-
-    // =========================================================
-    // 🧑‍🎓 USER SECTION
-    // =========================================================
-
-    /**
-     * Show the "Explore Now" page for a specific course.
-     * Route: /courses/explore/{courseId}
-     */
-    public function explore($courseId)
-    {
-        return view('courses.exploreNow', ['courseId' => $courseId]);
-    }
 
 
     // =========================================================
@@ -138,37 +92,5 @@ class CoursesController extends Controller
             ]
         ]);
     }
-
-    /**
-     * Delete a course (Trainer access only).
-     */
-    public function destroy($id)
-    {
-        $course = Course::find($id);
-
-        if (!$course) {
-            return response()->json([
-                'message' => 'Course not found'
-            ], 404);
-        }
-
-        try {
-            if ($course->image && Storage::exists($course->image)) {
-                Storage::delete($course->image);
-            }
-            $course->delete();
-
-            return response()->json([
-                'message' => 'Course deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Course deletion failed: ' . $e->getMessage());
-
-            return response()->json([
-                'message' => 'Failed to delete course'
-            ], 500);
-        }
-
-        return response()->json(['success' => true]);
-    }
 }
+

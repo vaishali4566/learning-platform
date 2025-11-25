@@ -31,7 +31,7 @@ use App\Http\Controllers\CourseFeedbackController;
 // ----------------------------
 // Trainer Controllers
 // ----------------------------
-use App\Http\Controllers\Trainer\TrainerController;
+use App\Http\Controllers\Trainer\TrainerController;;
 use App\Http\Controllers\Trainer\QuizController;
 use App\Http\Controllers\Trainer\TrainerCourseController;
 use App\Http\Controllers\Trainer\ReportController;
@@ -114,7 +114,6 @@ Route::prefix('user')->group(function () {
             Route::get('/{courseId}/feedback/check', [CourseFeedbackController::class, 'checkUserFeedback']);
             Route::get('/lessons/{id}/stream', [UserLessonController::class, 'stream'])->name('lessons.stream');
             Route::get('/{course}/lessons/data', [UserLessonController::class, 'getLessons'])->name('lessons.data');
-
         });
 
         // Quizzes
@@ -168,8 +167,7 @@ Route::prefix('trainer')->group(function () {
         Route::get('/report', [ReportController::class, 'index'])->name('trainer.report');
         Route::get('/students', [TrainerStudentController::class, 'index'])->name('trainer.students.index');
         Route::post('/{trainerId}/earnings/add/{courseId}', [TrainerController::class, 'addEarning'])->name('trainer.earnings.add');
-        Route::get('/{trainerId}/earnings/total', [TrainerController::class, 'totalEarnings'])
-            ->name('trainer.earnings.total');
+        Route::get('/{trainerId}/earnings/total', [TrainerController::class, 'totalEarnings'])->name('trainer.earnings.total');
 
 
         // Courses
@@ -277,14 +275,7 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
 // COURSES ROUTES
 // ======================================================================
 Route::group(['prefix' => 'courses'], function () {
-    Route::delete('/{id}', [CoursesController::class, 'delete']);
-    Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');
-    Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
-    Route::get('/data', [CoursesController::class, 'getAll']);
-    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
-    Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
-    Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');
+    // Route::get('/data', [CoursesController::class, 'getAll']);
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
@@ -327,3 +318,6 @@ Route::get('/video-call', function () {
     return view('chat.videoCall');
 });
 
+Route::get('/landing-page', function () {
+    return view('landingPage');
+});
