@@ -54,13 +54,6 @@
             <i data-lucide="brain"
                 class="w-5 h-5 text-[#00C2FF] group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text">Quizzes</span>
-        </a>
-
-    
-
-        
-
-
-        
+        </a>    
     </nav>
 </aside>
