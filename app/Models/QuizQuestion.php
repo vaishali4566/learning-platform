@@ -14,6 +14,7 @@ class QuizQuestion extends Model
     protected $fillable = [
         'quiz_id',
         'question_text',
+        'source',
         'marks',
         'options',        // add this
         'correct_option', // add this

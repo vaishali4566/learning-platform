@@ -51,6 +51,7 @@ class PracticeTestController extends Controller
         $test = PracticeTest::create([
             'lesson_id' => $request->lesson_id,
             'title'     => $request->title,
+            'source'     => $request->source,
             'total_questions' => 0,
         ]);
 

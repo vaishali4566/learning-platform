@@ -18,31 +18,41 @@
                 @csrf
 
                 @foreach($quiz->questions as $index => $q)
-                    <div class="relative bg-[#111A2E]/80 border border-[#1E2B4A] rounded-xl p-6 hover:border-[#00C2FF]/30 transition-all duration-300">
+                    <div class="relative bg-[#111A2E]/80 border border-[#1E2B4A] rounded-xl p-6 hover:border-[#00C2FF]/30 transition-all duration-300 flex justify-between items-start">
                         
-                        <!-- Question -->
-                        <div class="flex items-start gap-3 mb-5">
-                            <span class="text-[#00C2FF] font-semibold text-base mt-[2px]">Q{{ $index + 1 }}.</span>
-                            <p class="font-medium text-lg text-[#E6EDF7] leading-relaxed flex-1">
-                                {{ $q->question_text }}
-                            </p>
+                        <!-- Question Text -->
+                        <div class="flex-1">
+                            <div class="flex items-start gap-3 mb-5">
+                                <span class="text-[#00C2FF] font-semibold text-base mt-[2px]">Q{{ $index + 1 }}.</span>
+                                <p class="font-medium text-lg text-[#E6EDF7] leading-relaxed flex-1">
+                                    {{ $q->question_text }}
+                                </p>
+                            </div>
+
+                            <!-- Options -->
+                            <div class="space-y-3">
+                                @foreach($q->options as $optIndex => $option)
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <input type="radio" 
+                                               name="answers[{{ $q->id }}]" 
+                                               value="{{ $optIndex }}" 
+                                               required
+                                               class="w-4 h-4 accent-[#00C2FF] border border-[#26304D] focus:ring-[#00C2FF] cursor-pointer">
+                                        <span class="text-[#A8B3CF] text-base group-hover:text-white transition-colors duration-150">
+                                            {{ $option }}
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
 
-                        <!-- Options -->
-                        <div class="space-y-3">
-                            @foreach($q->options as $optIndex => $option)
-                                <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="radio" 
-                                           name="answers[{{ $q->id }}]" 
-                                           value="{{ $optIndex }}" 
-                                           required
-                                           class="w-4 h-4 accent-[#00C2FF] border border-[#26304D] focus:ring-[#00C2FF] cursor-pointer">
-                                    <span class="text-[#A8B3CF] text-base group-hover:text-white transition-colors duration-150">
-                                        {{ $option }}
-                                    </span>
-                                </label>
-                            @endforeach
-                        </div>
+                        <!-- Source Icon -->
+                        @if($q->source)
+                            <button type="button" class="ml-4 text-[#00C2FF] hover:text-[#2F82DB] text-lg" 
+                                    onclick="openSourceModal(`{!! addslashes($q->source) !!}`)">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        @endif
                     </div>
                 @endforeach
 
@@ -74,4 +84,27 @@
 
     </div>
 </div>
+
+<!-- Source Modal -->
+<div id="sourceModal" class="fixed inset-0 hidden bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-[#0E1625] rounded-2xl w-full max-w-lg p-6 relative">
+        <button onclick="closeSourceModal()" class="absolute top-4 right-4 text-white text-xl">&times;</button>
+        <h3 class="text-xl font-semibold text-[#00C2FF] mb-4">Question Source</h3>
+        <div class="max-h-80 overflow-y-auto text-[#E6EDF7] whitespace-pre-wrap">
+            <p id="sourceContent"></p>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script>
+function openSourceModal(sourceText) {
+    document.getElementById('sourceContent').textContent = sourceText;
+    document.getElementById('sourceModal').classList.remove('hidden');
+}
+
+function closeSourceModal() {
+    document.getElementById('sourceModal').classList.add('hidden');
+}
+</script>
 @endsection

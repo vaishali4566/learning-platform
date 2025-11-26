@@ -18,7 +18,8 @@
         <!-- Questions List -->
         <div id="questionList" class="space-y-6">
             @forelse ($quiz->questions as $question)
-                <div class="bg-[#12182B] border border-[#2C3B5B] rounded-xl p-6 hover:shadow-lg transition duration-200">
+                <div class="bg-[#12182B] border border-[#2C3B5B] rounded-xl p-6 hover:shadow-lg transition duration-200"
+                     data-id="{{ $question->id }}">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="text-lg font-semibold text-[#E6EDF7] mb-2 leading-snug">
@@ -66,7 +67,7 @@
             @endforelse
         </div>
 
-        <!-- ✅ Finalize Quiz Button (Show only if questions exist) -->
+        <!-- Finalize Quiz Button -->
         @if (count($quiz->questions) > 0)
             <div class="text-center mt-10">
                 <button id="finalizeBtn"
@@ -78,10 +79,10 @@
         @endif
     </div>
 
-    <!-- Add Question Modal -->
+    <!-- Add/Edit Question Modal -->
     <div id="addQuestionModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div class="bg-[#1C2541] w-full max-w-lg rounded-xl p-6 shadow-2xl border border-[#2C3658]">
-            <h3 class="text-xl font-semibold text-[#A9C7FF] mb-5 border-b border-[#2F3A5C] pb-3">Add New Question</h3>
+            <h3 class="text-xl font-semibold text-[#A9C7FF] mb-5 border-b border-[#2F3A5C] pb-3" id="modalTitle">Add New Question</h3>
             
             <form id="addQuestionForm" data-quiz-id="{{ $quiz->id }}">
                 @csrf
@@ -89,6 +90,13 @@
                     <label class="block mb-1 text-sm text-gray-300">Question Text</label>
                     <textarea name="question_text" rows="3" required 
                         class="w-full rounded-lg bg-[#12182B] text-white p-2 focus:outline-none focus:ring-2 focus:ring-[#2F82DB]"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1 text-sm text-gray-300">Source (Optional)</label>
+                    <textarea name="source" rows="2"
+                        class="w-full rounded-lg bg-[#12182B] text-white p-2 focus:outline-none focus:ring-2 focus:ring-[#2F82DB]"
+                        placeholder="Enter reference or explanation..."></textarea>
                 </div>
 
                 <div class="mb-4">
@@ -132,56 +140,95 @@
     </div>
 </div>
 
-<!-- JS Section -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('addQuestionModal');
     const openBtn = document.getElementById('addQuestionBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const form = document.getElementById('addQuestionForm');
+    const modalTitle = document.getElementById('modalTitle');
 
-    // Open modal
-    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    // Open modal for Add
+    openBtn.addEventListener('click', () => {
+        modalTitle.textContent = "Add New Question";
+        form.reset();
+        delete form.dataset.editId;
+        modal.classList.remove('hidden');
+    });
+
+    // Close modal
     cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-    // Handle form submit (AJAX)
+    // Handle form submit (Add/Edit)
     form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const quizId = form.dataset.quizId;
-        const formData = new FormData(form);
+    e.preventDefault();
+    const quizId = form.dataset.quizId;
+    const editId = form.dataset.editId;
 
-        const response = await fetch(`/trainer/quizzes/${quizId}/questions`, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: formData
-        });
-        const result = await response.json();
+    // ✅ Correct URLs
+    const url = editId
+        ? `/trainer/quizzes/questions/${editId}` // PUT route
+        : `/trainer/quizzes/${quizId}/questions`; // POST route
 
-        if (result.success) {
-            alert('Question added successfully!');
-            location.reload();
-        } else {
-            alert('Failed to add question.');
+    const method = editId ? 'PUT' : 'POST';
+    const formData = new FormData(form);
+
+    const res = await fetch(url, {
+        method: method,
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: formData
+    });
+    const result = await res.json();
+
+    if(result.success){
+        alert(editId ? 'Question updated!' : 'Question added!');
+        location.reload();
+    } else {
+        alert('Failed to save question.');
+    }
+});
+
+
+    // Event delegation for Delete & Edit
+    document.addEventListener('click', async (e) => {
+        // DELETE
+        if(e.target.classList.contains('deleteBtn')){
+            const id = e.target.dataset.id;
+            const container = e.target.closest('div[data-id]');
+
+            const res = await fetch(`/trainer/quizzes/questions/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            });
+            const result = await res.json();
+            if(result.success){
+                container.remove();
+            }
+        }
+
+        // EDIT
+        if(e.target.classList.contains('editBtn')){
+            const id = e.target.dataset.id;
+            const res = await fetch(`/trainer/quizzes/questions/${id}`);
+            const result = await res.json();
+
+            if(result.success){
+                const q = result.question;
+                modalTitle.textContent = "Edit Question";
+                form.dataset.editId = id;
+                form.querySelector('textarea[name="question_text"]').value = q.question_text;
+                form.querySelector('textarea[name="source"]').value = q.source || '';
+                form.querySelector('input[name="marks"]').value = q.marks;
+                form.querySelectorAll('input[name="options[]"]').forEach((input,i) => input.value = q.options[i]);
+                form.querySelector('select[name="correct_option"]').value = q.correct_option;
+                modal.classList.remove('hidden');
+            }
         }
     });
 
-    // Delete question
-    document.querySelectorAll('.deleteBtn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to delete this question?')) return;
-            const id = btn.dataset.id;
-            const res = await fetch(`/trainer/questions/${id}`, {
-                method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-            });
-            const result = await res.json();
-            if (result.success) location.reload();
-        });
-    });
-
-    // Finalize quiz
+    // Finalize Quiz
     const finalizeBtn = document.getElementById('finalizeBtn');
-    if (finalizeBtn) {
+    if(finalizeBtn){
         finalizeBtn.addEventListener('click', async (e) => {
             const id = e.target.dataset.id;
             const res = await fetch(`/trainer/quizzes/${id}/finalize`, {
@@ -189,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
             });
             const result = await res.json();
-            if (result.success) alert(result.success);
+            if(result.success) alert(result.success);
             else alert('Error finalizing quiz.');
         });
     }

@@ -186,13 +186,17 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ========== Create Modal ==========
     const createModal = document.getElementById("createModal");
     const openCreateModal = document.getElementById("openCreateModal");
     const openCreateModalEmpty = document.getElementById("openCreateModalEmpty");
     const closeCreateModal = document.getElementById("closeCreateModal");
     const closeCreateX = document.getElementById("closeCreateX");
+    const createForm = document.getElementById("createLessonForm");
+    const createBtn = document.getElementById("createBtn");
 
+    const lessonsTableBody = document.querySelector("tbody");
+
+    // ========== Open / Close Modal ==========
     [openCreateModal, openCreateModalEmpty].forEach(btn => {
         if (btn) btn.onclick = () => createModal.classList.remove("hidden");
     });
@@ -231,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const courseId = {{ $course->id }};
         const url = `/trainer/courses/${courseId}/${selectedId}`;
 
-        const res = await fetch(url, {
+        await fetch(url, {
             method: "DELETE",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
@@ -241,7 +245,66 @@ document.addEventListener("DOMContentLoaded", () => {
         location.reload();
     };
 
+    // ========== AJAX CREATE LESSON ==========
+    createForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Disable button & show loader
+        createBtn.disabled = true;
+        const originalText = createBtn.innerHTML;
+        createBtn.innerHTML = `<span class="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 inline-block"></span> Creating...`;
+
+        const formData = new FormData(createForm);
+
+        const response = await fetch(createForm.action, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        // Reset button
+        createBtn.disabled = false;
+        createBtn.innerHTML = originalText;
+
+        if (result.data) {
+            // Close modal
+            createModal.classList.add("hidden");
+            createForm.reset();
+
+            // Append new lesson to table
+            const lesson = result.data;
+            const row = document.createElement("tr");
+            row.className = "hover:bg-[#1A233A]/60 transition-all duration-200";
+            row.innerHTML = `
+                <td class="px-6 py-3 text-[#9BA3B8]">${lessonsTableBody.children.length + 1}</td>
+                <td class="px-6 py-3 font-medium text-[#E6EDF7]">${lesson.title}</td>
+                <td class="px-6 py-3 text-[#A8B3CF]">${lesson.content_type.charAt(0).toUpperCase() + lesson.content_type.slice(1)}</td>
+                <td class="px-6 py-3 text-center">
+                    <div class="flex justify-center items-center gap-2">
+                        <a href="#" class="px-3 py-1.5 rounded-md bg-[#1F3B2E] text-green-400">Explore</a>
+                        <a href="#" class="px-3 py-1.5 rounded-md bg-blue-800 text-blue-300">Update</a>
+                        <button data-id="${lesson.id}" class="delete-lesson-btn px-3 py-1.5 rounded-md bg-red-900 text-red-300">Delete</button>
+                    </div>
+                </td>
+            `;
+            lessonsTableBody.appendChild(row);
+
+            // Optional: re-attach delete event for the new row
+            row.querySelector(".delete-lesson-btn").onclick = () => {
+                selectedId = lesson.id;
+                deleteModal.classList.remove("hidden");
+            };
+        } else {
+            alert("Failed to create lesson.");
+        }
+    });
+
 });
 </script>
+
 
 @endsection

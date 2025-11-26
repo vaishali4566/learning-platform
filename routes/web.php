@@ -202,6 +202,8 @@ Route::prefix('trainer')->group(function () {
             Route::get('/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
             Route::post('/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
             Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
+            Route::get('questions/{id}', [QuizController::class,'getQuestion']);
+            Route::put('questions/{id}', [QuizController::class,'updateQuestion']);
             Route::post('/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
             Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
             Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
