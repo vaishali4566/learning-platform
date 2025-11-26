@@ -275,18 +275,7 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
 // COURSES ROUTES
 // ======================================================================
 Route::group(['prefix' => 'courses'], function () {
-<<<<<<< HEAD
-    Route::delete('/{id}', [CoursesController::class, 'delete']);
-    Route::get('/trainer', [CoursesController::class, 'showTrainerCourses'])->name('courses.trainercourses');
-    Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
-    Route::get('/data', [CoursesController::class, 'getAll']);
-    Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    // Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
-    Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
-    Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');
-=======
     // Route::get('/data', [CoursesController::class, 'getAll']);
->>>>>>> 2c40700b4623ecebf1028162c5203856a360b4fc
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
 });
 
