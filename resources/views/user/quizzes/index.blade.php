@@ -31,6 +31,10 @@
                                 <p class="text-sm text-gray-400 mb-4 line-clamp-3">
                                     {{ Str::limit($quiz->description ?? 'Test your knowledge and improve your skills!', 100) }}
                                 </p>
+
+                                <p class="text-sm text-gray-400 mb-4 line-clamp-3">
+                                    {{ $quiz->source }}
+                                </p>
                             </div>
 
                             <div class="flex justify-between items-center mt-auto pt-3 border-t border-[#1E2B4A]">
