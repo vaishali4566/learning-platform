@@ -67,9 +67,9 @@ class UserPracticeTestController extends Controller
      * Route: GET /practice-attempt/{attemptId}/questions?q=0
      */
     public function showTest(Request $request, $attemptId)
-{
-    $user = Auth::user();
-    $attempt = PracticeAttempt::findOrFail($attemptId);
+    {
+        $user = Auth::user();
+        $attempt = PracticeAttempt::findOrFail($attemptId);
 
         // Security checks
         if ($attempt->user_id !== $user->id) {
@@ -81,8 +81,8 @@ class UserPracticeTestController extends Controller
         }
 
         $questions = PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)
-            ->orderBy('id')
-            ->get();
+                        ->orderBy('id')
+                        ->get();
 
         $total   = $questions->count();
         $qIndex  = max(0, (int) $request->query('q', 0));
@@ -94,8 +94,8 @@ class UserPracticeTestController extends Controller
 
         // Saved answer
         $saved = PracticeAnswer::where('attempt_id', $attempt->id)
-            ->where('question_id', $question->id)
-            ->first();
+                    ->where('question_id', $question->id)
+                    ->first();
 
         // ────────────────────── TIMER LOGIC (FIXED) ──────────────────────
         $startedAt = Carbon::parse($attempt->started_at);
@@ -210,7 +210,7 @@ class UserPracticeTestController extends Controller
     /**
      * Finalize attempt: calculate correct answers, score, time taken, set completed_at/status
      */
-    protected function finalizeAttempt(PracticeAttempt $attempt)
+      protected function finalizeAttempt(PracticeAttempt $attempt)
     {
         if ($attempt->status === 'completed') return;
 
@@ -221,7 +221,10 @@ class UserPracticeTestController extends Controller
 
         $startedAt = Carbon::parse($attempt->started_at);
         $completedAt = Carbon::now();
-        $timeTakenSeconds = $completedAt->diffInSeconds($startedAt);
+
+        // ✅ Correct direction
+        $timeTakenSeconds = $startedAt->diffInSeconds($completedAt);
+
         $formattedTime = gmdate("H:i:s", $timeTakenSeconds);
 
         $attempt->update([
@@ -238,4 +241,6 @@ class UserPracticeTestController extends Controller
             'formatted' => $formattedTime
         ];
     }
+
+
 }

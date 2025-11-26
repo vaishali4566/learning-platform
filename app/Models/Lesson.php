@@ -39,7 +39,7 @@ class Lesson extends Model
 
 
 
-    public function practiceTest()
+    public function practice()
     {
         return $this->hasOne(PracticeTest::class, 'lesson_id');
     }
