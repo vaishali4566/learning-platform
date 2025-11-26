@@ -114,20 +114,27 @@
             const courseID = document.getElementById('course_id').value;
 
             try {
-                const response = await fetch('/lessons', {
-                    method: 'POST',
+                const response = await fetch(`/trainer/courses/${courseID}/lessons`, {
+                    method: "POST",
                     headers: {
                         "X-CSRF-TOKEN": csrfToken
                     },
                     body: formData
                 });
+
                 const data = await response.json();
 
                 if (response.ok) {
-                    document.getElementById('successMessage').textContent = data.message;
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    form.reset();
-                    toggleFields();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Lesson Created!",
+                        text: "Your lesson was added successfully",
+                        timer: 1600,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = `/trainer/courses/${courseID}/lessons/manage`;
+                    });
+
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -135,6 +142,7 @@
                         text: Object.values(data.errors)?.flat()?.join("\n") || data.message,
                     });
                 }
+
             } catch (err) {
                 Swal.fire({
                     icon: "error",
@@ -143,6 +151,7 @@
                 });
             }
         });
+
     });
 </script>
 @endsection

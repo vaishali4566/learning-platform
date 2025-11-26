@@ -120,15 +120,15 @@ Route::prefix('user')->group(function () {
         // Quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
-        Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
         Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
+        Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
 
         // User Practice Test Routes
         Route::get('/lesson/{lessonId}/practice-test', [UserPracticeTestController::class, 'start'])->name('user.practice.start');
-        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])->name('user.practice.start.attempt');
         Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])->name('user.practice.test');
-        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('user.practice.submit');
         Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])->name('user.practice.result');
+        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])->name('user.practice.start.attempt');
+        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('user.practice.submit');
 
 
 
@@ -185,9 +185,9 @@ Route::prefix('trainer')->group(function () {
 
             Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy.lessson'); // lesson  delete route
 
+            Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
-            Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
             Route::get('/lessons/{id}/stream', [TrainerLessonController::class, 'stream'])->name('lessons.stream');
@@ -282,7 +282,7 @@ Route::group(['prefix' => 'courses'], function () {
     Route::get('/trainer/course/count', [CoursesController::class, 'coursesWithPurchaseCount'])->name('course.purchase');
     Route::get('/data', [CoursesController::class, 'getAll']);
     Route::get('/', [CoursesController::class, 'index'])->name('courses.index');
-    Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
+    // Route::get('/{id}/lessons/data', [LessonsController::class, 'lessonsByCourse']);
     Route::get('/my', [CoursesController::class, 'myCourses'])->name('courses.mycourses');
     Route::get('/{courseId}/explore', [CoursesController::class, 'explore'])->name('courses.explore');
     Route::get('/{id}', [CoursesController::class, 'getCourse']);
