@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ---------------------------------------------------
        LOAD COURSE DETAILS
     ------------------------------------------------------*/
-    fetch(`/courses/${courseId}`)
+    fetch(`/trainer/courses/${courseId}`)
         .then(res => res.json())
         .then(resp => {
             const c = resp.data;
