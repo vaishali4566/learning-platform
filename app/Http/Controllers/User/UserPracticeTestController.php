@@ -60,7 +60,6 @@ class UserPracticeTestController extends Controller
 
         // redirect to question view - pass attempt id and start at index 0
         return redirect()->route('user.practice.test', ['attemptId' => $attempt->id, 'q' => 0]);
-
     }
 
     /**
@@ -72,57 +71,57 @@ class UserPracticeTestController extends Controller
     $user = Auth::user();
     $attempt = PracticeAttempt::findOrFail($attemptId);
 
-    // Security checks
-    if ($attempt->user_id !== $user->id) {
-        abort(403);
+        // Security checks
+        if ($attempt->user_id !== $user->id) {
+            abort(403);
+        }
+
+        if ($attempt->status === 'completed') {
+            return redirect()->route('user.practice.result', $attempt->id);
+        }
+
+        $questions = PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)
+            ->orderBy('id')
+            ->get();
+
+        $total   = $questions->count();
+        $qIndex  = max(0, (int) $request->query('q', 0));
+        if ($qIndex >= $total) {
+            $qIndex = $total - 1;
+        }
+
+        $question = $questions->get($qIndex);
+
+        // Saved answer
+        $saved = PracticeAnswer::where('attempt_id', $attempt->id)
+            ->where('question_id', $question->id)
+            ->first();
+
+        // ────────────────────── TIMER LOGIC (FIXED) ──────────────────────
+        $startedAt = Carbon::parse($attempt->started_at);
+        $endAt     = $startedAt->copy()->addMinutes($this->timeLimitMinutes); // your time limit
+
+        // If time is already over → finalize immediately
+        if (Carbon::now()->greaterThanOrEqualTo($endAt)) {
+            $this->finalizeAttempt($attempt);
+            return redirect()->route('user.practice.result', $attempt->id)
+                ->with('info', 'Time is up. Test submitted automatically.');
+        }
+
+        // Send exact end time in milliseconds (for JS – no flash!)
+        $endAtTimestamp = $endAt->timestamp * 1000;
+
+        // ───────────────────────────────────────────────────────────────
+
+        return view('user.practice.test', compact(
+            'attempt',
+            'question',
+            'qIndex',
+            'total',
+            'saved',
+            'endAtTimestamp'   // ← only this variable is needed now
+        ));
     }
-
-    if ($attempt->status === 'completed') {
-        return redirect()->route('user.practice.result', $attempt->id);
-    }
-
-    $questions = PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)
-                    ->orderBy('id')
-                    ->get();
-
-    $total   = $questions->count();
-    $qIndex  = max(0, (int) $request->query('q', 0));
-    if ($qIndex >= $total) {
-        $qIndex = $total - 1;
-    }
-
-    $question = $questions->get($qIndex);
-
-    // Saved answer
-    $saved = PracticeAnswer::where('attempt_id', $attempt->id)
-                ->where('question_id', $question->id)
-                ->first();
-
-    // ────────────────────── TIMER LOGIC (FIXED) ──────────────────────
-    $startedAt = Carbon::parse($attempt->started_at);
-    $endAt     = $startedAt->copy()->addMinutes($this->timeLimitMinutes); // your time limit
-
-    // If time is already over → finalize immediately
-    if (Carbon::now()->greaterThanOrEqualTo($endAt)) {
-        $this->finalizeAttempt($attempt);
-        return redirect()->route('user.practice.result', $attempt->id)
-            ->with('info', 'Time is up. Test submitted automatically.');
-    }
-
-    // Send exact end time in milliseconds (for JS – no flash!)
-    $endAtTimestamp = $endAt->timestamp * 1000;
-
-    // ───────────────────────────────────────────────────────────────
-
-    return view('user.practice.test', compact(
-        'attempt',
-        'question',
-        'qIndex',
-        'total',
-        'saved',
-        'endAtTimestamp'   // ← only this variable is needed now
-    ));
-}
 
     /**
      * Submit single answer or finish test.
@@ -183,10 +182,9 @@ class UserPracticeTestController extends Controller
         }
 
         return redirect()->route('user.practice.test', [
-    'attemptId' => $attempt->id,
-    'q' => $nextIndex
-]);
-
+            'attemptId' => $attempt->id,
+            'q' => $nextIndex
+        ]);
     }
 
     /**
@@ -214,27 +212,30 @@ class UserPracticeTestController extends Controller
      */
     protected function finalizeAttempt(PracticeAttempt $attempt)
     {
-        // Avoid finalizing twice
         if ($attempt->status === 'completed') return;
 
         $answers = PracticeAnswer::where('attempt_id', $attempt->id)->get();
         $correct = $answers->where('is_correct', true)->count();
-
         $total = $attempt->total_questions ?: PracticeQuestion::where('practice_test_id', $attempt->practice_test_id)->count();
-
         $score = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
 
-        // compute time taken in seconds
         $startedAt = Carbon::parse($attempt->started_at);
         $completedAt = Carbon::now();
         $timeTakenSeconds = $completedAt->diffInSeconds($startedAt);
+        $formattedTime = gmdate("H:i:s", $timeTakenSeconds);
 
         $attempt->update([
             'correct_answers' => $correct,
             'score' => $score,
             'time_taken' => $timeTakenSeconds,
+            'time_taken_formatted' => $formattedTime,
             'status' => 'completed',
             'completed_at' => $completedAt,
         ]);
+
+        return [
+            'seconds' => $timeTakenSeconds,
+            'formatted' => $formattedTime
+        ];
     }
 }

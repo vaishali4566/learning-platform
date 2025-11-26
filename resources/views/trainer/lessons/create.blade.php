@@ -108,30 +108,39 @@
         // Form submit
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const form = document.getElementById('lessonForm');
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener("submit", async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            const courseID = document.getElementById('course_id').value;
+
             try {
                 const response = await fetch('/lessons', {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken
+                        "X-CSRF-TOKEN": csrfToken
                     },
                     body: formData
                 });
                 const data = await response.json();
+
                 if (response.ok) {
                     document.getElementById('successMessage').textContent = data.message;
                     document.getElementById('successMessage').classList.remove('hidden');
                     form.reset();
                     toggleFields();
                 } else {
-                    document.getElementById('errorMessage').textContent = data.message || 'Please fix errors';
-                    document.getElementById('errorMessage').classList.remove('hidden');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Validation Error",
+                        text: Object.values(data.errors)?.flat()?.join("\n") || data.message,
+                    });
                 }
             } catch (err) {
-                alert('Error creating lesson');
-                console.error(err);
+                Swal.fire({
+                    icon: "error",
+                    title: "Something went wrong",
+                    text: "Please try again later"
+                });
             }
         });
     });
