@@ -60,7 +60,6 @@ class UserPracticeTestController extends Controller
 
         // redirect to question view - pass attempt id and start at index 0
         return redirect()->route('user.practice.test', ['attemptId' => $attempt->id, 'q' => 0]);
-
     }
 
     /**
@@ -183,10 +182,9 @@ class UserPracticeTestController extends Controller
         }
 
         return redirect()->route('user.practice.test', [
-    'attemptId' => $attempt->id,
-    'q' => $nextIndex
-]);
-
+            'attemptId' => $attempt->id,
+            'q' => $nextIndex
+        ]);
     }
 
     /**
