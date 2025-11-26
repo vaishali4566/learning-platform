@@ -180,7 +180,7 @@ Route::prefix('trainer')->group(function () {
             Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
-            Route::delete('/delete/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
+            Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
             Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
 
             Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy.lessson'); // lesson  delete route
