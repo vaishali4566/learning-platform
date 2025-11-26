@@ -23,6 +23,9 @@ class AuthController extends Controller
     // Show login form
     public function showUserLoginForm()
     {
+        if (Auth::check('web')) {
+        return redirect()->route('user.auth.dashboard');
+        }
         return view('user.auth.login');
     }
 
