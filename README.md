@@ -85,4 +85,3 @@ php artisan migrate
 
 ---
 
-If you want, I can also format this README with emojis, badges, screenshots, or add sections like **Features**, **Folder Structure**, **API Routes**, etc.
