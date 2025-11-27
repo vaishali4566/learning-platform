@@ -103,6 +103,7 @@ Route::prefix('user')->group(function () {
 
         Route::prefix('courses')->name('user.courses.')->group(function () {
             Route::get('/', [UserCourseController::class, 'index'])->name('index');
+            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
@@ -121,15 +122,15 @@ Route::prefix('user')->group(function () {
         // Quizzes
         Route::get('/quizzes', [UserQuizController::class, 'index'])->name('user.quizzes.index');
         Route::get('/quizzes/{quiz}', [UserQuizController::class, 'show'])->name('user.quizzes.show');
-        Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
         Route::get('/quizzes/{quiz}/result', [UserQuizController::class, 'result'])->name('user.quizzes.result');
+        Route::post('/quizzes/{quiz}/submit', [UserQuizController::class, 'submit'])->name('user.quizzes.submit');
 
         // User Practice Test Routes
         Route::get('/lesson/{lessonId}/practice-test', [UserPracticeTestController::class, 'start'])->name('user.practice.start');
-        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])->name('user.practice.start.attempt');
         Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])->name('user.practice.test');
-        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('user.practice.submit');
         Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])->name('user.practice.result');
+        Route::post('/lesson/{lessonId}/practice-test/start', [UserPracticeTestController::class, 'createAttempt'])->name('user.practice.start.attempt');
+        Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('user.practice.submit');
 
 
 
@@ -176,7 +177,9 @@ Route::prefix('trainer')->group(function () {
 
         // Courses
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
+       
             Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
+            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
@@ -277,14 +280,6 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
     Route::post('/logout', [AuthController::class, 'userLogout'])->name('admin.logout');
 });
 
-
-// ======================================================================
-// COURSES ROUTES
-// ======================================================================
-Route::group(['prefix' => 'courses'], function () {
-    // Route::get('/data', [CoursesController::class, 'getAll']);
-    Route::get('/{id}', [CoursesController::class, 'getCourse']);
-});
 
 // ======================================================================
 // CHATBOT & TELEGRAM
