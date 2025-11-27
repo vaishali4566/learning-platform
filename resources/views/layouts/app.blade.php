@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,8 @@
 
     <title>@yield('title', 'Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.skypack.dev/@hotwired/turbo"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -35,47 +38,47 @@
         <!-- Right Section -->
         <div class="flex items-center gap-6">
             @if(Auth::guard('web')->check())
-                <a href="{{ route('user.dashboard') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">Dashboard</span>
+            <a href="{{ route('user.dashboard') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">Dashboard</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
+            <a href="{{ route('user.profile') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">Profile</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
+            <form method="POST" action="{{ route('user.logout') }}" class="inline">
+                @csrf
+                <button type="submit" class="relative group transition">
+                    <span class="group-hover:text-[#00C2FF]">Logout</span>
                     <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
-                <a href="{{ route('user.profile') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">Profile</span>
-                    <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
-                <form method="POST" action="{{ route('user.logout') }}" class="inline">
-                    @csrf
-                    <button type="submit" class="relative group transition">
-                        <span class="group-hover:text-[#00C2FF]">Logout</span>
-                        <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                    </button>
-                </form>
+                </button>
+            </form>
 
             @elseif(Auth::guard('trainer')->check())
-                <a href="{{ route('trainer.dashboard') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">Dashboard</span>
+            <a href="{{ route('trainer.dashboard') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">Dashboard</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
+            <a href="{{ route('trainer.profile') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">Profile</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
+            <form method="POST" action="{{ route('trainer.logout') }}" class="inline">
+                @csrf
+                <button type="submit" class="relative group transition">
+                    <span class="group-hover:text-[#00C2FF]">Logout</span>
                     <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
-                <a href="{{ route('trainer.profile') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">Profile</span>
-                    <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
-                <form method="POST" action="{{ route('trainer.logout') }}" class="inline">
-                    @csrf
-                    <button type="submit" class="relative group transition">
-                        <span class="group-hover:text-[#00C2FF]">Logout</span>
-                        <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                    </button>
-                </form>
+                </button>
+            </form>
             @else
-                <a href="{{ route('user.login') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">User Login</span>
-                    <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
-                <a href="{{ route('trainer.login') }}" class="relative group transition">
-                    <span class="group-hover:text-[#00C2FF]">Trainer Login</span>
-                    <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
-                </a>
+            <a href="{{ route('user.login') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">User Login</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
+            <a href="{{ route('trainer.login') }}" class="relative group transition">
+                <span class="group-hover:text-[#00C2FF]">Trainer Login</span>
+                <span class="absolute -bottom-1 left-0 w-0 group-hover:w-full h-[2px] bg-[#00C2FF] rounded transition-all duration-300"></span>
+            </a>
             @endif
         </div>
     </nav>
@@ -96,18 +99,19 @@
             setTimeout(() => loader.remove(), 800);
         });
     </script> -->
-<script>
-  // Keep loader for 3 seconds then hide it
-  window.addEventListener('load', () => {
-      const loader = document.getElementById('page-loader');
-      setTimeout(() => {
-          loader.classList.add('opacity-0');
-          loader.style.transition = 'opacity 1s ease';
-          setTimeout(() => loader.remove(), 1000);
-      }, 3000); // 3000ms = 3 seconds
-  });
-</script>
+    <script>
+        // Keep loader for 3 seconds then hide it
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('page-loader');
+            setTimeout(() => {
+                loader.classList.add('opacity-0');
+                loader.style.transition = 'opacity 1s ease';
+                setTimeout(() => loader.remove(), 1000);
+            }, 3000); // 3000ms = 3 seconds
+        });
+    </script>
 
 
 </body>
+
 </html>

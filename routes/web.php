@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
+use HotwiredLaravel\TurboLaravel\Http\Middleware\TurboMiddleware;
 // ----------------------------
 // User Controllers
 // ----------------------------
