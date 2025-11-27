@@ -105,9 +105,9 @@ Route::prefix('user')->group(function () {
 
         Route::prefix('courses')->name('user.courses.')->group(function () {
             Route::get('/', [UserCourseController::class, 'index'])->name('index');
-            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
+            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
             Route::post('/feedback/store', [CourseFeedbackController::class, 'store'])->name('feedback.store');
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
@@ -175,14 +175,14 @@ Route::prefix('trainer')->group(function () {
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
        
             Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
-            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
             Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
             Route::delete('/delete/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
             Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
-
+            
+            Route::get('/{id}', [CoursesController::class, 'getCourse']);
             Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy.lessson'); // lesson  delete route
 
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
