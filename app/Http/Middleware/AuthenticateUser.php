@@ -12,7 +12,7 @@ class AuthenticateUser
     public function handle(Request $request, Closure $next, string $guard = 'web'): Response
     {
         Auth::shouldUse($guard);
-
+        
         if (!Auth::guard($guard)->check()) {
             return match ($guard) {
                 'trainer' => redirect()->route('trainer.login'),
