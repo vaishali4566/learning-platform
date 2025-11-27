@@ -123,7 +123,7 @@
                     Open Course
                 </a>
             @else
-                <a href="{{route('payment.stripe.trainer', $courseId)}}"
+                <a href="{{route('trainer.payment.stripe', $courseId)}}"
                    class="flex-1 text-center bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium py-3 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition-all duration-300">
                     Buy Now
                 </a>

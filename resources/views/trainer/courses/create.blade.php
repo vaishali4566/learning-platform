@@ -106,7 +106,7 @@ document.getElementById('createCourseForm').addEventListener('submit', async fun
     formData.append('trainer_id', "{{ Auth::guard('trainer')->id() }}");
 
     try {
-        const response = await fetch("{{ route('trainer.courses.store') }}", {
+        const response = await fetch("{{ route('trainer.courses.create') }}", {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             body: formData

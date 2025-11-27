@@ -139,7 +139,7 @@
                             <i class="fa-solid fa-eye"></i> Explore
                         </a>
 
-                        <a href="{{ route('payment.stripe.trainer', ['courseId' => $course->id]) }}"
+                        <a href="{{ route('trainer.payment.stripe', ['courseId' => $course->id]) }}"
                             class="px-4 py-2 bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white text-sm rounded-lg shadow-md hover:shadow-[#00C2FF]/40 hover:scale-[1.03] transition-all duration-300">
                             Buy Now
                         </a>

@@ -9,7 +9,7 @@
         <div class="flex justify-between items-center mb-8">
             <h3 class="text-3xl font-bold">Practice Tests</h3>
 
-            <a href="{{ route('practice-tests.create') }}"
+            <a href="{{ route('trainer.practice-tests.create') }}"
                class="px-5 py-3 rounded-lg bg-[#00C2FF] text-black font-semibold shadow hover:bg-[#3A6EA5] transition">
                 + Add Practice Test
             </a>
@@ -46,17 +46,17 @@
 
                         <td class="py-4 px-4 flex gap-3">
 
-                            <a href="{{ route('practice-tests.show', $test->id) }}"
+                            <a href="{{ route('trainer.practice-tests.show', $test->id) }}"
                                class="px-4 py-2 rounded-md bg-[#3A6EA5] text-white text-sm hover:bg-[#00C2FF] hover:text-black transition">
                                 View
                             </a>
 
-                            <a href="{{ route('practice-tests.edit', $test->id) }}"
+                            <a href="{{ route('trainer.practice-tests.edit', $test->id) }}"
                                class="px-4 py-2 rounded-md bg-yellow-500/80 text-black text-sm hover:bg-yellow-400 transition">
                                 Edit
                             </a>
 
-                            <form action="{{ route('practice-tests.destroy', $test->id) }}" method="POST" class="inline">
+                            <form action="{{ route('trainer.practice-tests.destroy', $test->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
 

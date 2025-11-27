@@ -53,7 +53,7 @@
                                 <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
                                     class="px-3 py-1.5 rounded-md bg-[#1F3B2E] text-green-400">Add Quiz</a>
                             @elseif($lesson->content_type === 'practice')
-                                <a href="{{ route('practice-tests.create', [$course->id, $lesson->id]) }}"
+                                <a href="{{ route('trainer.practice-tests.create', [$course->id, $lesson->id]) }}"
                                     class="px-3 py-1.5 rounded-md bg-blue-900 text-blue-300">Create Practice Test</a>
                             @else
                                 <a href="{{ route('trainer.courses.lessons.view', [$course->id, $lesson->id]) }}"

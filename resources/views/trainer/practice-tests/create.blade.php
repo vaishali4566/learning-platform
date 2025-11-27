@@ -19,7 +19,7 @@
                 @endif
             </h2>
 
-            <a href="{{ route('practice-tests.index') }}"
+            <a href="{{ route('trainer.practice-tests.index') }}"
                class="px-4 py-2 rounded-lg bg-[#0D1622] border border-[#1E2B4A] text-gray-300
                       hover:border-[#00C2FF] hover:text-[#00C2FF] transition-all">
                 <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -35,7 +35,7 @@
 
         <!-- Main Form (Create + Edit) -->
         <form 
-            action="{{ $isEdit ? route('practice-tests.update', $test->id) : route('practice-tests.store') }}" 
+            action="{{ $isEdit ? route('trainer.practice-tests.update', $test->id) : route('trainer.practice-tests.store') }}" 
             method="POST"
             class="space-y-5"
         >
@@ -106,7 +106,7 @@
             <i class="fa-solid fa-file-excel mr-2"></i> Import Questions
         </h3>
 
-        <form action="{{ route('practice-tests.import-questions', $test->id) }}" 
+        <form action="{{ route('trainer.practice-tests.import-questions', $test->id) }}" 
               method="POST"
               enctype="multipart/form-data"
               class="space-y-5">
