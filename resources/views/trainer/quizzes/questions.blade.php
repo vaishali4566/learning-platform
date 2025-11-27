@@ -161,44 +161,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle form submit (Add/Edit)
     form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const quizId = form.dataset.quizId;
-    const editId = form.dataset.editId;
+        e.preventDefault();
+        const quizId = form.dataset.quizId;
+        const editId = form.dataset.editId;
+        const formData = new FormData(form);
 
-    // ✅ Correct URLs
-    const url = editId
-        ? `/trainer/quizzes/questions/${editId}` // PUT route
-        : `/trainer/quizzes/${quizId}/questions`; // POST route
+        let url = '';
+        if(editId){
+            url = `/trainer/quizzes/questions/${editId}`;
+            formData.append('_method','PUT'); // spoof PUT for Laravel
+        } else {
+            url = `/trainer/quizzes/${quizId}/questions`;
+        }
 
-    const method = editId ? 'PUT' : 'POST';
-    const formData = new FormData(form);
+        const res = await fetch(url, {
+            method: 'POST', // always POST when using FormData
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+        const result = await res.json();
 
-    const res = await fetch(url, {
-        method: method,
-        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-        body: formData
+        if(result.success){
+            location.reload();
+        }
     });
-    const result = await res.json();
-
-    if(result.success){
-        alert(editId ? 'Question updated!' : 'Question added!');
-        location.reload();
-    } else {
-        alert('Failed to save question.');
-    }
-});
-
 
     // Event delegation for Delete & Edit
     document.addEventListener('click', async (e) => {
         // DELETE
         if(e.target.classList.contains('deleteBtn')){
+
             const id = e.target.dataset.id;
             const container = e.target.closest('div[data-id]');
 
             const res = await fetch(`/trainer/quizzes/questions/${id}`, {
-                method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                method: 'POST', // spoof DELETE
+                headers: { 
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}', 
+                    'Accept': 'application/json' 
+                },
+                body: new URLSearchParams({'_method':'DELETE'})
             });
             const result = await res.json();
             if(result.success){
@@ -233,11 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = e.target.dataset.id;
             const res = await fetch(`/trainer/quizzes/${id}/finalize`, {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                headers: { 
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
             });
-            const result = await res.json();
-            if(result.success) alert(result.success);
-            else alert('Error finalizing quiz.');
         });
     }
 });

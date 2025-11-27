@@ -44,12 +44,6 @@ class QuizController extends Controller
                          ->with('success', 'Quiz created. Now add questions.');
     }
 
-    // 🟢 Show quiz edit page with all questions
-    public function edit($id)
-    {
-        $quiz = Quiz::with('questions')->findOrFail($id);
-        return view('trainer.quizzes.edit', compact('quiz'));
-    }
     public function showQuestions($quizId)
     {
         $quiz = Quiz::with('questions')->findOrFail($quizId);

@@ -23,10 +23,15 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Chat\ChatRequestController;
-use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CourseFeedbackController;
+use App\Http\Controllers\PracticeTestController;
+
+// ----------------------------
+// Chat Controllers
+// ----------------------------
+use App\Http\Controllers\Chat\ChatController;
+use App\Http\Controllers\Chat\ChatRequestController;
 
 // ----------------------------
 // Trainer Controllers
@@ -42,13 +47,6 @@ use App\Http\Controllers\Trainer\TrainerLessonController;
 // Admin Controllers
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
-
-// ----------------------------
-// pratice questions Controllers
-// ----------------------------
-use App\Http\Controllers\PracticeTestController;
-
-
 
 // ======================================================================
 // ROOT REDIRECT
@@ -108,12 +106,16 @@ Route::prefix('user')->group(function () {
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
             Route::get('/{courseId}/view', [UserLessonController::class, 'viewLessons'])->name('view');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
+
+            // lessons
+            Route::get('/lessons/{id}/stream', [UserLessonController::class, 'stream'])->name('lessons.stream');
+            Route::get('/{course}/lessons/data', [UserLessonController::class, 'getLessons'])->name('lessons.data');
+
+            // feedback
             Route::post('/feedback/store', [CourseFeedbackController::class, 'store'])->name('feedback.store');
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
             Route::get('/{courseId}/feedback/summary', [CourseFeedbackController::class, 'summary']);
             Route::get('/{courseId}/feedback/check', [CourseFeedbackController::class, 'checkUserFeedback']);
-            Route::get('/lessons/{id}/stream', [UserLessonController::class, 'stream'])->name('lessons.stream');
-            Route::get('/{course}/lessons/data', [UserLessonController::class, 'getLessons'])->name('lessons.data');
         });
 
         // Quizzes
@@ -164,6 +166,8 @@ Route::prefix('trainer')->group(function () {
         Route::post('/update', [TrainerController::class, 'updateProfile'])->name('trainer.update');
         Route::post('/delete', [TrainerController::class, 'deleteAccount'])->name('trainer.delete');
         Route::post('/logout', [AuthController::class, 'trainerLogout'])->name('trainer.logout');
+
+        //additional
         Route::get('/report', [ReportController::class, 'index'])->name('trainer.report');
         Route::get('/students', [TrainerStudentController::class, 'index'])->name('trainer.students.index');
         Route::post('/{trainerId}/earnings/add/{courseId}', [TrainerController::class, 'addEarning'])->name('trainer.earnings.add');
@@ -174,23 +178,24 @@ Route::prefix('trainer')->group(function () {
         Route::prefix('courses')->name('trainer.courses.')->group(function () {
             Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
-            Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
+            Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
+            Route::post('/', [TrainerCourseController::class, 'store'])->name('store');
+            Route::put('/{id}', [TrainerCourseController::class, 'update'])->name('trainer.courses.update');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
 
-            Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
-
-            Route::delete('/{course}/{lesson_Id}', [TrainerCourseController::class, 'destroy_lessson'])->name('destroy.lessson'); // lesson  delete route
-
+            // lessons
             Route::get('/{course}/lessons', [TrainerLessonController::class, 'manage'])->name('lessons.manage');
             Route::get('/{course}/lessons/create', [TrainerLessonController::class, 'create'])->name('lessons.create');
-            Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
             Route::get('/lessons/{id}/stream', [TrainerLessonController::class, 'stream'])->name('lessons.stream');
-
+            Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
+            Route::put('/lessons/update/{id}', [TrainerLessonController::class, 'update'])->name('trainer.lessons.update');
+            Route::delete('/{course}/{lesson_Id}', [TrainerLessonController::class, 'destroy_lessson'])->name('destroy.lessson');
             
+            // course feedback
             Route::get('/{courseId}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.list');
             Route::get('/{courseId}/feedback/summary', [CourseFeedbackController::class, 'summary']);
         });
@@ -198,20 +203,20 @@ Route::prefix('trainer')->group(function () {
         // Quizzes
         Route::prefix('quizzes')->group(function () {
             Route::get('/', [QuizController::class, 'index'])->name('trainer.quizzes.index');
-            Route::get('/{id}/questions', [QuizController::class, 'showQuestions'])->name('trainer.quizzes.questions');
             Route::get('/create', [QuizController::class, 'create'])->name('trainer.quizzes.create');
             Route::post('/store', [QuizController::class, 'store'])->name('trainer.quizzes.store');
-            Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('trainer.quizzes.edit');
-            Route::get('questions/{id}', [QuizController::class,'getQuestion']);
-            Route::put('questions/{id}', [QuizController::class,'updateQuestion']);
-            Route::post('/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
-            Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
             Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('trainer.quizzes.finalize');
+
+            // Quiz question
+            Route::get('questions/{id}', [QuizController::class,'getQuestion']);
+            Route::get('/{id}/questions', [QuizController::class, 'showQuestions'])->name('trainer.quizzes.questions');
+            Route::post('/{quiz}/questions', [QuizController::class, 'storeQuestion'])->name('trainer.quizzes.questions.store');
+            Route::put('questions/{id}', [QuizController::class,'updateQuestion']);
+            Route::delete('/questions/{question}', [QuizController::class, 'deleteQuestion'])->name('trainer.quizzes.questions.delete');
+
         });
 
         Route::resource('practice-tests', PracticeTestController::class);
-
-            // Import Excel questions (POST)
         Route::post('practice-tests/{id}/import-questions', [PracticeTestController::class, 'importQuestions'])->name('practice-tests.import-questions');
         Route::get('/practice-tests/{id}/import-questions', [PracticeTestController::class, 'showImportPage']);
 
