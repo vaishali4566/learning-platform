@@ -3,20 +3,30 @@
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="min-h-screen bg-gradient-to-br from-[#0A0E19] via-[#0E1426] to-[#141C33] text-[#E6EDF7] px-6 py-10">
+<div class="min-h-screen bg-[#0a0f18] text-[#E6EDF7] px-6 py-10">
 
     <!-- Header -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <h1 class="text-3xl font-semibold bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent">
+        <h1 class="text-3xl font-semibold bg-gradient-to-r from-[#00E0FF] to-[#0066FF] bg-clip-text text-transparent drop-shadow-lg">
             Lessons — {{ $course->title }}
         </h1>
+
         <div class="flex items-center gap-3">
+            
             <a href="{{ route('trainer.courses.index') }}"
-                class="px-4 py-2 rounded-lg border border-[#26304D] text-[#A8B3CF] hover:text-white hover:bg-[#1C2541] transition-all">
+                class="px-4 py-2 rounded-xl backdrop-blur-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:text-white transition-all">
                 ← Back
             </a>
+
+            @if($lessons->count())
+                <a href="{{ route('trainer.courses.lessons.view', [$course->id, $lessons->first()->id]) }}"
+                    class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#26C281] to-[#1ABC9C] text-white hover:scale-105 transition-all shadow-md">
+                    Explore
+                </a>
+            @endif
+
             <button id="openCreateModal"
-                class="px-5 py-2 rounded-lg font-medium bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white">
+                class="px-5 py-2 rounded-xl font-medium bg-gradient-to-r from-[#007BFF] to-[#33A1FD] hover:scale-105 transition shadow-lg">
                 + Add Lesson
             </button>
         </div>
@@ -24,9 +34,9 @@
 
     <!-- Lessons Table -->
     @if($lessons->count())
-    <div class="bg-[#0E1625]/90 border border-[#26304D] rounded-2xl shadow-lg overflow-hidden">
+    <div class="bg-[#0d1627]/60 border border-[#1b2a44] rounded-2xl shadow-xl backdrop-blur-md">
         <table class="w-full text-sm">
-            <thead class="bg-[#111B2D]/60 text-[#8A93A8] text-xs uppercase tracking-wider">
+            <thead class="bg-[#101a33] text-[#8FA2C1] uppercase text-xs tracking-wider">
                 <tr>
                     <th class="px-6 py-3 text-left font-semibold">#</th>
                     <th class="px-6 py-3 text-left font-semibold">Title</th>
@@ -34,11 +44,12 @@
                     <th class="px-6 py-3 text-center font-semibold">Actions</th>
                 </tr>
             </thead>
-            <tbody id="lessonsTbody" class="divide-y divide-[#1F2945]/70">
+
+            <tbody id="lessonsTbody" class="divide-y divide-[#1b2a44]">
                 @foreach($lessons as $index => $lesson)
-                <tr id="lesson-row-{{ $lesson->id }}" class="hover:bg-[#1A233A]/60 transition-all duration-200">
-                    <td class="px-6 py-3 text-[#9BA3B8]">{{ $index + 1 }}</td>
-                    <td class="px-6 py-3 font-medium text-[#E6EDF7]">
+                <tr id="lesson-row-{{ $lesson->id }}" class="hover:bg-[#15203b] transition-all duration-200">
+                    <td class="px-6 py-3 text-gray-400">{{ $index+1 }}</td>
+                    <td class="px-6 py-3 font-medium text-white">
                         <div class="lesson-data"
                             data-id="{{ $lesson->id }}"
                             data-title="{{ e($lesson->title) }}"
@@ -46,28 +57,61 @@
                             {{ $lesson->title }}
                         </div>
                     </td>
-                    <td class="px-6 py-3 text-[#A8B3CF]">{{ ucfirst($lesson->content_type) }}</td>
-                    <td class="px-6 py-3 text-center">
-                        <div class="flex justify-center items-center gap-2">
-                            @if($lesson->content_type === 'quiz')
-                                <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
-                                    class="px-3 py-1.5 rounded-md bg-[#1F3B2E] text-green-400">Add Quiz</a>
-                            @elseif($lesson->content_type === 'practice')
-                                <a href="{{ route('trainer.practice-tests.create', [$course->id, $lesson->id]) }}"
-                                    class="px-3 py-1.5 rounded-md bg-blue-900 text-blue-300">Create Practice Test</a>
-                            @else
-                                <a href="{{ route('trainer.courses.lessons.view', [$course->id, $lesson->id]) }}"
-                                    class="px-3 py-1.5 rounded-md bg-[#1F3B2E] text-green-400">Explore</a>
-                            @endif
+                    <td class="px-6 py-3 text-gray-300">{{ ucfirst($lesson->content_type) }}</td>
 
-                            <button data-id="{{ $lesson->id }}"
-                                class="update-lesson-btn px-3 py-1.5 rounded-md bg-blue-800 text-blue-300 hover:bg-blue-700">
-                                Edit Title
+                    <td class="relative px-6 py-3 text-center">
+                        <div class="absolute inline-block text-left">
+                        
+                            <button class="lesson-action-btn px-2  text-gray-300 hover:text-white" data-id="{{ $lesson->id }}">
+                                ⋮
                             </button>
-                            <button data-id="{{ $lesson->id }}"
-                                class="delete-lesson-btn px-3 py-1.5 rounded-md bg-red-900 text-red-300 hover:bg-red-800">
-                                Delete
-                            </button>
+
+                            <!-- Dropdown -->
+                            <div class="lesson-dropdown absolute top-full right-0 z-50 mt-2 hidden w-52 bg-[#0F1626] 
+                                        border border-[#1E2740] rounded-xl shadow-xl text-sm overflow-hidden">
+
+                                <ul class="py-1 divide-y divide-[#1F2A44]/50">
+                                    <li>
+                                        <button data-id="{{ $lesson->id }}"
+                                            class="update-lesson-btn w-full text-left px-4 py-2.5 text-[#D0D8E8] 
+                                                hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
+                                            <i class="bi bi-pencil-square text-[#00C2FF] text-base"></i>
+                                            Edit Title
+                                        </button>
+                                    </li>
+
+                                    @if($lesson->content_type == 'quiz')
+                                    <li>
+                                        <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
+                                            class="w-full px-4 py-2.5 block text-[#D0D8E8] 
+                                                hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
+                                            <i class="bi bi-clipboard2-check text-[#2F82DB] text-base"></i>
+                                            Add Quiz
+                                        </a>
+                                    </li>
+
+                                    @elseif($lesson->content_type == 'practice')
+                                    <li>
+                                        <a href="{{ route('trainer.practice-tests.create', [$course->id, $lesson->id]) }}"
+                                            class="w-full px-4 py-2.5 block text-[#D0D8E8] 
+                                                hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
+                                            <i class="bi bi-collection-play text-[#2F82DB] text-base"></i>
+                                            Create Practice
+                                        </a>
+                                    </li>
+                                    @endif
+
+                                    <li>
+                                        <button data-id="{{ $lesson->id }}"
+                                            class="delete-lesson-btn w-full text-left px-4 py-2.5 text-red-400 
+                                                hover:bg-[#351C20] hover:text-red-300 flex items-center gap-2 transition font-medium">
+                                            <i class="bi bi-trash3 text-red-500 text-base"></i>
+                                            Delete
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
                         </div>
                     </td>
                 </tr>
@@ -76,42 +120,39 @@
         </table>
     </div>
     @else
-    <div class="text-center py-20 bg-[#0E1625]/80 border border-[#26304D] rounded-2xl shadow-lg max-w-lg mx-auto">
-        <h2 class="text-2xl font-semibold mb-2 text-[#E6EDF7]">No Lessons Found</h2>
-        <p class="text-[#9BA3B8] mb-6">You haven’t added any lessons yet for this course.</p>
+    <div class="text-center py-20 bg-[#0d1627]/70 border border-[#1b2a44] rounded-2xl shadow-xl max-w-lg mx-auto backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-2 text-white">No Lessons Found</h2>
+        <p class="text-gray-400 mb-6">Add your first lesson to get started.</p>
+
         <button id="openCreateModalEmpty"
-            class="px-6 py-2 rounded-lg bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white">
+            class="px-6 py-2 rounded-xl bg-gradient-to-r from-[#007BFF] to-[#33A1FD] text-white hover:scale-105 shadow-lg transition">
             + Add Lesson
         </button>
     </div>
     @endif
 
     <!-- Create / Edit Modal -->
-    <div id="createModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-[#0E1625] border border-[#26304D] rounded-2xl p-6 w-full max-w-2xl shadow-2xl relative">
-            <h2 id="modalHeading" class="text-2xl font-semibold mb-4 text-[#00C2FF]">New Lesson</h2>
+    <div id="createModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-[#101a33] border border-[#26304D] rounded-2xl p-7 w-full max-w-2xl shadow-[0_0_30px_rgba(0,150,255,0.15)] relative">
 
-            <form id="createLessonForm"
-                action="{{ route('trainer.courses.lessons.store', $course->id) }}"
-                method="POST"
-                enctype="multipart/form-data"
-                class="space-y-5">
+            <h2 id="modalHeading" class="text-2xl font-semibold mb-5 bg-gradient-to-r from-[#00E0FF] to-[#007BFF] bg-clip-text text-transparent">
+                New Lesson
+            </h2>
 
+            <form id="createLessonForm" method="POST" action="{{ route('trainer.courses.lessons.store', $course->id) }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 <input type="hidden" name="course_id" value="{{ $course->id }}">
-                <input type="hidden" id="edit_lesson_id" name="edit_lesson_id" value="">
+                <input type="hidden" id="edit_lesson_id" name="edit_lesson_id">
 
                 <div>
-                    <label class="block text-[#A8B3CF] mb-1">Title *</label>
-                    <input type="text" id="lesson_title" name="title" required
-                        class="w-full bg-[#101727] border border-[#26304D] rounded-lg px-3 py-2 text-[#E6EDF7]">
+                    <label class="text-gray-400 mb-1 block">Title *</label>
+                    <input id="lesson_title" type="text" name="title" required class="w-full bg-[#0d1528] border border-[#26304D] text-white rounded-xl px-3 py-2 focus:border-[#00B0FF] outline-none">
                 </div>
 
                 <div id="contentTypeWrapper">
-                    <label class="block text-[#A8B3CF] mb-1">Content Type *</label>
-                    <select name="content_type" id="contentType" required
-                        class="w-full bg-[#101727] border border-[#26304D] rounded-lg px-3 py-2 text-[#E6EDF7]">
-                        <option value="">-- Select Type --</option>
+                    <label class="text-gray-400 mb-1 block">Content Type *</label>
+                    <select name="content_type" id="contentType" class="w-full bg-[#0d1528] border border-[#26304D] text-white rounded-xl px-3 py-2 focus:border-[#00B0FF] outline-none">
+                        <option value="">Select</option>
                         <option value="video">Video</option>
                         <option value="text">Text</option>
                         <option value="quiz">Quiz</option>
@@ -120,51 +161,48 @@
                 </div>
 
                 <div id="contentTypeDisplay" class="hidden">
-                    <label class="block text-[#A8B3CF] mb-1">Content Type</label>
-                    <div class="px-3 py-2 bg-[#101727] border border-[#26304D] rounded-lg text-[#E6EDF7]">
+                    <label class="text-gray-400 mb-1 block">Content Type</label>
+                    <div class="px-3 py-2 bg-[#0d1528] border border-[#26304D] text-gray-200 rounded-xl">
                         <span id="currentTypeText"></span>
                     </div>
-                    <p class="text-xs text-yellow-400 mt-2">Content type cannot be changed after creation.</p>
+                    <p class="text-xs text-yellow-300 mt-2">Once created, type cannot be changed.</p>
                 </div>
 
                 <div id="videoField" class="hidden">
-                    <label class="block text-[#A8B3CF] mb-1">Upload Video</label>
-                    <input type="file" name="video" accept="video/*"
-                        class="w-full bg-[#101727] border border-[#26304D] rounded-lg px-3 py-2">
+                    <label class="text-gray-400 mb-1">Upload Video</label>
+                    <input type="file" name="video" accept="video/*" class="w-full bg-[#0d1528] border border-[#26304D] text-white rounded-xl px-3 py-2">
                 </div>
 
                 <div id="textField" class="hidden">
-                    <label class="block text-[#A8B3CF] mb-1">Text Content</label>
-                    <textarea name="text_content" rows="5"
-                        class="w-full bg-[#101727] border border-[#26304D] rounded-lg px-3 py-2"></textarea>
+                    <label class="text-gray-400 mb-1">Text Content</label>
+                    <textarea name="text_content" rows="5" class="w-full bg-[#0d1528] border border-[#26304D] text-white rounded-xl px-3 py-2"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3">
                     <button type="button" id="closeCreateModal"
-                        class="px-4 py-2 rounded-lg border border-[#26304D] text-[#A8B3CF] hover:bg-[#1C2541]">
-                        Cancel
-                    </button>
+                        class="px-5 py-2 rounded-xl border border-[#26304D] text-gray-400 hover:bg-white/10 transition">Cancel</button>
+
                     <button type="submit" id="createBtn"
-                        class="px-6 py-2 rounded-lg bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white font-medium">
+                        class="px-6 py-2 rounded-xl bg-gradient-to-r from-[#007BFF] to-[#33A1FD] text-white font-medium hover:scale-105 shadow-lg transition">
                         <span id="createBtnText">Create Lesson</span>
                     </button>
                 </div>
             </form>
 
-            <button id="closeCreateX" class="absolute top-4 right-4 text-[#9BA3B8] hover:text-[#00C2FF] text-2xl">×</button>
+            <button id="closeCreateX" class="absolute top-4 right-4 text-gray-400 hover:text-[#00B0FF] text-2xl">×</button>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-[#0E1625] border border-[#26304D] rounded-2xl p-6 w-full max-w-md text-center">
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-[#101a33] border border-[#26304D] rounded-2xl p-7 w-full max-w-md text-center shadow-[0_0_30px_rgba(255,0,0,0.1)]">
             <h2 class="text-2xl font-semibold text-red-400 mb-4">Confirm Delete</h2>
-            <p class="text-[#A8B3CF] mb-6">This action cannot be undone.</p>
+            <p class="text-gray-400 mb-6">This action cannot be undone.</p>
             <div class="flex justify-center gap-4">
-                <button id="cancelDelete" class="px-5 py-2 border border-[#26304D] text-[#A8B3CF] rounded-lg hover:bg-[#1C2541]">
+                <button id="cancelDelete" class="px-5 py-2 border border-[#26304D] text-gray-400 rounded-xl hover:bg-white/10">
                     Cancel
                 </button>
-                <button id="confirmDelete" class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                <button id="confirmDelete" class="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 shadow">
                     Yes, Delete
                 </button>
             </div>
@@ -345,6 +383,23 @@ document.addEventListener("click", (e) => {
             deleteModal.classList.add("hidden");
         }
     });
+
+    // Toggle 3-dot dropdown menu
+document.addEventListener("click", (e) => {
+    // Close any open dropdown if clicking outside
+    document.querySelectorAll(".lesson-dropdown").forEach(dd => {
+        if (!dd.contains(e.target) && !dd.previousElementSibling.contains(e.target)) {
+            dd.classList.add("hidden");
+        }
+    });
+
+    // Open clicked dropdown
+    if (e.target.matches(".lesson-action-btn")) {
+        const dropdown = e.target.nextElementSibling;
+        dropdown.classList.toggle("hidden");
+    }
+});
+
 
 });
 </script>

@@ -157,7 +157,7 @@ class TrainerLessonController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Lesson created successfully',
+                'success' => true,
                 'data' => $lesson,
             ], 201);
 
@@ -226,8 +226,7 @@ class TrainerLessonController extends Controller
             Log::error('Lesson title update failed: ' . $e->getMessage());
 
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to update lesson title.',
+                'success' => false
             ], 500);
         }
     }
@@ -239,9 +238,9 @@ class TrainerLessonController extends Controller
             $lesson = Lesson::where('course_id', $courseId)->where('id', $lessonId)->firstOrFail();
             $lesson->delete();
 
-            return response()->json(['success' => true, 'message' => 'Lesson deleted successfully']);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to delete lesson']);
+            return response()->json(['success' => false]);
         }
     }
 }
