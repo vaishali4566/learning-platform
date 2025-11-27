@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
+use HotwiredLaravel\TurboLaravel\Http\Middleware\TurboMiddleware;
 // ----------------------------
 // USER CONTROLLERS
 // ----------------------------
@@ -156,7 +156,7 @@ Route::prefix('trainer')->name('trainer.')->group(function () {
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
-            Route::delete('/delete/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
+            Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
             Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
 
             // Lessons

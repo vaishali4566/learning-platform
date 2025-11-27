@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "doctrine/dbal": "^4.3",
+        "hotwired-laravel/turbo-laravel": "^2.5",
         "laravel/framework": "^12.0",
         "laravel/reverb": "^1.6",
         "laravel/sanctum": "^4.2",
