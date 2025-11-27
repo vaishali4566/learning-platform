@@ -48,6 +48,7 @@
                 <p class="text-red-500 text-xs mt-1 hidden" id="description-error"></p>
             </div>
 
+
             <div class="pt-2">
                 <p class="text-gray-400 text-xs">Total Marks: <span class="text-white">0</span> (updates after adding questions)</p>
                 <p class="text-gray-400 text-xs">Passing Marks: <span class="text-white">0</span> (33% of total)</p>

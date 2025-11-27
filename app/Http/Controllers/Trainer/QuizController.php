@@ -35,6 +35,7 @@ class QuizController extends Controller
             'lesson_id' => $request->lesson_id,
             'title' => $request->title,
             'description' => $request->description,
+            'source' => $request->source,
             'total_marks' => 0,
             'passing_marks' => 0,
         ]);
@@ -43,23 +44,37 @@ class QuizController extends Controller
                          ->with('success', 'Quiz created. Now add questions.');
     }
 
-    // 🟢 Show quiz edit page with all questions
-    public function edit($id)
-    {
-        $quiz = Quiz::with('questions')->findOrFail($id);
-        return view('trainer.quizzes.edit', compact('quiz'));
-    }
     public function showQuestions($quizId)
     {
         $quiz = Quiz::with('questions')->findOrFail($quizId);
         return view('trainer.quizzes.questions', compact('quiz'));
     }
 
+    // 🟢 Get single question (for Edit modal)
+    public function getQuestion($id)
+    {
+        $question = QuizQuestion::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'question' => [
+                'id' => $question->id,
+                'question_text' => $question->question_text,
+                'source' => $question->source,
+                'marks' => $question->marks,
+                'options' => $question->options,
+                'correct_option' => $question->correct_option,
+            ]
+        ]);
+    }
+
+
     // 🟢 Store new question (AJAX)
     public function storeQuestion(Request $request, $quizId)
     {
         $request->validate([
             'question_text' => 'required|string',
+            'source' => 'nullable|string',
             'marks' => 'required|integer|min:1',
             'options' => 'required|array|size:4',
             'options.*' => 'required|string',
@@ -69,6 +84,7 @@ class QuizController extends Controller
         $question = QuizQuestion::create([
             'quiz_id' => $quizId,
             'question_text' => $request->question_text,
+            'source' => $request->source,
             'marks' => $request->marks,
             'options' => $request->options,
             'correct_option' => $request->correct_option,
@@ -92,6 +108,39 @@ class QuizController extends Controller
             ],
         ]);
     }
+
+    // 🟢 Update question (AJAX)
+    public function updateQuestion(Request $request, $id)
+    {
+        $request->validate([
+            'question_text' => 'required|string',
+            'source' => 'nullable|string',
+            'marks' => 'required|integer|min:1',
+            'options' => 'required|array|size:4',
+            'options.*' => 'required|string',
+            'correct_option' => 'required|integer|between:0,3',
+        ]);
+
+        $question = QuizQuestion::findOrFail($id);
+        $question->update([
+            'question_text' => $request->question_text,
+            'source' => $request->source,
+            'marks' => $request->marks,
+            'options' => $request->options,
+            'correct_option' => $request->correct_option,
+        ]);
+
+        // Update quiz marks
+        $quiz = Quiz::find($question->quiz_id);
+        $totalMarks = $quiz->questions()->sum('marks');
+        $quiz->update([
+            'total_marks' => $totalMarks,
+            'passing_marks' => ceil($totalMarks * 0.33),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
 
     // 🟢 Delete question (AJAX)
     public function deleteQuestion($questionId)

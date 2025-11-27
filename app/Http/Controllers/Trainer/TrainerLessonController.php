@@ -171,6 +171,7 @@ class TrainerLessonController extends Controller
             ], 500);
         }
     }
+
     public function viewLessons($id)
     {
         $course = Course::with(['lessons.quiz'])->findOrFail($id);
@@ -197,5 +198,50 @@ class TrainerLessonController extends Controller
     {
         $lessons = $course->lessons()->get();
         return view('trainer.lessons.manage', compact('course', 'lessons'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $lesson = Lesson::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|min:3|max:100',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $lesson->title = $request->title;
+
+            $lesson->save();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lesson title updated successfully!',
+                'data'    => $lesson->makeHidden(['video_url', 'text_content']) // optional: sensitive data hide
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lesson title update failed: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update lesson title.',
+            ], 500);
+        }
+    }
+
+
+    public function destroy_lessson($courseId, $lessonId)
+    {
+        try {
+            $lesson = Lesson::where('course_id', $courseId)->where('id', $lessonId)->firstOrFail();
+            $lesson->delete();
+
+            return response()->json(['success' => true, 'message' => 'Lesson deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete lesson']);
+        }
     }
 }
