@@ -10,13 +10,25 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+
+    <script>
+        // Run before render
+        document.documentElement.classList.add(
+            "sidebar-init-loading",
+        );
+    </script>
+
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- ✅ Material Icons for chat ticks -->
-
-
 
     <style>
         /* ===== TRANSITIONS ===== */
@@ -30,7 +42,37 @@
         }
 
         .sidebar-expanded {
-            width: 16rem;
+            width: 14rem;
+        }
+
+        /* PAGE FADE-IN ANIMATION */
+        .page-hidden {
+            opacity: 0;
+        }
+
+        .page-visible {
+            opacity: 1;
+            transition: opacity 0.35s ease;
+        }
+
+        /* SIDEBAR INITIAL HIDDEN STATE */
+        .sidebar-init-loading #sidebar {
+            opacity: 0;
+            transform: translateX(-20px); 
+        }
+
+        /* SIDEBAR FADE + SLIDE IN */
+        #sidebar.sidebar-animate-in {
+            opacity: 1 !important;
+            transform: translateX(0);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        /* MOBILE SLIDE-IN */
+        @media (max-width: 1023px) {
+            .sidebar-init-loading #sidebar {
+                transform: translateX(-40px); 
+            }
         }
 
         /* ===== TOOLTIP ===== */
@@ -57,7 +99,7 @@
             pointer-events: auto;
             transform: translateY(-50%) translateX(8px);
         }
-
+        
         .tooltip::after {
             content: "";
             position: absolute;
@@ -78,13 +120,13 @@
             background-color: #0f172a;
             color: #fff;
             overflow-y: auto;
-            height: calc(100vh - 4rem);
+            height: calc(100vh - 2rem);
         }
 
-        #sidebar {
+        /* #sidebar {
             background-color: #1e293b;
             color: white;
-        }
+        } */
 
         /* ===== NOTIFICATION CONTAINER ===== */
         #notification-container {
@@ -126,7 +168,7 @@
     </style>
 </head>
 
-<body class="bg-gray-900 flex flex-col h-screen overflow-hidden">
+<body class="bg-[#F5F7FA] page-hidden text-[#0F172A] dark:bg-[#0f172a] dark:text-white flex flex-col h-screen overflow-hidden">
 
     {{-- Define current user for chat notifications --}}
     <script>
@@ -136,50 +178,161 @@
             type: "user"
         };
         window.currentRoomId = null; 
-    </script>
-
-    {{-- NAVBAR --}}
-    <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-gray-800">
-        @include('partials.user.navbar')
-    </div>
+    </script>   
 
     {{-- BODY LAYOUT --}}
-    <div class="flex flex-1 pt-16 overflow-hidden">
+    <div class="flex flex-1 transition-all duration-300 overflow-hidden">
         {{-- SIDEBAR --}}
         @include('partials.user.sidebar')
 
-        {{-- MAIN CONTENT --}}
-        <main id="mainContent" class="flex-1 ml-64 transition-all duration-300">
-            @yield('content')
-        </main>
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+        <div id="mainContent" class="flex-1 ml-20 lg:ml-0 transition-all duration-300 flex flex-col">            
+            {{-- NAVBAR --}}
+            <div id="navbar" class=" fixed top-0 left-20 lg:left-[14rem] right-0 bg-[#F0F4FA] dark:bg-gray-900 border-b border-[#D5DEE8] dark:border-gray-800">
+                @include('partials.user.navbar')
+            </div>
+
+            {{-- MAIN CONTENT --}}
+            <main class="flex-1 pt-16 transition-all duration-300">
+                @yield('content')
+            </main>
+        </div>
     </div>
 
     {{-- CHATBOT --}}
     @include('partials.chatbot')
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const html = document.documentElement;
+            const body = document.body;
+            const sidebar = document.getElementById("sidebar");
+
+            requestAnimationFrame(() => {
+                // Remove initial width-lock class
+                html.classList.remove("sidebar-init-loading");
+
+                // Trigger sidebar animation
+                sidebar.classList.add("sidebar-animate-in");
+
+                // Reveal page fade-in
+                requestAnimationFrame(() => {
+                    body.classList.remove("page-hidden");
+                    body.classList.add("page-visible");
+                });
+            });
+        });
+    </script>
+
     {{-- LUCIDE ICONS & SIDEBAR SCRIPT --}}
     <script>
         lucide.createIcons();
 
-        const toggleBtn = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const sidebarTextElements = document.querySelectorAll('.sidebar-text');
-        const sidebarTitle = document.getElementById('sidebar-title');
+        const toggleBtn = document.getElementById("sidebarToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const navbar = document.getElementById("navbar");
+        const overlay = document.getElementById("sidebarOverlay");
+        const textElements = document.querySelectorAll(".sidebar-text");
+        const chevronIcon = document.getElementById('chevronIcon');
+        const menuIcon = document.getElementById('menuIcon');
 
-        toggleBtn.addEventListener('click', () => {
-            const isNowCollapsed = sidebar.classList.toggle('sidebar-collapsed');
-            sidebar.classList.toggle('sidebar-expanded', !isNowCollapsed);
+        const isDesktop = () => window.innerWidth >= 1024;
 
-            if (isNowCollapsed) {
-                mainContent.classList.replace('ml-64', 'ml-20');
-                sidebarTextElements.forEach(el => el.classList.add('hidden'));
-                sidebarTitle?.classList.add('hidden');
+        function collapseSidebar() {
+            sidebar.classList.add("sidebar-collapsed");
+            sidebar.classList.remove("sidebar-expanded");
+
+            if (!isDesktop()) {
+                overlay.classList.add("hidden");
+            } 
+            navbar.style.left = "5rem";
+            navbar.style.width = "calc(100% - 5rem)";
+            textElements.forEach(el => el.classList.add("hidden"));
+            chevronIcon.classList.add("hidden");
+            menuIcon.classList.remove("hidden");
+        }
+
+        function expandSidebar() {
+            sidebar.classList.add("sidebar-expanded");
+            sidebar.classList.remove("sidebar-collapsed");
+
+            if (isDesktop()) {
+                // Desktop behaviour
+                navbar.style.left = "14rem";
+                navbar.style.width = "calc(100% - 14rem)";
             } else {
-                mainContent.classList.replace('ml-20', 'ml-64');
-                sidebarTextElements.forEach(el => el.classList.remove('hidden'));
-                sidebarTitle?.classList.remove('hidden');
+                // Mobile: show sidebar as overlay drawer
+                sidebar.classList.remove("hidden");
+                overlay.classList.remove("hidden");
             }
+
+            textElements.forEach(el => el.classList.remove("hidden"));
+            chevronIcon.classList.remove("hidden");
+            menuIcon.classList.add("hidden");
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            if (sidebar.classList.contains("sidebar-expanded")) {
+                collapseSidebar();
+            } else {
+                expandSidebar();
+            }
+        });
+
+        overlay.addEventListener("click", () => {
+            collapseSidebar();
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            requestAnimationFrame(() => {
+                    document.documentElement.classList.remove("sidebar-init-loading");
+                });
+            
+                if (!isDesktop()) {
+                    collapseSidebar(); // collapse for mobile only
+                }
+        });
+
+        // On resize, reset layout
+        window.addEventListener("resize", () => {
+            if (isDesktop()) {
+                expandSidebar();
+            } else {
+                collapseSidebar();
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById("themeToggle");
+            const sunIcon = document.getElementById("sunIcon");
+            const moonIcon = document.getElementById("moonIcon");
+
+            // Load saved theme
+            if (localStorage.theme === "dark") {
+                html.classList.add("dark");
+                sunIcon.classList.remove("hidden");
+                moonIcon.classList.add("hidden");
+            } else {
+                html.classList.remove("dark");
+                sunIcon.classList.add("hidden");
+                moonIcon.classList.remove("hidden");
+            }
+
+            themeToggle.addEventListener("click", () => {
+                const isDark = html.classList.toggle("dark");
+
+                // Switch icons
+                sunIcon.classList.toggle("hidden", !isDark);
+                moonIcon.classList.toggle("hidden", isDark);
+
+                // Save preference
+                localStorage.theme = isDark ? "dark" : "light";
+            });
         });
     </script>
 

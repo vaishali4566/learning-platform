@@ -2,8 +2,8 @@
 
   <!-- Floating Chat Button -->
   <button id="chat-toggle-btn"
-    class="bg-gradient-to-r from-indigo-500 via-blue-500 to-sky-400 text-white rounded-full p-3 shadow-xl hover:scale-110 transition-transform duration-300 fixed bottom-5 right-5 z-50 flex items-center justify-center animate-pulse-slow">
-    <i class="bi bi-chat-dots-fill text-lg"></i>
+    class="bg-gradient-to-r from-indigo-500 via-blue-500 to-sky-400 text-white w-14 h-14 rounded-full p-1 shadow-xl hover:scale-110 transition-transform duration-300 fixed bottom-8 right-8 z-50 flex items-center justify-center animate-pulse-slow">
+    <i class="bi bi-chat-dots-fill text-xl"></i>
   </button>
 
   <!-- Chat Box -->

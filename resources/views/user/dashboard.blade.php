@@ -3,52 +3,52 @@
 @section('title', 'Student Dashboard')
 
 @section('content')
-<div class="bg-[#101727] min-h-screen p-6 rounded-lg">
-    <h1 class="text-2xl font-bold text-[#E6EDF7] mb-4">
+<div class="bg-gray-50 text-gray-800 dark:bg-[#101727] min-h-screen p-6 px-4 sm:p-8">
+    <h1 class="text-2xl font-semibold text-gray-800 dark:text-[#E6EDF7] mb-2">
         Welcome back, {{ Auth::user()->name ?? 'Student' }} 👋
     </h1>
-    <p class="text-[#8A93A8] mb-8">
+    <p class="text-gray-600 dark:text-[#8A93A8] mb-8">
         Here’s your learning summary and progress insights.
     </p>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] border-l-4 border-[#00C2FF] p-5 rounded-lg shadow-md hover:shadow-[#00C2FF]/30 transition-all duration-300 hover:-translate-y-1">
-            <h2 class="text-[#E6EDF7] font-semibold flex items-center gap-2">
-                <i data-lucide="book-open" class="w-5 h-5 text-[#00C2FF]"></i> Courses Enrolled
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-[#1C2541] dark:to-[#11182A] border-l-4 border-[#00C2FF] p-5 rounded-lg shadow-md transition-all duration-300">
+            <h2 class="text-gray-800 dark:text-[#E6EDF7] font-semibold flex items-center justify-between w-full gap-2">
+               Courses Enrolled <i data-lucide="book-open" class="w-6 h-6 text-[#00C2FF]"></i> 
             </h2>
-            <p class="text-3xl font-bold text-[#E6EDF7] mt-3">5</p>
-            <p class="text-[#8A93A8] text-sm">Active learning paths</p>
+            <p class="text-3xl font-semibold text-gray-800 dark:text-[#E6EDF7] mt-1">5</p>
+            <p class="text-[#8A93A8] text-sm mt-2">Active learning paths</p>          
         </div>
 
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] border-l-4 border-[#16a34a] p-5 rounded-lg shadow-md hover:shadow-[#16a34a]/30 transition-all duration-300 hover:-translate-y-1">
-            <h2 class="text-[#E6EDF7] font-semibold flex items-center gap-2">
-                <i data-lucide="check-circle" class="w-5 h-5 text-[#16a34a]"></i> Completed Courses
+        <div class="bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-[#1C2541] dark:to-[#11182A] border-l-4 border-[#16a34a] p-5 rounded-lg shadow-md transition-all duration-300">
+            <h2 class="text-gray-800 dark:text-[#E6EDF7] font-semibold flex items-center justify-between w-full gap-2">
+               Completed Courses <i data-lucide="check-circle" class="w-6 h-6 text-[#16a34a]"></i> 
             </h2>
-            <p class="text-3xl font-bold text-[#E6EDF7] mt-3">2</p>
-            <p class="text-[#8A93A8] text-sm">Keep it up!</p>
+            <p class="text-3xl font-semibold text-gray-800 dark:text-[#E6EDF7] mt-1">2</p>
+            <p class="text-[#8A93A8] text-sm mt-2">Keep it up!</p>
         </div>
 
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] border-l-4 border-[#facc15] p-5 rounded-lg shadow-md hover:shadow-[#facc15]/30 transition-all duration-300 hover:-translate-y-1">
-            <h2 class="text-[#E6EDF7] font-semibold flex items-center gap-2">
-                <i data-lucide="activity" class="w-5 h-5 text-[#facc15]"></i> Course Progress
+        <div class="bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-[#1C2541] dark:to-[#11182A] border-l-4 border-[#facc15] p-5 rounded-lg shadow-md transition-all duration-300">
+            <h2 class="text-gray-800 dark:text-[#E6EDF7] font-semibold flex items-center gap-2 w-full justify-between">
+               Course Progress <i data-lucide="activity" class="w-6 h-6 text-[#facc15]"></i>
             </h2>
-            <p class="text-3xl font-bold text-[#E6EDF7] mt-3">76%</p>
-            <p class="text-[#8A93A8] text-sm">Overall completion</p>
+            <p class="text-3xl font-semibold text-gray-800 dark:text-[#E6EDF7] mt-1">76%</p>
+            <p class="text-[#8A93A8] text-sm mt-2">Overall completion</p>
         </div>
 
-        <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] border-l-4 border-[#a855f7] p-5 rounded-lg shadow-md hover:shadow-[#a855f7]/30 transition-all duration-300 hover:-translate-y-1">
-            <h2 class="text-[#E6EDF7] font-semibold flex items-center gap-2">
-                <i data-lucide="trophy" class="w-5 h-5 text-[#a855f7]"></i> Certificates
+        <div class="bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-[#1C2541] dark:to-[#11182A] border-l-4 border-[#a855f7] p-5 rounded-lg shadow-md transition-all duration-300">
+            <h2 class="text-gray-800 dark:text-[#E6EDF7] font-semibold flex w-full justify-between items-center gap-2">
+              Certificates <i data-lucide="trophy" class="w-6 h-6 text-[#a855f7]"></i> 
             </h2>
-            <p class="text-3xl font-bold text-[#E6EDF7] mt-3">3</p>
-            <p class="text-[#8A93A8] text-sm">Earned so far</p>
+            <p class="text-3xl font-semibold text-gray-800 dark:text-[#E6EDF7] mt-1">3</p>
+            <p class="text-[#8A93A8] text-sm mt-2">Earned so far</p>
         </div>
     </div>
 
     <!-- Progress Chart -->
-    <div class="bg-[#1C2541]/70 p-6 rounded-lg border border-[#26304D] mb-10 shadow-md">
-        <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-[#1C2541]/70 p-6 rounded-lg border border-gray-200 dark:border-[#26304D] mb-10 shadow-md">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-[#E6EDF7] mb-4 flex items-center gap-2">
             <i data-lucide="bar-chart-3" class="w-5 h-5 text-[#00C2FF]"></i> Weekly Study Activity
         </h2>
         <div class="h-64">
@@ -58,17 +58,17 @@
 
     <!-- Recently Accessed Courses -->
     <div class="mb-10">
-        <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-[#E6EDF7] mb-4 flex items-center gap-2">
             <i data-lucide="book" class="w-5 h-5 text-[#00C2FF]"></i> Recently Accessed Courses
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @foreach([
             ['title' => 'React Basics', 'progress' => '45%', 'status' => 'In Progress', 'color' => '#00C2FF'],
             ['title' => 'Advanced JavaScript', 'progress' => '80%', 'status' => 'Almost Done', 'color' => '#16a34a'],
             ['title' => 'Node.js Fundamentals', 'progress' => '20%', 'status' => 'New', 'color' => '#facc15'],
             ] as $course)
-            <div class="bg-gradient-to-br from-[#1C2541] to-[#11182A] p-5 rounded-lg shadow-md hover:shadow-[#00C2FF]/20 transition-all">
-                <h3 class="font-semibold text-[#E6EDF7] mb-2">{{ $course['title'] }}</h3>
+            <div class="bg-white dark:bg-gradient-to-br dark:from-[#1C2541] dark:to-[#11182A] p-5 rounded-lg shadow-md hover:shadow-[#00C2FF]/20 transition-all">
+                <h3 class="font-semibold text-gray-800 dark:text-[#E6EDF7] mb-2">{{ $course['title'] }}</h3>
                 <p class="text-sm text-[#8A93A8] mb-3">Progress: {{ $course['progress'] }}</p>
                 <div class="flex items-center justify-between text-sm">
                     <span class="font-medium" style="color: {{ $course['color'] }}">{{ $course['status'] }}</span>
@@ -81,19 +81,19 @@
 
     <!-- Upcoming Lessons -->
     <div>
-        <h2 class="text-lg font-semibold text-[#E6EDF7] mb-4 flex items-center gap-2">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-[#E6EDF7] mb-4 flex items-center gap-2">
             <i data-lucide="calendar-days" class="w-5 h-5 text-[#00C2FF]"></i> Upcoming Lessons
         </h2>
         <ul class="space-y-3 text-[#E6EDF7]">
-            <li class="flex justify-between bg-[#1C2541]/70 p-4 rounded-md border border-[#26304D] hover:shadow-[#00C2FF]/10 transition-all">
+            <li class="flex justify-between bg-white dark:bg-[#1C2541]/70 p-4 rounded-md border border-gray-200 dark:border-[#26304D] text-gray-600 dark:text-[#E6EDF7] hover:shadow-[#00C2FF]/10">
                 <span>New module: “React State Management”</span>
                 <span class="text-sm text-[#8A93A8]">Due: Oct 29</span>
             </li>
-            <li class="flex justify-between bg-[#1C2541]/70 p-4 rounded-md border border-[#26304D] hover:shadow-[#00C2FF]/10 transition-all">
+            <li class="flex justify-between bg-white dark:bg-[#1C2541]/70 p-4 rounded-md border border-gray-200 dark:border-[#26304D] text-gray-600 dark:text-[#E6EDF7] hover:shadow-[#00C2FF]/10">
                 <span>Quiz: JavaScript Closures</span>
                 <span class="text-sm text-[#8A93A8]">Due: Oct 30</span>
             </li>
-            <li class="flex justify-between bg-[#1C2541]/70 p-4 rounded-md border border-[#26304D] hover:shadow-[#00C2FF]/10 transition-all">
+            <li class="flex justify-between bg-white dark:bg-[#1C2541]/70 p-4 rounded-md border border-gray-200 dark:border-[#26304D] text-gray-600 dark:text-[#E6EDF7] hover:shadow-[#00C2FF]/10">
                 <span>Assignment Review: Node.js Basics</span>
                 <span class="text-sm text-[#8A93A8]">Due: Nov 1</span>
             </li>
@@ -111,6 +111,8 @@
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         gradient.addColorStop(0, 'rgba(0, 194, 255, 0.5)');
         gradient.addColorStop(1, 'rgba(0, 194, 255, 0)');
+
+        const isDark = document.documentElement.classList.contains("dark");
 
         new Chart(ctx, {
             type: 'line',
@@ -137,7 +139,7 @@
                     legend: {
                         display: true,
                         labels: {
-                            color: '#E6EDF7',
+                            color: isDark ? "#cdcdcd" : "#8A93A8",
                             boxWidth: 0
                         }
                     },
@@ -148,7 +150,8 @@
                         titleColor: '#E6EDF7',
                         bodyColor: '#E6EDF7',
                         borderColor: '#00C2FF',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        boxPadding: 6
                     }
                 },
                 scales: {
