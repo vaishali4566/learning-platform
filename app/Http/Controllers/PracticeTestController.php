@@ -58,7 +58,7 @@ class PracticeTestController extends Controller
         Lesson::where('id', $request->lesson_id)
             ->update(['practice_test_id' => $test->id]);
 
-        return redirect()->route('practice-tests.edit', $test->id)
+        return redirect()->route('trainer.practice-tests.edit', $test->id)
             ->with('success', 'Practice Test Created Successfully! Now upload questions.');
     }
 
@@ -153,6 +153,7 @@ class PracticeTestController extends Controller
         'option_d'         => trim($row['option_d'] ?? ''),
         'correct_option'   => $correctOption,
         'explanation'      => trim($row['explanation'] ?? ''),
+        'source'      => trim($row['source'] ?? ''),
     ]);
 }
 

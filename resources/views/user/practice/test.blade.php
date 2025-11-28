@@ -17,8 +17,23 @@
         </div>
 
         <!-- QUESTION CARD -->
-        <div class="backdrop-blur-xl bg-white/5 border border-white/10 
+        <div class="relative backdrop-blur-xl bg-white/5 border border-white/10 
                     rounded-3xl shadow-2xl p-10 transition hover:border-white/20">
+
+            <!-- INFO BUTTON -->
+            <button id="sourceBtn" type="button"
+                class="absolute top-6 right-6 text-[#00C2FF] hover:text-white transition text-2xl"
+                title="View Source">
+                ℹ️
+            </button>
+
+            <!-- SOURCE POPUP -->
+            <div id="sourcePopup"
+                class="hidden absolute top-14 right-6 bg-[#0A1221] border border-[#00C2FF]/40
+                       text-gray-300 p-4 rounded-xl shadow-lg w-72 z-50 text-sm">
+                <strong class="text-[#00C2FF]">Source:</strong><br>
+                {{ $question->source ?? 'No source available.' }}
+            </div>
 
             <h3 class="text-2xl font-semibold mb-6 text-[#00C2FF]">
                 Q{{ $qIndex + 1 }}. {{ $question->question_text }}
@@ -94,7 +109,7 @@
     </div>
 </div>
 
-<!-- TIMER SCRIPT -->
+<!-- SCRIPT -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const endAtTimestamp = {{ $endAtTimestamp }};
@@ -126,6 +141,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateTimer();
     setInterval(updateTimer, 1000);
+
+    // SOURCE POPUP LOGIC
+    const btn = document.getElementById('sourceBtn');
+    const popup = document.getElementById('sourcePopup');
+
+    btn.addEventListener('click', () => {
+        popup.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!btn.contains(e.target) && !popup.contains(e.target)) {
+            popup.classList.add('hidden');
+        }
+    });
 });
 </script>
 

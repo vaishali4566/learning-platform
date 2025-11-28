@@ -27,6 +27,7 @@
                         <th class="py-4 px-4 text-left">C</th>
                         <th class="py-4 px-4 text-left">D</th>
                         <th class="py-4 px-4 text-left">Correct</th>
+                        <th class="py-4 px-4 text-left">Source</th>
                     </tr>
                 </thead>
 
@@ -45,6 +46,8 @@
                         <td class="py-4 px-4 font-semibold text-[#00C2FF]">
                             {{ strtoupper($q->correct_option) }}
                         </td>
+                        
+                        <td class="py-4 px-4">{{ $q->source }}</td>
 
                     </tr>
                     @endforeach

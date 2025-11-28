@@ -92,6 +92,12 @@ class UserPracticeTestController extends Controller
 
         $question = $questions->get($qIndex);
 
+        if (!$question) {
+            return redirect()->route('user.practice.start.attempt', $attempt->id)
+                    ->with('error', 'Question not found');
+        }
+
+
         // Saved answer
         $saved = PracticeAnswer::where('attempt_id', $attempt->id)
                     ->where('question_id', $question->id)
@@ -210,7 +216,7 @@ class UserPracticeTestController extends Controller
     /**
      * Finalize attempt: calculate correct answers, score, time taken, set completed_at/status
      */
-      protected function finalizeAttempt(PracticeAttempt $attempt)
+    protected function finalizeAttempt(PracticeAttempt $attempt)
     {
         if ($attempt->status === 'completed') return;
 

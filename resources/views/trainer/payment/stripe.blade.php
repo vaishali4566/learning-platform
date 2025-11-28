@@ -144,7 +144,7 @@
         <p class="text-sm text-gray-300 mb-1"><strong>Price:</strong> ₹{{ $course->price }}</p>
         <p class="course-desc">{{ $course->description }}</p>
 
-        <form action="{{ route('payment.post.trainer') }}" method="POST" id="payment-form">
+        <form action="{{ route('trainer.payment.post') }}" method="POST" id="payment-form">
             @csrf
             <input type="hidden" name="course_id" value="{{ $course->id }}">
             <input type="hidden" name="stripeToken" id="stripeToken">
@@ -204,7 +204,7 @@
             }
 
             try {
-                const response = await fetch("{{ route('payment.post.trainer') }}", {
+                const response = await fetch("{{ route('trainer.payment.post') }}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
