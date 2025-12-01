@@ -63,4 +63,14 @@ class UserCourseController extends Controller
             'course' => $course
         ]);
     }
+
+    public function show($courseId)
+    {
+        $course = Course::with('trainer')->findOrFail($courseId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $course
+        ]);
+    }
 }
