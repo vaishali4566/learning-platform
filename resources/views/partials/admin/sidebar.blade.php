@@ -28,10 +28,10 @@
         </a>
 
         <!-- User Management -->
-        <a href="{{ route('admin.users') }}"
+        <a href="{{ route('admin.users.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out 
             hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.users') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('admin.users.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#4ADE80] rounded transition-all duration-300"></div>
             <i data-lucide="users"
                 class="w-5 h-5 text-[#4ADE80] group-hover:text-[#00C2FF] transition-all duration-300"></i>
@@ -39,10 +39,10 @@
         </a>
 
         <!-- Course Management -->
-        <a href="{{ route('admin.courses') }}"
+        <a href="{{ route('admin.courses.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out 
             hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.courses') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('admin.courses.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#38BDF8] rounded transition-all duration-300"></div>
             <i data-lucide="book-open"
                 class="w-5 h-5 text-[#38BDF8] group-hover:text-[#00C2FF] transition-all duration-300"></i>
@@ -50,10 +50,10 @@
         </a>
 
         <!-- Trainer Management -->
-        <a href="{{ route('admin.trainers') }}"
+        <a href="{{ route('admin.trainers.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out 
             hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]
-            {{ request()->routeIs('admin.trainers') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
+            {{ request()->routeIs('admin.trainers.index') ? 'bg-[#101727] text-[#00C2FF] border-r-4 border-[#00C2FF]' : '' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FACC15] rounded transition-all duration-300"></div>
             <i data-lucide="user-check"
                 class="w-5 h-5 text-[#FACC15] group-hover:text-[#00C2FF] transition-all duration-300"></i>
@@ -79,10 +79,6 @@
                 class="w-5 h-5 text-[#C084FC] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Payment Reports</span>
         </a>
-
-        
-        
-
         
     </nav>
 </aside>
