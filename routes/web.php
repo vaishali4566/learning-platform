@@ -86,6 +86,7 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::prefix('courses')->name('courses.')->group(function () {
             Route::get('/', [UserCourseController::class, 'index'])->name('index');
             Route::get('/my', [PurchaseController::class, 'index'])->name('my');
+            Route::get('/{courseId}/data',[UserCourseController::class, 'show'])->name('data');
             Route::get('/explore/{courseId}', [UserCourseController::class, 'explore'])->name('explore');
             Route::get('/{course}/lessons/data', [UserLessonController::class, 'getLessons'])->name('lessons.data');
             Route::get('/lessons/{id}/stream', [UserLessonController::class, 'stream'])->name('lessons.stream');
@@ -153,6 +154,7 @@ Route::prefix('trainer')->name('trainer.')->group(function () {
         // Courses
         Route::prefix('courses')->name('courses.')->group(function () {
             Route::get('/', [TrainerCourseController::class, 'index'])->name('index');
+            Route::get('/{courseId}/data',[TrainerCourseController::class, 'show'])->name('data');
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
@@ -165,6 +167,7 @@ Route::prefix('trainer')->name('trainer.')->group(function () {
             Route::get('/{course}/lessons/view', [TrainerLessonController::class, 'viewLessons'])->name('lessons.view');
             Route::get('/{course}/lessons/data', [TrainerLessonController::class, 'getLessons'])->name('lessons.data');
             Route::get('/lessons/{id}/stream', [TrainerLessonController::class, 'stream'])->name('lessons.stream');
+
             Route::post('/{course}/lessons', [TrainerLessonController::class, 'store'])->name('lessons.store');
             Route::put('/lessons/update/{id}', [TrainerLessonController::class, 'update'])->name('lessons.update');
             Route::delete('/{course}/{lesson_Id}', [TrainerLessonController::class, 'destroy_lessson'])->name('lessons.destroy');

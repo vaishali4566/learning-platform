@@ -220,6 +220,17 @@ class TrainerCourseController extends Controller
         }
     }
 
+    public function show($courseId)
+    {
+        $course = Course::with('trainer')->findOrFail($courseId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $course
+        ]);
+    }
+
+
     public function myCourses()
     {
         $trainer = Auth::guard('trainer')->user();
