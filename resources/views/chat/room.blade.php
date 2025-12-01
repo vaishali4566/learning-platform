@@ -113,7 +113,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ✅ Socket Join Room
     if (!window.socket) return console.error("Socket not loaded");
-    const joinRoom = () => window.socket.emit("join", { roomId });
+    const joinRoom = () => window.socket.emit("join", {
+        roomId,
+        user: {
+            id: userId,
+            type: userType
+        }
+    });
+
     if (window.socket.connected) joinRoom();
     else window.socket.once("connect", joinRoom);
 

@@ -271,6 +271,8 @@ Route::prefix('chat')->middleware(['auth.any'])->group(function () {
     Route::post('/decline/{id}', [ChatRequestController::class, 'declineRequest'])->name('chat.decline');
 });
 
+
+
 // ======================================================================
 // MISC PAGES
 // ======================================================================
