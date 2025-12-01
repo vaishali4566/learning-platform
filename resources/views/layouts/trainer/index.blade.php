@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('Globbusoft_learning channel logo.jpg') }}">
 
     <title>@yield('title', 'Trainer Dashboard | E-Learning')</title>
 
