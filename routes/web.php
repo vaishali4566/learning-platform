@@ -26,6 +26,10 @@ use App\Http\Controllers\Trainer\TrainerLessonController;
 // ADMIN CONTROLLERS
 // ----------------------------
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminTrainerController;
+use App\Http\Controllers\Admin\AdminCourseController;
+use App\Http\Controllers\Admin\AdminQuizController;
 
 // ----------------------------
 // CORE & MISC CONTROLLERS
@@ -212,34 +216,31 @@ Route::prefix('admin')->middleware(['authenticate.user:web', 'admin.only', 'prev
 
     // Users
     Route::prefix('users')->name('admin.users.')->group(function () {
-        Route::get('/', [AdminProfileController::class, 'showUserPage'])->name('index');
-        Route::get('/fetch', [AdminProfileController::class, 'fetchAllUsers'])->name('fetch');
-        Route::post('/add', [AdminProfileController::class, 'addUser'])->name('add');
-        Route::post('/update/{id}', [AdminProfileController::class, 'updateUser'])->name('update');
-        Route::delete('/delete/{id}', [AdminProfileController::class, 'deleteUser'])->name('delete');
+        Route::get('/', [AdminUserController::class, 'showUserPage'])->name('index');
+        Route::get('/fetch', [AdminUserController::class, 'fetchAllUsers'])->name('fetch');
+        Route::post('/add', [AdminUserController::class, 'addUser'])->name('add');
+        Route::post('/update/{id}', [AdminUserController::class, 'updateUser'])->name('update');
+        Route::delete('/delete/{id}', [AdminUserController::class, 'deleteUser'])->name('delete');
     });
 
     // Trainers
     Route::prefix('trainers')->name('admin.trainers.')->group(function () {
-        Route::get('/', [AdminProfileController::class, 'showTrainerPage'])->name('index');
-        Route::get('/fetch', [AdminProfileController::class, 'fetchAllTrainers'])->name('fetch');
-        Route::post('/add', [AdminProfileController::class, 'addTrainer'])->name('add');
-        Route::post('/update/{id}', [AdminProfileController::class, 'updateTrainer'])->name('update');
-        Route::delete('/delete/{id}', [AdminProfileController::class, 'deleteTrainer'])->name('delete');
+        Route::get('/', [AdminTrainerController::class, 'showTrainerPage'])->name('index');
+        Route::get('/fetch', [AdminTrainerController::class, 'fetchAllTrainers'])->name('fetch');
+        Route::post('/add', [AdminTrainerController::class, 'addTrainer'])->name('add');
+        Route::post('/update/{id}', [AdminTrainerController::class, 'updateTrainer'])->name('update');
+        Route::delete('/delete/{id}', [AdminTrainerController::class, 'deleteTrainer'])->name('delete');
     });
 
     // Courses
     Route::prefix('courses')->name('admin.courses.')->group(function () {
-        Route::get('/', [AdminProfileController::class, 'showCoursePage'])->name('index');
-        Route::get('/fetch', [AdminProfileController::class, 'fetchAllCourses'])->name('fetch');
-        Route::post('/update-status/{id}', [AdminProfileController::class, 'updateStatus'])->name('updateStatus');
-        Route::delete('/{id}', [AdminProfileController::class, 'destroy'])->name('destroy');
+        Route::get('/', [AdminCourseController::class, 'showCoursePage'])->name('index');
+        Route::get('/fetch', [AdminCourseController::class, 'fetchAllCourses'])->name('fetch');
+        Route::post('/update-status/{id}', [AdminCourseController::class, 'updateStatus'])->name('updateStatus');
+        Route::delete('/{id}', [AdminCourseController::class, 'destroy'])->name('destroy');
     });
 
-    // Optional
-    Route::get('/quizzes', [AdminProfileController::class, 'fetchAllQuizzes'])->name('quizzes.index')->middleware('optional');
-    Route::get('/reports', [AdminProfileController::class, 'reports'])->name('reports')->middleware('optional');
-    Route::get('/settings', [AdminProfileController::class, 'settings'])->name('settings')->middleware('optional');
+    Route::resource('quizzes', AdminQuizController::class);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'userLogout'])->name('admin.logout');

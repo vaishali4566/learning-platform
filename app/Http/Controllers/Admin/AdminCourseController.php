@@ -4,21 +4,55 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Course;
 
 class AdminCourseController extends Controller
 {
-    public function index()
+    /**
+     * Course Page
+     */
+    public function showCoursePage()
     {
-        return view('admin.courses.index');
+        return view('admin.courses');
     }
 
-    public function create()
+    /**
+     * Get All Courses
+     */
+    public function fetchAllCourses()
     {
-        return view('admin.courses.create');
+        $courses = Course::with('trainer:id,name,email')->latest()->get();
+
+        return response()->json([
+            'status' => 'success',
+            'courses' => $courses
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Approve / Reject Course
+     */
+    public function updateStatus(Request $request, $id)
     {
-        // store logic
+        $course = Course::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $course->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete Course
+     */
+    public function destroy($id)
+    {
+        Course::findOrFail($id)->delete();
+        return response()->json(['success' => true]);
     }
 }

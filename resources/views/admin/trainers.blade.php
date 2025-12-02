@@ -15,12 +15,19 @@
             </button>
         </div>
 
+        <!-- Search Bar -->
+        <div class="mt-4 mb-4">
+            <input type="text" id="searchUserInput" placeholder="Search trainers..."
+                class="w-full max-w-sm bg-[#121A2E] border border-[#2F3A5F] rounded-md p-2 text-[#E6EDF7] focus:ring-2 focus:ring-[#00C2FF]">
+        </div>
+
         <!-- Trainers Table -->
         <div class="overflow-x-auto bg-[#121A2E]/60 border border-[#1E2A45] rounded-lg shadow-lg">
             <table class="w-full text-left">
                 <thead class="bg-[#1B2540]/80 border-b border-[#24304F]">
                     <tr>
                         <th class="px-6 py-3 text-sm font-medium">#</th>
+                        <th class="px-6 py-3 text-sm font-medium">Profile</th>
                         <th class="px-6 py-3 text-sm font-medium">Name</th>
                         <th class="px-6 py-3 text-sm font-medium">Email</th>
                         <th class="px-6 py-3 text-sm font-medium">Qualification</th>
@@ -29,6 +36,7 @@
                         <th class="px-6 py-3 text-sm font-medium text-right">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody id="trainerTable" class="divide-y divide-[#1E2A45]/50">
                     <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading trainers...</td></tr>
                 </tbody>
@@ -177,7 +185,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ? data.trainers.map((t, i) => `
                         <tr class="hover:bg-[#18223C]/60 transition">
                             <td class="px-6 py-3 text-sm">${i + 1}</td>
+                            <td class="px-6 py-3">
+                                ${
+                                    t.profile_image
+                                    ? `<img src="/storage/${t.profile_image}" 
+                                        class="w-10 h-10 rounded-full object-cover border border-[#2C3A63]"
+                                        alt="${t.name}">`
+                                    : `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#0071BC] to-[#00C2FF]
+                                            flex items-center justify-center text-lg font-semibold text-white
+                                            border border-[#2C3A63]">
+                                            ${t.name.charAt(0).toUpperCase()}
+                                    </div>`
+                                }
+                            </td>
                             <td class="px-6 py-3 text-sm font-medium">${t.name}</td>
+
                             <td class="px-6 py-3 text-sm">${t.email}</td>
                             <td class="px-6 py-3 text-sm">${t.qualification ?? '-'}</td>
                             <td class="px-6 py-3 text-sm">${t.specialization ?? '-'}</td>
