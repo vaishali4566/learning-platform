@@ -7,37 +7,37 @@
     }
 </style>
 
-<div class="min-h-screen bg-gradient-to-br from-[#0B1120] via-[#0E162B] to-[#0B1A2E] text-gray-200 py-12 px-6">
-    <div class="max-w-7xl mx-auto space-y-20">
+<div class="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0B1120] dark:via-[#0E162B] dark:to-[#0B1A2E] text-gray-800 dark:text-gray-200 py-12 px-6">
+    <div class="lg:px-4 mx-auto space-y-20">
 
         {{-- ✅ Only show Purchased Courses if available --}}
         @if($purchasedCourses->count() > 0)
         <section>
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-3xl font-semibold text-[#00C2FF] flex items-center gap-3">
+            <div class="flex items-center justify-between mb-4 lg:mb-5 2xl:mb-8 ml-2">
+                <h2 class="text-xl 2xl:text-3xl font-semibold text-[#00C2FF] flex items-baseline gap-3">
                     <i class="fa-solid fa-book-open"></i> My Purchased Courses ({{ $purchasedCourses->count() }})
                 </h2>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4">
                 @foreach($purchasedCourses as $course)
                 <div
-                    class="bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-md hover:shadow-[#00C2FF]/30 hover:-translate-y-1 transition-all duration-300">
+                    class="bg-white dark:bg-[#101D35] border dark:border-[#1E2B4A] rounded-2xl shadow-md hover:shadow-[#00C2FF]/30">
                     <img src="{{ $course->thumbnail ? asset('storage/' . $course->thumbnail) : asset('images/course-placeholder.png') }}"
                         alt="{{ $course->title }} thumbnail"
-                        class="w-full h-44 object-cover rounded-t-2xl border-b border-[#1E2B4A]"
+                        class="w-full h-40 2xl:h-44 object-cover rounded-t-2xl border-b dark:border-[#1E2B4A]"
                         loading="lazy" />
 
-                    <div class="p-5 space-y-3">
-                        <h3 class="text-lg font-semibold text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
+                    <div class="p-4">
+                        <h3 class="text-sm 2xl:text-lg font-semibold text-gray-800 dark:text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
                             {{ $course->title }}
                         </h3>
-                        <p class="text-sm text-gray-400 line-clamp-2">
+                        <p class="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
                             {{ Str::limit($course->description ?? 'No description available.', 80) }}
                         </p>
 
                         <a href="{{ route('user.courses.view', ['courseId' => $course->id]) }}"
-                            class="block w-full text-center mt-3 px-4 py-2 bg-[#00C2FF]/10 border border-[#00C2FF]/30 rounded-lg text-[#00C2FF] text-sm font-medium hover:bg-[#00C2FF]/20 transition">
+                            class="block w-full text-center mt-4 px-4 py-2 bg-[#00C2FF]/10 border border-[#00C2FF]/30 rounded-lg text-[#00C2FF] text-xs 2xl:text-sm font-medium hover:bg-[#00C2FF]/20 transition">
                             Continue Course
                         </a>
                     </div>
@@ -59,7 +59,7 @@
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($availableCourses as $course)
                 <div
-                    class="bg-[#101D35] border border-[#1E2B4A] rounded-2xl shadow-md hover:shadow-[#00C2FF]/30 hover:-translate-y-1 transition-all duration-300">
+                    class="bg-white dark:bg-[#101D35] border dark:border-[#1E2B4A] rounded-2xl shadow-md hover:shadow-[#00C2FF]/30 hover:-translate-y-1 transition-all duration-300">
                     
                     <img src="{{ $course->thumbnail ? asset('storage/' . $course->thumbnail) : asset('images/course-placeholder.png') }}"
                         alt="{{ $course->title }} thumbnail"
@@ -67,10 +67,10 @@
                         loading="lazy" />
 
                     <div class="p-5 space-y-3">
-                        <h3 class="text-lg font-semibold text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-[#E2E8F0] group-hover:text-[#00C2FF] transition">
                             {{ $course->title }}
                         </h3>
-                        <p class="text-sm text-gray-400 line-clamp-2">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                             {{ Str::limit($course->description ?? 'No description available.', 80) }}
                         </p>
                         <span class="text-[#00C2FF] text-sm font-medium block">₹{{ $course->price }}</span>

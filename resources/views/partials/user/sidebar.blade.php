@@ -15,7 +15,7 @@
     <!-- Brand + Sidebar Toggle -->
     <div class="flex items-center justify-between [.sidebar-collapsed_&]:justify-center px-4 h-[4.25rem] gap-3 border border-b border-gray-200 dark:border-[#26304D] dark:bg-[#0E1625]/80 backdrop-blur-sm shadow-inner">
         <div class="[.sidebar-collapsed_&]:hidden flex items-center gap-2">
-            <div class="p-2 rounded-lg bg-[#0077B6]/10 border-[#0077B6]/30 dark:bg-[#00C2FF]/10 border dark:border-[#00C2FF]/30 backdrop-blur-sm sidebar-text">
+            <div class="p-2 rounded-lg bg-[#0077B6]/10 border-[#0077B6]/30 dark:bg-[#00C2FF]/10 border dark:border-[#00C2FF]/30 backdrop-blur-sm sidebar-text text-sm 2xl:text-base">
                 <i data-lucide="graduation-cap" class="w-5 h-5 text-[#00C2FF]"></i>
             </div>
             <span id="sidebar-title" class="font-semibold text-lg tracking-wide text-[#00c2ff] dark:text-[#E6EDF7]">E-Learning</span>
@@ -39,7 +39,7 @@
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="layout-dashboard"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300 group-hover:scale-110"></i>
-            <span class="sidebar-text">Dashboard</span>
+            <span class="sidebar-text text-sm 2xl:text-base">Dashboard</span>
         </a>
 
         <!-- All Courses -->
@@ -47,9 +47,9 @@
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1
             {{ request()->routeIs('user.courses.index') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
-            <i data-lucide="book-open"
+            <i data-lucide="library"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300"></i>
-            <span class="sidebar-text">All Courses</span>
+            <span class="sidebar-text text-sm 2xl:text-base">All Courses</span>
         </a>
 
         <!-- My Courses -->
@@ -57,9 +57,9 @@
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 
             {{ request()->routeIs('user.courses.my') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
-            <i data-lucide="book-open"
+            <i data-lucide="book-marked"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300"></i>
-            <span class="sidebar-text">My Courses</span>
+            <span class="sidebar-text text-sm 2xl:text-base">My Courses</span>
         </a>
 
         <!-- Quizzes -->
@@ -69,7 +69,7 @@
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="brain"
                 class="w-5 h-5  group-hover:scale-110 transition-all duration-300"></i>
-            <span class="sidebar-text">Quizzes</span>
+            <span class="sidebar-text text-sm 2xl:text-base">Quizzes</span>
         </a>    
     </nav>
 </aside>
