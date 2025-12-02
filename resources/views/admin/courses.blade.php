@@ -11,6 +11,13 @@
             <h2 class="text-2xl font-semibold tracking-wide">Course Management</h2>
         </div>
 
+        <!-- Search Bar -->
+        <div class="mt-4 mb-4">
+            <input type="text" id="searchUserInput" placeholder="Search courses..."
+                class="w-full max-w-sm bg-[#121A2E] border border-[#2F3A5F] rounded-md p-2 text-[#E6EDF7] focus:ring-2 focus:ring-[#00C2FF]">
+        </div>
+        
+
         <!-- Toast Notification -->
         <div id="toast"
             class="hidden fixed top-6 right-6 bg-[#1B2540] border border-[#24304F] text-[#E6EDF7] px-5 py-3 rounded-lg shadow-lg transition-opacity duration-500 opacity-0 z-50">

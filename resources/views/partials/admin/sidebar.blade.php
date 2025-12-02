@@ -61,23 +61,13 @@
         </a>
 
         <!-- Quiz Management -->
-        <a href="#"
+        <a href="{{ route('quizzes.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out 
             hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#FB923C] rounded transition-all duration-300"></div>
             <i data-lucide="clipboard-list"
                 class="w-5 h-5 text-[#FB923C] group-hover:text-[#00C2FF] transition-all duration-300"></i>
             <span class="sidebar-text">Quiz Management</span>
-        </a>
-
-        <!-- Payment Reports -->
-        <a href="#"
-            class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out 
-            hover:translate-x-1 hover:bg-[#101727]/70 hover:text-[#E6EDF7]">
-            <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#C084FC] rounded transition-all duration-300"></div>
-            <i data-lucide="credit-card"
-                class="w-5 h-5 text-[#C084FC] group-hover:text-[#00C2FF] transition-all duration-300"></i>
-            <span class="sidebar-text">Payment Reports</span>
         </a>
         
     </nav>

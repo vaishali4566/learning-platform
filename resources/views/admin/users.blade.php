@@ -15,6 +15,13 @@
             </button>
         </div>
 
+        <!-- Search Bar -->
+        <div class="mt-4 mb-4">
+            <input type="text" id="searchUserInput" placeholder="Search users..."
+                class="w-full max-w-sm bg-[#121A2E] border border-[#2F3A5F] rounded-md p-2 text-[#E6EDF7] focus:ring-2 focus:ring-[#00C2FF]">
+        </div>
+
+
         <!-- Users Table -->
         <div class="overflow-x-auto bg-[#121A2E]/60 border border-[#1E2A45] rounded-lg shadow-lg">
             <table class="w-full text-left">
@@ -161,9 +168,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <tr class="hover:bg-[#18223C]/60 transition">
                         <td class="px-6 py-3 text-sm">${i + 1}</td>
                         <td class="px-6 py-3">
-                            <img src="${user.profile_image ? '/storage/' + user.profile_image : '/default-avatar.png'}"
-                                 class="w-10 h-10 rounded-full object-cover border border-[#2C3A63]" alt="${user.name}">
+                            ${
+                                user.profile_image
+                                ? `<img src="/storage/${user.profile_image}" 
+                                    class="w-10 h-10 rounded-full object-cover border border-[#2C3A63]" alt="${user.name}">`
+                                : `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#0071BC] to-[#00C2FF] flex items-center justify-center text-lg font-semibold text-white border border-[#2C3A63]">
+                                        ${user.name.charAt(0).toUpperCase()}
+                                </div>`
+                            }
                         </td>
+
                         <td class="px-6 py-3 text-sm font-medium">${user.name}</td>
                         <td class="px-6 py-3 text-sm">${user.email}</td>
                         <td class="px-6 py-3 text-sm">${user.country ?? '-'}</td>
