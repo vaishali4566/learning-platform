@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateEl = document.getElementById("created-date");
     const priceEl = document.getElementById("course-price");
 
-    fetch(`/user/courses/${courseId}`)
+    fetch(`/user/courses/${courseId}/data`)
         .then(res => res.json())
         .then(resp => {
             const c = resp.data;
