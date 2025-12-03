@@ -13,7 +13,7 @@
 
     <!-- Header -->
     <div id="chat-header"
-      class="cursor-move bg-gradient-to-r from-indigo-500 via-blue-500 to-sky-400 text-white px-5 py-3 flex justify-between items-center shadow-md rounded-t-[2rem]">
+      class="bg-gradient-to-r from-indigo-500 via-blue-500 to-sky-400 text-white px-5 py-3 flex justify-between items-center shadow-md rounded-t-[2rem]">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
           <i class="bi bi-stars text-lg"></i>
@@ -166,25 +166,25 @@
       });
       restoreScroll();
 
-      let offsetX, offsetY, isDragging = false;
-      header.addEventListener('mousedown', e => {
-        isDragging = true;
-        const rect = chatBox.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        document.body.style.userSelect = 'none';
-      });
-      window.addEventListener('mousemove', e => {
-        if (!isDragging) return;
-        chatBox.style.left = `${e.clientX - offsetX}px`;
-        chatBox.style.top = `${e.clientY - offsetY}px`;
-        chatBox.style.right = 'auto';
-        chatBox.style.bottom = 'auto';
-      });
-      window.addEventListener('mouseup', () => {
-        isDragging = false;
-        document.body.style.userSelect = 'auto';
-      });
+      // let offsetX, offsetY, isDragging = false;
+      // header.addEventListener('mousedown', e => {
+      //   isDragging = true;
+      //   const rect = chatBox.getBoundingClientRect();
+      //   offsetX = e.clientX - rect.left;
+      //   offsetY = e.clientY - rect.top;
+      //   document.body.style.userSelect = 'none';
+      // });
+      // window.addEventListener('mousemove', e => {
+      //   if (!isDragging) return;
+      //   chatBox.style.left = `${e.clientX - offsetX}px`;
+      //   chatBox.style.top = `${e.clientY - offsetY}px`;
+      //   chatBox.style.right = 'auto';
+      //   chatBox.style.bottom = 'auto';
+      // });
+      // window.addEventListener('mouseup', () => {
+      //   isDragging = false;
+      //   document.body.style.userSelect = 'auto';
+      // });
 
       let isResizing = false, startX, startY, startWidth, startHeight;
       resizeHandle.addEventListener('mousedown', e => {

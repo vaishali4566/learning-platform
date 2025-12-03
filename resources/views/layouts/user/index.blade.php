@@ -168,7 +168,7 @@
     </style>
 </head>
 
-<body class="bg-[#F5F7FA] page-hidden text-[#0F172A] dark:bg-[#0f172a] dark:text-white flex flex-col h-screen overflow-hidden">
+<body class="bg-gray-50 page-hidden text-[#0F172A] dark:bg-gradient-to-br dark:from-[#0B1120] dark:via-[#0E162B] dark:to-[#0B1A2E] dark:text-white flex flex-col h-screen overflow-hidden">
 
     {{-- Define current user for chat notifications --}}
     <script>
@@ -189,7 +189,7 @@
 
         <div id="mainContent" class="flex-1 ml-20 lg:ml-0 transition-all duration-300 flex flex-col">            
             {{-- NAVBAR --}}
-            <div id="navbar" class=" fixed top-0 left-20 lg:left-[14rem] right-0 bg-[#F0F4FA] dark:bg-gray-900 border-b border-[#D5DEE8] dark:border-gray-800">
+            <div id="navbar" class=" fixed top-0 left-20 z-50 lg:left-[14rem] right-0 bg-[#F0F4FA] dark:bg-gray-900 border-b border-[#D5DEE8] dark:border-gray-800">
                 @include('partials.user.navbar')
             </div>
 
