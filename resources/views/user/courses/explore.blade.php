@@ -128,11 +128,11 @@
 
                 <!-- Title + Bio -->
                 <div class="mb-6">
-                    <h1 class="text-2xl 2xl:text-4xl font-bold text-gray-800 dark:text-white tracking-wide dark:drop-shadow-[0_0_5px_rgba(0,194,255,0.3)]">
+                    <h1 id="course-title" class="text-2xl 2xl:text-4xl font-bold text-gray-800 dark:text-white tracking-wide dark:drop-shadow-[0_0_5px_rgba(0,194,255,0.3)]">
                         Full-Stack Web Development Mastery 2025
                     </h1>
 
-                    <p class="text-gray-600 text-base dark:text-[#A1A9C4] 2xl:text-lg leading-relaxed mt-2">
+                    <p id="course-bio" class="text-gray-600 text-base dark:text-[#A1A9C4] 2xl:text-lg leading-relaxed mt-2">
                         Become a job-ready full-stack developer by mastering modern frontend,
                         backend and deployment workflows. Built with a hands-on, project-focused approach.
                     </p>
@@ -167,9 +167,9 @@
 
                 <!-- Meta (Trainer / Experience / Created) -->
                 <div class="flex items-center flex-wrap gap-3 md:gap-6 text-xs 2xl:text-sm text-gray-600 dark:text-[#A1A9C4] border-t border-b border-gray-300 dark:border-white/10 py-3">
-                    <p><span class="font-semibold text-[#00C2FF]">Trainer:</span> Aman Verma</p>
-                    <p><span class="font-semibold text-[#00C2FF]">Experience:</span> 8 Years in Web Development</p>
-                    <p><span class="font-semibold text-[#00C2FF]">Created:</span> December 10, 2024</p>
+                    <p><span class="font-semibold text-[#00C2FF]">Trainer:</span> <span id="trainer-name">—</span></p>
+                    <p><span class="font-semibold text-[#00C2FF]">Experience:</span> <span id="trainer-exp">—</span></p>
+                    <p><span class="font-semibold text-[#00C2FF]">Created:</span> <span id="created-date">—</span></p>
                 </div>
 
                 <!-- What You’ll Learn -->
@@ -377,70 +377,77 @@
 
                             <!-- Left: Overall Rating -->
                             <div>
-                                <p class="text-4xl 2xl:text-5xl font-bold text-gray-800 dark:text-white">
-                                    4.7 <span class="text-xl 2xl:text-2xl text-yellow-400 align-top">/ 5</span>
+                                <p id="avg-rating" class="text-4xl 2xl:text-5xl font-bold text-gray-800 dark:text-white">
+                                    0.0 <span class="text-xl 2xl:text-2xl text-yellow-400 align-top">/ 5</span>
                                 </p>
 
                                 <!-- Stars -->
-                                <div class="flex text-yellow-400 text-xl 2xl:text-2xl mt-1">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                <div id="avg-stars" class="flex text-yellow-400 text-xl 2xl:text-2xl mt-1">
                                 </div>
 
-                                <p class="text-gray-500 dark:text-gray-400 text-xs 2xl:text-sm mt-2">Based on 152 reviews</p>
+                                <p id="total-reviews" class="text-gray-500 dark:text-gray-400 text-xs 2xl:text-sm mt-2">Based on 0 reviews</p>
                             </div>
 
                             <!-- Middle: Rating Bars -->
                             <div class="flex-1">
                                 <div class="space-y-2 text-xs 2xl:text-sm">
 
+                                 <template id="rating-row-template">
+                                    <div class="flex items-center gap-3 rating-row">
+                                        <span class="text-gray-300 star-label"></span>
+                                        <div class="bg-gray-700 h-2 flex-1 rounded">
+                                            <div class="bg-[#00C2FF] h-2 rounded progress-bar"></div>
+                                        </div>
+                                        <span class="text-gray-400 count"></span>
+                                    </div>
+                                </template>
+
+                                <div id="rating-rows"></div>
+
                                     <!-- 5 Stars -->
-                                    <div class="flex items-center gap-3">
+                                    <!-- <div class="flex items-center gap-3">
                                         <span class="text-gray-600 dark:text-gray-300 w-12">5 Stars</span>
                                         <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded" style="width: 78%;"></div>
                                         </div>
                                         <span class="text-gray-500 dark:text-gray-400">118</span>
-                                    </div>
+                                    </div> -->
 
                                     <!-- 4 Stars -->
-                                    <div class="flex items-center gap-3">
+                                    <!-- <div class="flex items-center gap-3">
                                         <span class="text-gray-600 dark:text-gray-300 w-12">4 Stars</span>
                                         <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded" style="width: 16%;"></div>
                                         </div>
                                         <span class="text-gray-500 dark:text-gray-400">24</span>
-                                    </div>
+                                    </div> -->
 
                                     <!-- 3 Stars -->
-                                    <div class="flex items-center gap-3">
+                                    <!-- <div class="flex items-center gap-3">
                                         <span class="text-gray-600 dark:text-gray-300 w-12">3 Stars</span>
                                         <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded" style="width: 4%;"></div>
                                         </div>
                                         <span class="text-gray-500 dark:text-gray-400">7</span>
-                                    </div>
+                                    </div> -->
 
                                     <!-- 2 Stars -->
-                                    <div class="flex items-center gap-3">
+                                    <!-- <div class="flex items-center gap-3">
                                         <span class="text-gray-600 dark:text-gray-300 w-12">2 Stars</span>
                                         <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded" style="width: 1%;"></div>
                                         </div>
                                         <span class="text-gray-500 dark:text-gray-400">2</span>
-                                    </div>
+                                    </div> -->
 
                                     <!-- 1 Star -->
-                                    <div class="flex items-center gap-3">
+                                    <!-- <div class="flex items-center gap-3">
                                         <span class="text-gray-600 dark:text-gray-300 w-12">1 Star</span>
                                         <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded" style="width: 1%;"></div>
                                         </div>
                                         <span class="text-gray-500 dark:text-gray-400">1</span>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
 
@@ -460,7 +467,7 @@
                     <div id="feedback-list" class="space-y-4">
 
                         <!-- Feedback Item 1 -->
-                        <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
+                        <!-- <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
                             <div class="flex justify-between">
                                 <p class="font-semibold text-gray-700 dark:text-white text-sm 2xl:text-base">Rahul Singh</p>
                                 <p class="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400">Jan 15, 2025</p>
@@ -477,10 +484,10 @@
                             <p class="text-gray-600 dark:text-gray-300 mt-2 text-sm 2xl:text-base">
                                 Amazing course! The projects and explanations were crystal clear. Helped me crack my first frontend job.
                             </p>
-                        </div>
+                        </div> -->
 
                         <!-- Feedback Item 2 -->
-                        <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
+                        <!-- <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
                             <div class="flex justify-between">
                                 <p class="font-semibold text-gray-700 dark:text-white text-sm 2xl:text-base">Sneha Mirza</p>
                                 <p class="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400">Dec 28, 2024</p>
@@ -500,10 +507,10 @@
                                 I wish there were even more advanced projects, but overall this gave me the clarity and confidence I needed
                                 to start applying for developer roles.
                             </p>
-                        </div>
+                        </div> -->
 
                         <!-- Feedback Item 3 -->
-                        <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
+                        <!-- <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
                             <div class="flex justify-between">
                                 <p class="font-semibold text-gray-700 dark:text-white text-sm 2xl:text-base">Aditya Rao</p>
                                 <p class="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400">Nov 18, 2024</p>
@@ -519,7 +526,7 @@
                             <p class="text-gray-600 dark:text-gray-300 mt-2 text-sm 2xl:text-base">
                                 Very informative and beginner-friendly. Could use a few more advanced assignments, but overall fantastic.
                             </p>
-                        </div>
+                        </div> -->
 
                     </div>
 
@@ -541,8 +548,8 @@
                         </div>
 
                         <div>
-                            <h3 class="text-base 2xl:text-lg font-medium text-gray-800 dark:text-white">Aman Verma</h3>
-                            <p class="text-gray-500 dark:text-[#A1A9C4] text-xs 2xl:text-sm">Senior Web Developer • 8+ Years Experience</p>
+                            <h3 id="trainer-name-2" class="text-base 2xl:text-lg font-medium text-gray-800 dark:text-white">Aman Verma</h3>
+                            <p id="trainer-exp-2" class="text-gray-500 dark:text-[#A1A9C4] text-xs 2xl:text-sm">Senior Web Developer • 8+ Years Experience</p>
                         </div>
                     </div>
                 </div>
@@ -676,54 +683,10 @@
             });
         }
 
+        loadFeedback();
 
         /* ---------------------------------------------------
-        LOAD COURSE DETAILS
-        ------------------------------------------------------*/
-        const titleEl = document.getElementById("course-title");
-        const bioEl = document.getElementById("course-bio");
-        const trainerNameEl = document.getElementById("trainer-name");
-        const trainerExpEl = document.getElementById("trainer-exp");
-        const trainerName2El = document.getElementById("trainer-name-2");
-        const trainerExp2El = document.getElementById("trainer-exp-2");
-        const dateEl = document.getElementById("created-date");
-        const priceEl = document.getElementById("course-price");
-
-        fetch(`/user/courses/${courseId}`)
-            .then(res => res.json())
-            .then(resp => {
-                const c = resp.data;
-
-                titleEl.textContent = c.title;
-                bioEl.textContent = c.description;
-                trainerNameEl.textContent = c.trainer?.name ?? "N/A";
-                trainerName2El.textContent = c.trainer?.name ?? "N/A";
-                trainerExpEl.textContent = (c.trainer?.experience_years ?? 0) + " Years";
-                trainerExp2El.textContent = "Experience: " + (c.trainer?.experience_years ?? 0) + " Years";
-                priceEl.textContent = c.price;
-                dateEl.textContent = new Date(c.created_at).toLocaleDateString();
-            });
-
-
-        /* ---------------------------------------------------
-        ⭐ LOAD FEEDBACK LIST FROM BACKEND
-        ------------------------------------------------------*/
-        // const feedbackList = document.getElementById("feedback-list");
-
-        // function loadFeedback() {
-        //     fetch(`/user/courses/${courseId}/feedback`)
-        //         .then(res => res.json())
-        //         .then(list => {
-        //             feedbackList.innerHTML = "";
-        //             list.forEach(fb => appendFeedbackToUI(fb));
-        //         });
-        // }
-
-        // loadFeedback();
-
-
-        /* ---------------------------------------------------
-        ⭐ FUNCTION — APPEND FEEDBACK
+       ⭐ FUNCTION — APPEND FEEDBACK
         ------------------------------------------------------*/
         function appendFeedbackToUI(fb) {
             const div = document.createElement("div");
@@ -743,6 +706,8 @@
 
             feedbackList.prepend(div);
         }
+
+
 
         /* ---------------------------------------------------
     ⭐ LOAD FEEDBACK SUMMARY
