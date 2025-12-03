@@ -474,7 +474,7 @@
                             </div>
 
                             <div class="flex text-yellow-400 text-base 2xl:text-lg mt-1">
-                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
@@ -690,18 +690,23 @@
         ------------------------------------------------------*/
         function appendFeedbackToUI(fb) {
             const div = document.createElement("div");
-            div.className = "bg-white/5 border border-white/10 rounded-xl p-4";
+            div.className = "";
 
             const userName = fb.user?.name ?? fb.user ?? "Unknown";
             const formattedDate = fb.created_at ? new Date(fb.created_at).toLocaleString() : "";
 
             div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <h4 class="text-white font-medium">${userName}</h4>
-                    <p class="text-yellow-400">${"⭐".repeat(fb.rating)}</p>
+                <div class="bg-white dark:bg-white/5 border border-white/10 rounded-xl p-5 shadow">
+                    <div class="flex justify-between">
+                        <p class="font-semibold text-gray-700 dark:text-white text-sm 2xl:text-base">${userName}</p>
+                        <p class="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400">${formattedDate}</p>
+                    </div>
+
+                    <div class="flex text-yellow-400 text-base 2xl:text-lg mt-1">
+                        <p class="text-yellow-400">${'<i class="fa-solid fa-star"></i>'.repeat(fb.rating)}</p>                   
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2 text-sm 2xl:text-base">${fb.comment ?? ''}</p>
                 </div>
-                <p class="text-gray-300 mt-1">${fb.comment ?? ''}</p>
-                <p class="text-gray-500 text-xs mt-1">${formattedDate}</p>
             `;
 
             feedbackList.prepend(div);
