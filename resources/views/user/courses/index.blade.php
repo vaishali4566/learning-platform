@@ -76,7 +76,7 @@
                         <span class="text-[#00C2FF] text-sm font-medium block">₹{{ $course->price }}</span>
 
                         <div class="flex gap-3 pt-2">
-                            <a href="{{ route('trainer.payment.stripe', ['courseId' => $course->id]) }}"
+                            <a href="{{ route('user.payment.stripe', ['courseId' => $course->id]) }}"
                                 class="flex-1 text-center px-4 py-2 bg-gradient-to-r from-[#2F82DB] to-[#00C2FF] text-white text-sm font-medium rounded-lg shadow-md hover:shadow-[#00C2FF]/30 hover:scale-[1.02] transition">
                                 Buy Now
                             </a>

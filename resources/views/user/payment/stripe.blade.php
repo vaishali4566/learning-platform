@@ -136,7 +136,7 @@
         <p class="text-sm text-gray-300 mb-1"><strong>Price:</strong> ₹{{ $course->price }}</p>
         <p class="course-desc">{{ Str::limit($course->description, 100) }}</p>
 
-        <form action="{{ route('payment.post') }}" method="POST" id="payment-form">
+        <form action="{{ route('user.payment.post') }}" method="POST" id="payment-form">
             @csrf
             <input type="hidden" name="course_id" value="{{ $course->id }}">
             <input type="hidden" name="stripeToken" id="stripeToken">

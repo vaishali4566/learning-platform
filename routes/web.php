@@ -162,6 +162,7 @@ Route::prefix('trainer')->name('trainer.')->group(function () {
             Route::get('/create', [TrainerCourseController::class, 'create'])->name('create');
             Route::get('/my', [TrainerCourseController::class, 'myCourses'])->name('my');
             Route::get('/explore/{courseId}', [TrainerCourseController::class, 'explore'])->name('explore');
+            Route::post('/explore', [TrainerCourseController::class, 'store'])->name('store');
             Route::delete('/{course}', [TrainerCourseController::class, 'destroy'])->name('destroy');
             Route::get('/my-purchases', [PurchaseController::class, 'index'])->name('my.purchases');
 
