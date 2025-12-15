@@ -85,7 +85,7 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::post('/update', [UserController::class, 'updateProfile'])->name('update');
         Route::post('/delete', [UserController::class, 'deleteAccount'])->name('delete');
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
-
+        Route::get('purchase-history', [UserController::class, 'purchaseHistory'])->name('purchase.history');
         // Courses
         Route::prefix('courses')->name('courses.')->group(function () {
             Route::get('/', [UserCourseController::class, 'index'])->name('index');
