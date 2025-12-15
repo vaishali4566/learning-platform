@@ -50,11 +50,22 @@ class UserController extends Controller
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'old_password' => 'nullable|required_with:password|string',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 
+        // ✅ FIRST validate
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
+        }
+
+        // ✅ THEN check old password
+        if ($request->filled('password')) {
+            if (!Hash::check($request->old_password, $user->password)) {
+                return back()->withErrors([
+                    'old_password' => 'Your old password is incorrect.'
+                ])->withInput();
+            }
         }
 
         // ✅ Upload image if provided
@@ -70,14 +81,17 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->country = $request->country;
 
+        // ✅ Update password only if provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
         $user->save();
 
-        return redirect()->route('user.profile')->with('success', 'Profile updated successfully!');
+        return redirect()->route('user.profile')
+            ->with('success', 'Profile updated successfully!');
     }
+
 
     /**
      * Delete user account

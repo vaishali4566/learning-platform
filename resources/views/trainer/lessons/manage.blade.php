@@ -304,7 +304,7 @@ document.addEventListener("click", (e) => {
             ? `/trainer/courses/lessons/update/${editLessonId.value}`
             : form.action;
 
-        const formData = new FormData();
+        const formData = new FormData(form);
         formData.append("title", titleInput.value);
 
         if (isEdit) {

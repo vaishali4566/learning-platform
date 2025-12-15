@@ -36,7 +36,7 @@ class CustomResetPassword extends Notification
      */
 public function toMail(object $notifiable): MailMessage
 {
-    $resetUrl = url(route('password.reset', [
+    $resetUrl = url(route('user.password.reset', [
         'token' => $this->token,
         'email' => $notifiable->email,
     ], false));

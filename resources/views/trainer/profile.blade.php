@@ -99,6 +99,11 @@
                 <!-- Password -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                        <label class="block text-[#A1A9C4] text-sm mb-1">Old Password</label>
+                        <input type="password" name="old_password" placeholder="Enter old password"
+                            class="w-full bg-[#1C2541]/70 text-[#E6EDF7] border border-[#00C2FF]/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00C2FF]/70 text-sm transition-all duration-300 placeholder-gray-400">
+                    </div>
+                    <div>
                         <label class="block text-[#A1A9C4] text-sm mb-1">New Password</label>
                         <input type="password" name="password" placeholder="Enter new password"
                             class="w-full bg-[#1C2541]/70 text-[#E6EDF7] border border-[#00C2FF]/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00C2FF]/70 text-sm transition-all duration-300 placeholder-gray-400">

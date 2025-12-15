@@ -32,87 +32,113 @@ class PaymentController extends Controller
 
     /** 🔹 Handle Stripe payment */
    public function stripePost(Request $request)
-{
-    // Accept JSON or form data
-    $stripeToken = $request->input('stripeToken');
-    $courseId = $request->input('course_id');
+    {
+        // Accept JSON or form data
+        $stripeToken = $request->input('stripeToken');
+        $courseId = $request->input('course_id');
 
-    if (!$stripeToken || !$courseId) {
-        return response()->json(['success' => false, 'message' => 'Invalid data.']);
-    }
+        if (!$stripeToken || !$courseId) {
+            return response()->json(['success' => false, 'message' => 'Invalid data.']);
+        }
 
-    $course = Course::find($courseId);
-    if (!$course) {
-        return response()->json(['success' => false, 'message' => 'Course not found.']);
-    }
+        $course = Course::find($courseId);
+        if (!$course) {
+            return response()->json(['success' => false, 'message' => 'Course not found.']);
+        }
 
-    try {
-        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
-        $charge = Charge::create([
-            "amount" => $course->price * 100,
-            "currency" => "inr",
-            "source" => $stripeToken,
-            "description" => "Payment for course: " . $course->title,
-        ]);
-
+        // 🔒 Check already purchased (User / Trainer both)
         if (auth('trainer')->check()) {
-            $buyer = auth('trainer')->user();
-            $buyerType = 'trainer';
-            $buyerId = $buyer->id;
-            if ($course->trainer_id == $buyerId) {
-                return response()->json(['success' => false, 'message' => 'You cannot buy your own course.']);
-            }
-            $paymentData = ['trainer_id' => $buyerId, 'buyer_type' => $buyerType];
+            $buyerId = auth('trainer')->id();
+
+            $alreadyPurchased = Purchase::where('course_id', $course->id)
+                ->where('trainer_id', $buyerId)
+                ->where('status', 'completed')
+                ->exists();
+
         } else {
-            $buyer = auth()->user();
-            $buyerType = 'user';
-            $buyerId = $buyer->id;
-            $paymentData = ['user_id' => $buyerId, 'buyer_type' => $buyerType];
+            $buyerId = auth()->id();
+
+            $alreadyPurchased = Purchase::where('course_id', $course->id)
+                ->where('user_id', $buyerId)
+                ->where('status', 'completed')
+                ->exists();
         }
 
-        $payment = Payment::create(array_merge($paymentData, [
-            'course_id' => $course->id,
-            'transaction_id' => $charge->id,
-            'amount' => $course->price,
-            'currency' => $charge->currency,
-            'payment_method' => 'stripe',
-            'status' => $charge->status === 'succeeded' ? 'success' : 'failed',
-            'receipt_url' => $charge->receipt_url ?? null,
-        ]));
-
-        if ($charge->status === 'succeeded') {
-            $purchaseData = [
-                'course_id' => $course->id,
-                'payment_id' => $payment->id,
-                'status' => 'completed',
-                'progress' => 0,
-            ];
-            if ($buyerType === 'trainer') $purchaseData['trainer_id'] = $buyerId;
-            else $purchaseData['user_id'] = $buyerId;
-
-            Purchase::create($purchaseData);
-
-           try {
-                $buyer->notify(new PurchaseSuccessMail($buyer, $course));
-            } catch (\Exception $e) {
-                Log::warning("Mail not sent to buyer ID: {$buyer->id}, Type: " . get_class($buyer));
-                
-            }
-
+        if ($alreadyPurchased) {
             return response()->json([
-                'success' => true,
-                'message' => 'Payment successful!',
-                'redirect_url' => $buyerType === 'trainer'
-                    ? route('trainer.courses.my.purchases')
-                    : route('user.courses.my')
+                'success' => false,
+                'message' => 'You have already purchased this course.'
             ]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Payment failed.']);
         }
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+
+
+        try {
+            Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+            $charge = Charge::create([
+                "amount" => $course->price * 100,
+                "currency" => "inr",
+                "source" => $stripeToken,
+                "description" => "Payment for course: " . $course->title,
+            ]);
+
+            if (auth('trainer')->check()) {
+                $buyer = auth('trainer')->user();
+                $buyerType = 'trainer';
+                $buyerId = $buyer->id;
+                if ($course->trainer_id == $buyerId) {
+                    return response()->json(['success' => false, 'message' => 'You cannot buy your own course.']);
+                }
+                $paymentData = ['trainer_id' => $buyerId, 'buyer_type' => $buyerType];
+            } else {
+                $buyer = auth()->user();
+                $buyerType = 'user';
+                $buyerId = $buyer->id;
+                $paymentData = ['user_id' => $buyerId, 'buyer_type' => $buyerType];
+            }
+
+            $payment = Payment::create(array_merge($paymentData, [
+                'course_id' => $course->id,
+                'transaction_id' => $charge->id,
+                'amount' => $course->price,
+                'currency' => $charge->currency,
+                'payment_method' => 'stripe',
+                'status' => $charge->status === 'succeeded' ? 'success' : 'failed',
+                'receipt_url' => $charge->receipt_url ?? null,
+            ]));
+
+            if ($charge->status === 'succeeded') {
+                $purchaseData = [
+                    'course_id' => $course->id,
+                    'payment_id' => $payment->id,
+                    'status' => 'completed',
+                    'progress' => 0,
+                ];
+                if ($buyerType === 'trainer') $purchaseData['trainer_id'] = $buyerId;
+                else $purchaseData['user_id'] = $buyerId;
+
+                Purchase::create($purchaseData);
+
+            try {
+                    $buyer->notify(new PurchaseSuccessMail($buyer, $course));
+                } catch (\Exception $e) {
+                    Log::warning("Mail not sent to buyer ID: {$buyer->id}, Type: " . get_class($buyer));
+                    
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment successful!',
+                    'redirect_url' => $buyerType === 'trainer'
+                        ? route('trainer.courses.my.purchases')
+                        : route('user.courses.my')
+                ]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Payment failed.']);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
-}
 
 
 
