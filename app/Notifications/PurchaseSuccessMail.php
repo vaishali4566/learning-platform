@@ -3,14 +3,10 @@
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class PurchaseSuccessMail extends Notification implements ShouldQueue
+class PurchaseSuccessMail extends Notification
 {
-    use Queueable;
-
     public $buyer;
     public $course;
 
@@ -28,7 +24,6 @@ class PurchaseSuccessMail extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $name = $this->buyer->name ?? $this->buyer->trainer_name ?? 'Learner';
-        $email = $this->buyer->email ?? $this->buyer->trainer_email;
 
         return (new MailMessage)
             ->subject('Purchase Successful!')
@@ -41,7 +36,7 @@ class PurchaseSuccessMail extends Notification implements ShouldQueue
 
     private function getRedirectUrl()
     {
-        if (method_exists($this->buyer, 'isTrainer') || get_class($this->buyer) === 'App\Models\Trainer') {
+        if (get_class($this->buyer) === 'App\Models\Trainer') {
             return route('trainer.courses.my.purchases');
         }
         return route('user.courses.my');
