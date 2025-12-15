@@ -80,17 +80,28 @@
                                         </button>
                                     </li>
 
-                                    @if($lesson->content_type == 'quiz')
-                                    <li>
-                                        <a href="{{ route('trainer.quizzes.index', [$course->id]) }}"
-                                            class="w-full px-4 py-2.5 block text-[#D0D8E8] 
-                                                hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
-                                            <i class="bi bi-clipboard2-check text-[#2F82DB] text-base"></i>
-                                            Add Quiz
-                                        </a>
-                                    </li>
+                                  @if($lesson->content_type === 'quiz')
+                                    @if($lesson->quiz)
+                                        <li>
+                                            <a href="{{ route('trainer.quizzes.questions', $lesson->quiz->id) }}"
+                                                class="w-full px-4 py-2.5 block text-[#D0D8E8] 
+                                                    hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
+                                                <i class="bi bi-clipboard2-check text-[#2F82DB] text-base"></i>
+                                                Manage Quiz
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ route('trainer.quizzes.create', $lesson->id) }}"
+                                                class="w-full px-4 py-2.5 block text-[#D0D8E8] 
+                                                    hover:bg-[#1C2541] hover:text-white flex items-center gap-2 transition">
+                                                <i class="bi bi-plus-circle text-[#2F82DB] text-base"></i>
+                                                Add Quiz
+                                            </a>
+                                        </li>
+                                    @endif
 
-                                    @elseif($lesson->content_type == 'practice')
+                                @elseif($lesson->content_type === 'practice')
                                     <li>
                                         <a href="{{ route('trainer.practice-tests.create', [$course->id, $lesson->id]) }}"
                                             class="w-full px-4 py-2.5 block text-[#D0D8E8] 
@@ -99,7 +110,8 @@
                                             Create Practice
                                         </a>
                                     </li>
-                                    @endif
+                                @endif
+
 
                                     <li>
                                         <button data-id="{{ $lesson->id }}"

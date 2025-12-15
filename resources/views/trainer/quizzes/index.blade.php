@@ -17,10 +17,6 @@
             <h1 class="text-2xl font-semibold text-white tracking-wide">
                 Manage Quizzes
             </h1>
-            <a href="{{ route('trainer.quizzes.create') }}"
-               class="px-5 py-2 rounded-lg font-medium bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] text-white hover:shadow-[#00C2FF]/40 transition-all">
-                + Create Quiz
-            </a>
         </div>
 
         <!-- Quiz List -->

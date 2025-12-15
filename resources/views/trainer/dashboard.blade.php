@@ -171,7 +171,7 @@
                     <i data-lucide="plus-circle" class="w-5 h-5 text-[#00C2FF]"></i>
                     <span class="text-[#E6EDF7]">Create New Course</span>
                 </a>
-                <a href="{{ route('trainer.quizzes.create') }}" 
+                <a href="{{ route('trainer.quizzes.create', $lesson->id) }}"
                    class="flex items-center gap-3 bg-[#101727]/40 rounded-lg px-4 py-3 hover:bg-[#101727]/70 transition-all duration-200">
                     <i data-lucide="check-square" class="w-5 h-5 text-[#16a34a]"></i>
                     <span class="text-[#E6EDF7]">Add New Quiz</span>

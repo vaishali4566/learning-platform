@@ -185,7 +185,7 @@ Route::prefix('trainer')->name('trainer.')->group(function () {
         // Quizzes
         Route::prefix('quizzes')->name('quizzes.')->group(function () {
             Route::get('/', [QuizController::class, 'index'])->name('index');
-            Route::get('/create', [QuizController::class, 'create'])->name('create');
+            Route::get('/create/{lesson}', [QuizController::class, 'create'])->name('create');
             Route::post('/store', [QuizController::class, 'store'])->name('store');
             Route::post('/{quiz}/finalize', [QuizController::class, 'finalizeQuiz'])->name('finalize');
             Route::get('/{id}/questions', [QuizController::class, 'showQuestions'])->name('questions');
