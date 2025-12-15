@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Payment; 
 use App\Models\User;
 
 class UserController extends Controller
@@ -96,5 +97,17 @@ class UserController extends Controller
         }
 
         return back()->with('error', 'There was an error deleting your account.');
+    }
+    public function purchaseHistory()
+    {
+        $userId = Auth::id(); // logged-in user
+
+        $payments = Payment::with(['course', 'trainer'])
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('user.payment.purchase-history', compact('payments'));
+
     }
 }
