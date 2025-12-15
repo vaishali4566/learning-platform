@@ -715,7 +715,7 @@
 
 
         /* ---------------------------------------------------
-    ⭐ LOAD FEEDBACK SUMMARY
+        ⭐ LOAD FEEDBACK SUMMARY
         ------------------------------------------------------*/
         function loadFeedbackSummary() {
             fetch(`/user/courses/${courseId}/feedback/summary`)

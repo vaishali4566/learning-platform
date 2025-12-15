@@ -58,6 +58,7 @@ class TrainerController extends Controller
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'old_password' => 'nullable|required_with:password|string',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 
@@ -68,6 +69,21 @@ class TrainerController extends Controller
         // Upload image if provided
         if ($request->hasFile('profile_image')) {
             $path = $request->file('profile_image')->store('trainer_profile_images', 'public');
+            $trainer->profile_image = $path;
+        }
+
+         // ✅ THEN check old password
+        if ($request->filled('password')) {
+            if (!Hash::check($request->old_password, $trainer->password)) {
+                return back()->withErrors([
+                    'old_password' => 'Your old password is incorrect.'
+                ])->withInput();
+            }
+        }
+
+        // ✅ Upload image if provided
+        if ($request->hasFile('profile_image')) {
+            $path = $request->file('profile_image')->store('profile_images', 'public');
             $trainer->profile_image = $path;
         }
 
