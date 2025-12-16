@@ -18,6 +18,14 @@ class PracticeAttempt extends Model
         'completed_at'
     ];
 
+    // ⭐ IMPORTANT FIX
+    protected $casts = [
+        'started_at'   => 'datetime',
+        'completed_at' => 'datetime',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
+    ];
+
     public function answers()
     {
         return $this->hasMany(PracticeAnswer::class, 'attempt_id');

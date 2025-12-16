@@ -115,6 +115,8 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/practice-attempt/{attemptId}/questions', [UserPracticeTestController::class, 'showTest'])->name('practice.test');
         Route::get('/practice-attempt/{attemptId}/result', [UserPracticeTestController::class, 'result'])->name('practice.result');
         Route::post('/practice-attempt/{attemptId}/submit', [UserPracticeTestController::class, 'submitTest'])->name('practice.submit');
+        Route::get('/practice/history', [UserPracticeTestController::class, 'practiceHistory'])->name('practice.history');
+
 
         // Payments
         Route::prefix('payment')->controller(PaymentController::class)->group(function () {

@@ -248,5 +248,18 @@ class UserPracticeTestController extends Controller
         ];
     }
 
+    public function practiceHistory()
+    {
+        $attempts = PracticeAttempt::with([
+                'test',
+                'answers.question'
+            ])
+            ->where('user_id', auth()->id())
+            ->where('status', 'completed')
+            ->latest()
+            ->get();
+
+        return view('user.practice.history', compact('attempts'));
+    }
 
 }
