@@ -8,6 +8,7 @@ use App\Models\Purchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Services\CourseProgressService;
 
 class UserCourseController extends Controller
 {
@@ -15,33 +16,39 @@ class UserCourseController extends Controller
     {
         $userId = Auth::id();
 
-        // ✅ Get purchased course IDs
-        $purchasedCourseIds = DB::table('payments')
-            ->where('user_id', $userId)
+        $purchasedCourseIds = Purchase::where('user_id', $userId)
             ->pluck('course_id');
 
-        // ✅ Get purchased courses as models
         $purchasedCourses = Course::whereIn('id', $purchasedCourseIds)->get();
 
-        // ✅ Get available courses (not purchased)
         $availableCourses = Course::whereNotIn('id', $purchasedCourseIds)->get();
 
         return view('user.courses.index', compact('purchasedCourses', 'availableCourses'));
     }
 
-
-
     public function myCourses()
     {
         $userId = Auth::id();
-        $courses = DB::table('payments')
-            ->join('courses', 'payments.course_id', '=', 'courses.id')
-            ->where('payments.user_id', $userId)
-            ->select('courses.*')
-            ->get();
+
+        $courses = Course::whereIn(
+            'id',
+            Purchase::where('user_id', $userId)->pluck('course_id')
+        )->get();
+
+        foreach ($courses as $course) {
+            // ✅ Progress 0-100
+            $course->progress = CourseProgressService::getProgress($userId, $course->id);
+
+            // ✅ Check if certificate exists
+            $course->certificateExists = Certificate::where('user_id', $userId)
+                ->where('course_id', $course->id)
+                ->exists();
+        }
 
         return view('user.courses.myCourses', compact('courses'));
     }
+
+
     
     public function explore($courseId)
     {

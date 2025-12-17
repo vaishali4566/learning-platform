@@ -46,258 +46,160 @@
 </div>
 
 <style>
+    /* --- Scrollbar + Sidebar + Lesson Buttons Styles (unchanged) --- */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background-color: rgba(0, 194, 255, 0.3); border-radius: 6px; }
-
     .sidebar-collapsed { width: 5rem !important; padding: 1.5rem 0.75rem !important; }
-    .sidebar-collapsed #course-title{
-        display: none !important;
-    }
-    .sidebar-collapsed #lesson-list button span.lesson-title {
-        display: none !important;
-    }
-    .sidebar-collapsed #lesson-list button span.lesson-number {
-        display: inline-block !important;
-        width: 100%;
-        text-align: center;
-    }
-
-    .tooltip {
-        position: absolute; left: 4.4rem; top: 50%; transform: translateY(-50%) translateX(5px);
-        background: rgba(14, 20, 35, 0.98); color: #E6EDF7; padding: 6px 12px; border-radius: 8px;
-        font-size: 0.8rem; opacity: 0; pointer-events: none; white-space: nowrap;
-        transition: all 0.25s ease; box-shadow: 0 0 12px rgba(0, 194, 255, 0.25);
-        border: 1px solid rgba(0, 194, 255, 0.2); z-index: 50;
-    }
-    .sidebar-collapsed #lesson-list button:hover .tooltip {
-        opacity: 1;
-        transform: translateY(-50%) translateX(0);
-    }
-
-    #course-logo::after {
-        content: attr(data-tooltip); position: absolute; left: 3.8rem; top: 50%;
-        transform: translateY(-50%) translateX(5px); background: rgba(14, 20, 35, 0.98);
-        color: #E6EDF7; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; opacity: 0;
-        pointer-events: none; white-space: nowrap; transition: all 0.25s ease;
-        box-shadow: 0 0 12px rgba(0, 194, 255, 0.25); border: 1px solid rgba(0, 194, 255, 0.2); z-index: 50;
-    }
-
-    .sidebar-collapsed #course-logo:hover::after {
-        opacity: 1;
-        transform: translateY(-50%) translateX(0);
-    }
-
-    /* Lesson buttons */
-    #lesson-list button {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        color: #A1A9C4;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.25s ease;
-        position: relative;
-    }
-
-    #lesson-list button:hover {
-        background: rgba(0, 194, 255, 0.08);
-        border-color: rgba(0, 194, 255, 0.2);
-        color: #E6EDF7;
-        transform: translateX(2px);
-    }
-
-    .lesson-active {
-        background: rgba(0, 194, 255, 0.12);
-        border-color: rgba(0, 194, 255, 0.45);
-        color: #E6EDF7;
-        font-weight: 600;
-        box-shadow: inset 0 0 12px rgba(0, 194, 255, 0.25);
-        position: relative;
-    }
-
-    .lesson-active::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 3px;
-        background: #00C2FF;
-        border-radius: 2px;
-        box-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
-    }
-
-    .lesson-number {
-        font-weight: 600;
-        color: #00C2FF;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 0.4; }
-        50% { opacity: 1; }
-    }
-
-    .loading-placeholder {
-        background: rgba(255, 255, 255, 0.06);
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    video {
-        border-radius: 18px;
-        outline: none;
-        box-shadow: 0 0 20px rgba(0, 194, 255, 0.2);
-    }
+    .sidebar-collapsed #course-title{ display: none !important; }
+    .sidebar-collapsed #lesson-list button span.lesson-title { display: none !important; }
+    .sidebar-collapsed #lesson-list button span.lesson-number { display: inline-block !important; width: 100%; text-align: center; }
+    .tooltip { position: absolute; left: 4.4rem; top: 50%; transform: translateY(-50%) translateX(5px); background: rgba(14, 20, 35, 0.98); color: #E6EDF7; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; opacity: 0; pointer-events: none; white-space: nowrap; transition: all 0.25s ease; box-shadow: 0 0 12px rgba(0, 194, 255, 0.25); border: 1px solid rgba(0, 194, 255, 0.2); z-index: 50; }
+    .sidebar-collapsed #lesson-list button:hover .tooltip { opacity: 1; transform: translateY(-50%) translateX(0); }
+    #course-logo::after { content: attr(data-tooltip); position: absolute; left: 3.8rem; top: 50%; transform: translateY(-50%) translateX(5px); background: rgba(14, 20, 35, 0.98); color: #E6EDF7; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; opacity: 0; pointer-events: none; white-space: nowrap; transition: all 0.25s ease; box-shadow: 0 0 12px rgba(0, 194, 255, 0.25); border: 1px solid rgba(0, 194, 255, 0.2); z-index: 50; }
+    .sidebar-collapsed #course-logo:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+    #lesson-list button { width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; color: #A1A9C4; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.25s ease; position: relative; }
+    #lesson-list button:hover { background: rgba(0, 194, 255, 0.08); border-color: rgba(0, 194, 255, 0.2); color: #E6EDF7; transform: translateX(2px); }
+    .lesson-active { background: rgba(0, 194, 255, 0.12); border-color: rgba(0, 194, 255, 0.45); color: #E6EDF7; font-weight: 600; box-shadow: inset 0 0 12px rgba(0, 194, 255, 0.25); position: relative; }
+    .lesson-active::before { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 3px; background: #00C2FF; border-radius: 2px; box-shadow: 0 0 8px rgba(0, 194, 255, 0.6); }
+    .lesson-number { font-weight: 600; color: #00C2FF; }
+    @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .loading-placeholder { background: rgba(255, 255, 255, 0.06); animation: pulse 1.5s ease-in-out infinite; }
+    video { border-radius: 18px; outline: none; box-shadow: 0 0 20px rgba(0, 194, 255, 0.2); }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const courseId = document.getElementById('lesson-app').dataset.courseId;
-        const lessonList = document.getElementById('lesson-list');
-        const sidebar = document.getElementById('lesson-sidebar');
-        const lessonTitle = document.getElementById('lesson-title');
-        const lessonContent = document.getElementById('lesson-content');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        let activeLessonId = null;
+document.addEventListener('DOMContentLoaded', function () {
+    const courseId = document.getElementById('lesson-app').dataset.courseId;
+    const lessonList = document.getElementById('lesson-list');
+    const sidebar = document.getElementById('lesson-sidebar');
+    const lessonTitle = document.getElementById('lesson-title');
+    const lessonContent = document.getElementById('lesson-content');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    let activeLessonId = null;
 
-        // Sidebar toggle
-        toggleBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('sidebar-collapsed');
+    // Sidebar toggle
+    toggleBtn?.addEventListener('click', () => {
+        sidebar.classList.toggle('sidebar-collapsed');
+    });
+
+    // Load lessons sidebar
+    fetch(`/user/courses/${courseId}/lessons/data`)
+        .then(r => r.json())
+        .then(lessons => {
+            if (!lessons.length) {
+                lessonTitle.textContent = "No lessons available";
+                return;
+            }
+
+            lessons.forEach((lesson, i) => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.dataset.lessonId = lesson.id;
+                btn.innerHTML = `
+                    <span class="lesson-number">${i + 1}</span>
+                    <span class="lesson-title truncate">${lesson.title}</span>
+                    <span class="tooltip">${lesson.title}</span>
+                `;
+                btn.onclick = () => loadLesson(lesson.id, lesson.title, btn);
+                li.appendChild(btn);
+                lessonList.appendChild(li);
+
+                if (i === 0) btn.click();
+            });
         });
 
-        // Load lessons sidebar
-        fetch(`/user/courses/${courseId}/lessons/data`)
-            .then(r => r.json())
-            .then(lessons => {
-                if (!lessons.length) {
-                    lessonTitle.textContent = "No lessons available";
-                    return;
+    // Function to mark lesson completed
+    function markLessonCompleted(lessonId) {
+        fetch('/user/lessons/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ lesson_id: lessonId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                console.log('Lesson marked completed ✅');
+
+                // 🔥 THIS IS IMPORTANT
+                localStorage.setItem(
+                    'course_updated_' + courseId,
+                    Date.now()
+                );
+            }
+        })
+        .catch(console.error);
+    }
+
+
+
+    // Main load function
+    function loadLesson(lessonId, title, btn) {
+        if (lessonId === activeLessonId) return;
+        activeLessonId = lessonId;
+
+        lessonTitle.textContent = title;
+        lessonContent.innerHTML = `<div class="text-center py-16"><div class="loading-placeholder w-64 h-8 rounded mx-auto"></div></div>`;
+
+        document.querySelectorAll('#lesson-list button').forEach(b => b.classList.remove('lesson-active'));
+        btn.classList.add('lesson-active');
+
+        fetch(`/user/courses/lessons/${lessonId}/stream`)
+            .then(response => {
+                const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+
+                // ---- VIDEO ----
+                if (contentType.startsWith('video') || contentType.includes('mp4') || contentType.includes('octet-stream')) {
+                    lessonContent.innerHTML = `
+                        <div class="flex justify-center mt-6">
+                            <div class="relative w-full max-w-5xl h-[65vh] rounded-2xl overflow-hidden bg-black shadow-2xl">
+                                <video class="w-full h-full object-contain rounded-2xl" controls autoplay playsinline>
+                                    <source src="/user/courses/lessons/${lessonId}/stream" type="video/mp4">
+                                    Your browser does not support video.
+                                </video>
+                            </div>
+                        </div>`;
+
+                    // 🔹 Mark lesson completed when video ends
+                    const videoEl = lessonContent.querySelector('video');
+                    videoEl.onended = () => markLessonCompleted(lessonId);
+
+                    return null;
                 }
 
-                lessons.forEach((lesson, i) => {
-                    const li = document.createElement('li');
-                    const btn = document.createElement('button');
-                    btn.dataset.lessonId = lesson.id;
-                    btn.innerHTML = `
-                        <span class="lesson-number">${i + 1}</span>
-                        <span class="lesson-title truncate">${lesson.title}</span>
-                        <span class="tooltip">${lesson.title}</span>
-                    `;
-                    btn.onclick = () => loadLesson(lesson.id, lesson.title, btn);
-                    li.appendChild(btn);
-                    lessonList.appendChild(li);
+                // ---- NON-VIDEO: JSON ----
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return;
 
-                    if (i === 0) btn.click();
-                });
-            });
-
-        // Main load function
-        function loadLesson(lessonId, title, btn) {
-            if (lessonId === activeLessonId) return;
-            activeLessonId = lessonId;
-
-            lessonTitle.textContent = title;
-            lessonContent.innerHTML = `<div class="text-center py-16"><div class="loading-placeholder w-64 h-8 rounded mx-auto"></div></div>`;
-
-            // Remove active class from all
-            document.querySelectorAll('#lesson-list button').forEach(b => b.classList.remove('lesson-active'));
-            btn.classList.add('lesson-active');
-            fetch(`/user/courses/lessons/${lessonId}/stream`)
-                .then(response => {
-                    const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
-
-                    // ---- VIDEO DETECTED ----
-                    if (
-                        contentType.startsWith('video') ||
-                        contentType.includes('mp4') ||
-                        contentType.includes('octet-stream')
-                    ) {
-                        lessonContent.innerHTML = `
-                            <div class="flex justify-center mt-6">
-                                <div class="relative w-full max-w-5xl h-[65vh] rounded-2xl overflow-hidden bg-black shadow-2xl">
-                                    <video class="w-full h-full object-contain rounded-2xl" controls autoplay playsinline>
-                                        <source src="/user/courses/lessons/${lessonId}/stream" type="video/mp4">
-                                        Your browser does not support video.
-                                    </video>
-                                </div>
-                            </div>`;
-
-                        return null; // IMPORTANT → prevents JSON parser from running
-                    }
-
-                    // ---- NON-VIDEO: Return JSON ----
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data) return; // video already shown
-
-                    // TEXT
-                    if (data.content_type === 'text') {
-                        lessonContent.innerHTML = `
-                            <div class="prose prose-invert max-w-none text-[#A1A9C4]">${data.text_content || 'No content'}</div>`;
-                    }
-
-                    
-
-                    // PRACTICE
-                    else if (data.content_type === 'practice') {
-                        lessonContent.innerHTML = `
-                            <div class="text-center py-20 rounded-2xl border border-white/10 
-                                         shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-
-                                <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">
-                                    Practice Time
-                                </h3>
-
-                                <p class="text-lg mb-10 text-[#8A93A8]">
-                                    Test your knowledge with a quick practice test.
-                                </p>
-
-                                <a href="/user/lesson/${data.id}/practice-test"
-                                    class="px-10 py-4 rounded-xl text-lg font-medium
-                                         transition-all 
-                                        bg-[#00C2FF] text-[#101727] shadow-lg
-                                        focus:ring-4 focus:ring-[#00C2FF]/40">
-                                    Practice Test
-                                </a>
-                            </div>`;
-                    }
-
-                    // QUIZ
-                    else if (data.content_type === 'quiz') {
-                        lessonContent.innerHTML = `
-                            <div class="text-center py-20 rounded-2xl border border-white/10 
-                                         shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-
-                                <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">
-                                    Quiz Time
-                                </h3>
-
-                                <p class="text-lg mb-10 text-[#8A93A8]">
-                                    Test your knowledge with a quick quiz.
-                                </p>
-
-                                <a href="/user/quizzes/${data.quiz_id}"
-                                    class="px-10 py-4 rounded-xl text-lg font-medium
-                                         transition-all 
-                                        bg-[#00C2FF] text-[#101727] shadow-lg
-                                        focus:ring-4 focus:ring-[#00C2FF]/40">
-                                    Start Quiz
-                                </a>
-                            </div>`;
-                    }
-
-                })
-                .catch(err => {
-                    console.error(err);
-                    lessonContent.innerHTML = `<p class="text-red-400">Failed to load content.</p>`;
-                });
-
-        }
-    });
+                if (data.content_type === 'text') {
+                    lessonContent.innerHTML = `<div class="prose prose-invert max-w-none text-[#A1A9C4]">${data.text_content || 'No content'}</div>`;
+                    // 🔹 Mark text lesson complete immediately
+                    markLessonCompleted(lessonId);
+                }
+                else if (data.content_type === 'practice') {
+                    lessonContent.innerHTML = `
+                        <div class="text-center py-20 rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+                            <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">Practice Time</h3>
+                            <p class="text-lg mb-10 text-[#8A93A8]">Test your knowledge with a quick practice test.</p>
+                            <a href="/user/lesson/${data.id}/practice-test" class="px-10 py-4 rounded-xl text-lg font-medium transition-all bg-[#00C2FF] text-[#101727] shadow-lg focus:ring-4 focus:ring-[#00C2FF]/40">Practice Test</a>
+                        </div>`;
+                }
+                else if (data.content_type === 'quiz') {
+                    lessonContent.innerHTML = `
+                        <div class="text-center py-20 rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+                            <h3 class="text-3xl font-semibold mb-4 text-[#E6EDF7] tracking-wide">Quiz Time</h3>
+                            <p class="text-lg mb-10 text-[#8A93A8]">Test your knowledge with a quick quiz.</p>
+                            <a href="/user/quizzes/${data.quiz_id}" class="px-10 py-4 rounded-xl text-lg font-medium transition-all bg-[#00C2FF] text-[#101727] shadow-lg focus:ring-4 focus:ring-[#00C2FF]/40">Start Quiz</a>
+                        </div>`;
+                }
+            })
+            .catch(err => { console.error(err); lessonContent.innerHTML = `<p class="text-red-400">Failed to load content.</p>`; });
+    }
+});
 </script>
 
 {{-- Lucide Icons --}}

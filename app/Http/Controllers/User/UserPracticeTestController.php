@@ -10,6 +10,7 @@ use App\Models\PracticeAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\LessonProgressService;
 
 class UserPracticeTestController extends Controller
 {
@@ -200,18 +201,30 @@ class UserPracticeTestController extends Controller
     public function result($attemptId)
     {
         $user = Auth::user();
-        $attempt = PracticeAttempt::with('answers.question')->findOrFail($attemptId);
 
-        if ($attempt->user_id !== $user->id) abort(403);
+        $attempt = PracticeAttempt::with('answers.question')
+            ->findOrFail($attemptId);
 
+        // Security check
+        if ($attempt->user_id !== $user->id) {
+            abort(403);
+        }
+
+        // Finalize if still in progress
         if ($attempt->status !== 'completed') {
-            // If still in progress, finalize before showing result
             $this->finalizeAttempt($attempt);
             $attempt = $attempt->fresh('answers.question');
         }
 
+        // ✅ Mark lesson completed (correct way)
+        LessonProgressService::markCompleted(
+            $user->id,
+            $attempt->lesson_id
+        );
+
         return view('user.practice.result', compact('attempt'));
     }
+
 
     /**
      * Finalize attempt: calculate correct answers, score, time taken, set completed_at/status

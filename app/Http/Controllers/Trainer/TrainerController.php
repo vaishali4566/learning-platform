@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Trainer;
+use App\Models\Lesson;
 
 class TrainerController extends Controller
 {
@@ -29,15 +30,21 @@ class TrainerController extends Controller
      * Show trainer dashboard
      */
     public function index()
-    { 
-        
+    {
         if (!Auth::guard('trainer')->check()) {
             return redirect()->route('trainer.login');
         }
 
         $trainer = Auth::guard('trainer')->user();
-        return view('trainer.dashboard', compact('trainer'));
+
+        $lessons = Lesson::whereHas('course', function ($q) use ($trainer) {
+            $q->where('trainer_id', $trainer->id);
+        })->get();
+
+        return view('trainer.dashboard', compact('trainer', 'lessons'));
     }
+
+
 
     /**
      * Update trainer profile details
