@@ -36,6 +36,8 @@
                         {{ $purchase->course->title }}
                     </h3>
 
+                    
+
                     {{-- Progress --}}
                     <div class="mt-4 course-progress" data-course-id="{{ $purchase->course->id }}">
                         <div class="w-full bg-gray-300 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
@@ -46,7 +48,7 @@
                         </p>
                     </div>
 
-                    <div class="mt-4 flex flex-col gap-2">
+                    <div class="mt-4 flex justify-between items-center gap-2">
                         <a href="{{ route('user.courses.view', $purchase->course->id) }}"
                            class="inline-block text-[#00C2FF] text-sm">
                             Continue →
