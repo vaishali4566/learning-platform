@@ -101,7 +101,7 @@
                                         </li>
                                     @endif
 
-                                    @elseif($lesson->content_type == 'practice')
+                                @elseif($lesson->content_type === 'practice')
                                     <li>
                                         <a href="{{ route('trainer.practice-tests.create', [$course->id, $lesson->id]) }}"
                                             class="w-full px-4 py-2.5 block text-[#D0D8E8] 
@@ -110,7 +110,8 @@
                                             Create Practice
                                         </a>
                                     </li>
-                                    @endif
+                                @endif
+
 
                                     <li>
                                         <button data-id="{{ $lesson->id }}"
