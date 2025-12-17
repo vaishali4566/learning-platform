@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Quiz;
 use App\Models\Lesson;
 use App\Models\QuizQuestion;
-use App\Models\Lesson;
 
 class QuizController extends Controller
 {
@@ -20,7 +19,6 @@ class QuizController extends Controller
 
     // 🟢 Show quiz creation form
     public function create(Lesson $lesson)
-    public function create(Lesson $lesson)
     {
         return view('trainer.quizzes.create', compact('lesson'));
     }
@@ -28,48 +26,48 @@ class QuizController extends Controller
     // 🟢 Store new quiz
 
     public function store(Request $request)
-{
-    $request->validate([
-        'lesson_id' => 'required|exists:lessons,id',
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-    ]);
-{
-    $request->validate([
-        'lesson_id' => 'required|exists:lessons,id',
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-    ]);
-
-    $quiz = Quiz::create([
-        'lesson_id' => $request->lesson_id,
-        'title' => $request->title,
-        'description' => $request->description,
-        'source' => $request->source,
-        'total_marks' => 0,
-        'passing_marks' => 0,
-    ]);
-    $quiz = Quiz::create([
-        'lesson_id' => $request->lesson_id,
-        'title' => $request->title,
-        'description' => $request->description,
-        'source' => $request->source,
-        'total_marks' => 0,
-        'passing_marks' => 0,
-    ]);
-
-    // Check if request is AJAX
-    if ($request->ajax()) {
-        return response()->json([
-            'success' => true,
-            'quiz_id' => $quiz->id,   // <--- this is needed for your JS
+    {
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
         ]);
-    }
+    
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
 
-    // fallback for normal requests
-    return redirect()->route('trainer.quizzes.questions', $quiz->id)
-                     ->with('success', 'Quiz created. Now add questions.');
-}
+        $quiz = Quiz::create([
+            'lesson_id' => $request->lesson_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'source' => $request->source,
+            'total_marks' => 0,
+            'passing_marks' => 0,
+        ]);
+        $quiz = Quiz::create([
+            'lesson_id' => $request->lesson_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'source' => $request->source,
+            'total_marks' => 0,
+            'passing_marks' => 0,
+        ]);
+
+        // Check if request is AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'quiz_id' => $quiz->id,   // <--- this is needed for your JS
+            ]);
+        }
+
+        // fallback for normal requests
+        return redirect()->route('trainer.quizzes.questions', $quiz->id)
+                        ->with('success', 'Quiz created. Now add questions.');
+    }
 
     public function showQuestions($quizId)
     {

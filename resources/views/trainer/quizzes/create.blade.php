@@ -39,15 +39,6 @@
             <textarea name="description" rows="4"
                 class="w-full p-3 bg-[#101727] border border-[#1E2A45] rounded-lg text-white"></textarea>
         </div>
-        <!-- Description -->
-        <div>
-            <label class="block text-sm font-medium text-[#AAB3C7] mb-1">Description</label>
-            <textarea name="description" rows="4"
-                class="w-full p-3 bg-[#101727] border border-[#1E2A45] rounded-lg text-white"></textarea>
-        </div>
-
-
-
 
         <button type="submit" class="w-full bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] py-3 rounded-lg">
             Create Quiz
