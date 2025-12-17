@@ -17,7 +17,10 @@
 
         <form id="create-quiz-form" action="{{ route('trainer.quizzes.store') }}" method="POST">
         @csrf
+        <form id="create-quiz-form" action="{{ route('trainer.quizzes.store') }}" method="POST">
+        @csrf
 
+        <input type="hidden" name="lesson_id" value="{{ $lesson->id }}">
         <input type="hidden" name="lesson_id" value="{{ $lesson->id }}">
 
         <!-- Quiz Title -->
@@ -27,6 +30,8 @@
                 class="w-full p-3 bg-[#101727] border border-[#1E2A45] rounded-lg text-white">
             <p class="text-red-500 text-xs mt-1 hidden" id="title-error"></p>
         </div>
+
+
 
         <!-- Description -->
         <div>
@@ -39,7 +44,6 @@
             Create Quiz
         </button>
     </form>
-
     </div>
 </div>
 
@@ -60,6 +64,7 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(response) {
                 if(response.success) {
+                    window.location.href = '/trainer/quizzes/' + response.quiz_id + '/questions';
                     window.location.href = '/trainer/quizzes/' + response.quiz_id + '/questions';
                 } else {
                     window.location.href = response.redirect_url || '/trainer/quizzes';

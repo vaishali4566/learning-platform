@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAnswer;
 use Illuminate\Support\Facades\Auth;
+use App\Services\LessonProgressService;
 
 class UserQuizController extends Controller
 {
@@ -25,32 +26,41 @@ class UserQuizController extends Controller
     }
 
     // 3️⃣ Submit quiz
-    public function submit(Request $request, Quiz $quiz)
-    {
-        $user = Auth::guard('web')->user();
-        $answers = $request->input('answers');
+public function submit(Request $request, Quiz $quiz)
+{
+    $user = Auth::guard('web')->user();
+    $answers = $request->input('answers');
 
-        $totalScore = 0;
+    $totalScore = 0;
 
-        foreach ($answers as $questionId => $selectedOption) {
-            $question = QuizQuestion::find($questionId);
-            $isCorrect = ($question->correct_option == $selectedOption);
+    foreach ($answers as $questionId => $selectedOption) {
+        $question = QuizQuestion::findOrFail($questionId);
+        $isCorrect = ($question->correct_option == $selectedOption);
 
-            QuizAnswer::create([
-                'quiz_id' => $quiz->id,
-                'question_id' => $questionId,
-                'user_id' => $user->id,
-                'selected_option' => $selectedOption,
-                'answer_text' => $question->options[$selectedOption] ?? null,
-                'is_correct' => $isCorrect,
-            ]);
+        QuizAnswer::create([
+            'quiz_id' => $quiz->id,
+            'question_id' => $questionId,
+            'user_id' => $user->id,
+            'selected_option' => $selectedOption,
+            'answer_text' => $question->options[$selectedOption] ?? null,
+            'is_correct' => $isCorrect,
+        ]);
 
-            if ($isCorrect) $totalScore += $question->marks;
+        if ($isCorrect) {
+            $totalScore += $question->marks;
         }
-
-        // Redirect to result page
-        return redirect()->route('user.quizzes.result', $quiz->id);
     }
+
+    // ✅ Correct way: lesson_id from quiz relation
+    LessonProgressService::markCompleted(
+        $user->id,
+        $quiz->lesson_id
+    );
+
+    // Redirect to result page
+    return redirect()->route('user.quizzes.result', $quiz->id);
+}
+
 
     // 4️⃣ Show quiz result
     public function result(Quiz $quiz)

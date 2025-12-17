@@ -80,7 +80,7 @@
                                         </button>
                                     </li>
 
-                                  @if($lesson->content_type === 'quiz')
+                                     @if($lesson->content_type === 'quiz')
                                     @if($lesson->quiz)
                                         <li>
                                             <a href="{{ route('trainer.quizzes.questions', $lesson->quiz->id) }}"
