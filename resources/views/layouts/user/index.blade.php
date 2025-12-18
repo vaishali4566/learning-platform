@@ -26,6 +26,7 @@
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- ✅ Material Icons for chat ticks -->
@@ -189,7 +190,7 @@
 
         <div id="mainContent" class="flex-1 ml-20 lg:ml-0 transition-all duration-300 flex flex-col">            
             {{-- NAVBAR --}}
-            <div id="navbar" class=" fixed top-0 left-20 z-50 lg:left-[14rem] right-0 bg-[#F0F4FA] dark:bg-gray-900 border-b border-[#D5DEE8] dark:border-gray-800">
+            <div id="navbar" class=" fixed top-0 left-20 z-20 lg:left-[14rem] right-0 bg-[#F0F4FA] dark:bg-gray-900 border-b border-[#D5DEE8] dark:border-gray-800">
                 @include('partials.user.navbar')
             </div>
 

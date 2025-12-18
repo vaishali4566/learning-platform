@@ -394,11 +394,11 @@
 
                                  <template id="rating-row-template">
                                     <div class="flex items-center gap-3 rating-row">
-                                        <span class="text-gray-300 star-label"></span>
-                                        <div class="bg-gray-700 h-2 flex-1 rounded">
+                                        <span class="text-gray-600 dark:text-gray-300 w-12 star-label"></span>
+                                        <div class="bg-gray-200 dark:bg-gray-700 h-2 flex-1 rounded">
                                             <div class="bg-[#00C2FF] h-2 rounded progress-bar"></div>
                                         </div>
-                                        <span class="text-gray-400 count"></span>
+                                        <span class="text-gray-500 dark:text-gray-400 count"></span>
                                     </div>
                                 </template>
 
@@ -592,15 +592,15 @@
 <div id="feedback-modal"
      class="fixed inset-0 bg-black/70 backdrop-blur-md hidden flex items-center justify-center z-50">
 
-    <div class="bg-[#0F1627] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-lg relative">
+    <div class="bg-white dark:bg-[#0F1627] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-lg relative">
 
         <button id="close-feedback-modal"
-            class="absolute top-3 right-3 text-gray-400 hover:text-white text-xl">&times;</button>
+            class="absolute top-3 right-3 text-gray-600 dark:text-gray-400 hover:text-gray-400 dark:hover:text-white text-2xl">&times;</button>
 
-        <h2 class="text-xl font-semibold text-white mb-4">Leave Your Feedback</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Leave Your Feedback</h2>
 
         <!-- Rating Stars -->
-        <div id="modal-rating-stars" class="flex gap-2 text-3xl cursor-pointer mb-4 text-gray-500">
+        <div id="modal-rating-stars" class="flex gap-2 text-3xl cursor-pointer mb-4 text-gray-200 dark:text-gray-500">
             <i data-star="1" class="fa-solid fa-star"></i>
             <i data-star="2" class="fa-solid fa-star"></i>
             <i data-star="3" class="fa-solid fa-star"></i>
@@ -610,11 +610,11 @@
 
         <textarea id="modal-feedback-comment"
                   rows="3"
-                  class="w-full p-3 bg-[#101B2E] border border-white/10 rounded-lg text-gray-200"
+                  class="w-full p-3 bg-gray-100 dark:bg-[#101B2E] border border-white/10 rounded-lg text-gray-600 dark:text-gray-200 focus:ring-1 ring-[#00C2FF]/80 focus:outline-none resize-none"
                   placeholder="Write your comment (optional)..."></textarea>
 
         <button id="modal-submit-feedback"
-                class="w-full mt-4 bg-[#00C2FF] text-white py-2 rounded-lg">
+                class="w-full mt-4 bg-[#00C2FF] text-white py-2 rounded-lg hover:opacity-80">
             Submit Feedback
         </button>
     </div>
@@ -681,9 +681,9 @@
                 feedbackList.innerHTML = "";
                 list.forEach(fb => appendFeedbackToUI(fb));
             });
-        }
+    }
 
-        loadFeedback();
+    // loadFeedback();
 
         /* ---------------------------------------------------
        ⭐ FUNCTION — APPEND FEEDBACK
@@ -809,25 +809,38 @@
         ------------------------------------------------------*/
         const stars = document.querySelectorAll("#modal-rating-stars i");
 
+        function getInactiveStarColor() {
+            return document.documentElement.classList.contains("dark")
+                ? "#6b7280"  
+                : "#e5e7eb"; 
+        }
+
+       function updateStarColors(hoverValue = null) {
+            const inactive = getInactiveStarColor();
+
+            stars.forEach(s => {
+                const value = s.getAttribute("data-star");
+
+                if (hoverValue) {
+                    s.style.color = (value <= hoverValue) ? "#FFD700" : inactive;
+                } else {
+                    s.style.color = (value <= modalRating) ? "#FFD700" : inactive;
+                }
+            });
+    }
+
         stars.forEach(star => {
             star.addEventListener("mouseover", () => {
-                const val = star.getAttribute("data-star");
-                stars.forEach(s => {
-                    s.style.color = (s.getAttribute("data-star") <= val) ? "#FFD700" : "#555";
-                });
+                updateStarColors(star.getAttribute("data-star"));
             });
 
             star.addEventListener("mouseout", () => {
-                stars.forEach(s => {
-                    s.style.color = (s.getAttribute("data-star") <= modalRating) ? "#FFD700" : "#555";
-                });
+                updateStarColors();
             });
 
             star.addEventListener("click", () => {
                 modalRating = star.getAttribute("data-star");
-                stars.forEach(s => {
-                    s.style.color = (s.getAttribute("data-star") <= modalRating) ? "#FFD700" : "#555";
-                });
+                updateStarColors();
             });
         });
 

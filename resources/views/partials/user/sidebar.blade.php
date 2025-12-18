@@ -18,7 +18,7 @@
             <div class="p-2 rounded-lg bg-[#0077B6]/10 border-[#0077B6]/30 dark:bg-[#00C2FF]/10 border dark:border-[#00C2FF]/30 backdrop-blur-sm sidebar-text text-sm 2xl:text-base">
                 <i data-lucide="graduation-cap" class="w-5 h-5 text-[#00C2FF]"></i>
             </div>
-            <span id="sidebar-title" class="font-semibold text-lg tracking-wide text-[#00c2ff] dark:text-[#E6EDF7]">E-Learning</span>
+            <span id="sidebar-title" class="font-semibold text-lg tracking-wide bg-gradient-to-r from-[#00C2FF] to-[#2F82DB] bg-clip-text text-transparent dark:text-[#E6EDF7]">E-Learning</span>
         </div>
 
         <button id="sidebarToggle"
@@ -30,12 +30,12 @@
 
     <!-- Menu -->
     <nav
-        class="flex-1 mt-6 relative text-gray-500 dark:text-gray-400 overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[#101727]/50 scrollbar-track-transparent transition-transform duration-300 ease-in-out">
+        class="flex-1 mt-6 relative text-gray-600 dark:text-gray-300 overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[#101727]/50 scrollbar-track-transparent transition-transform duration-300 ease-in-out">
 
         <!-- Dashboard -->
         <a href="{{ route('user.dashboard') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 font-medium rounded-lg mb-1 transition-all duration-300 ease-in-out hover:translate-x-1
-            {{ request()->routeIs('user.dashboard') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
+            {{ request()->routeIs('user.dashboard') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-black/30 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="layout-dashboard"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300 group-hover:scale-110"></i>
@@ -45,7 +45,7 @@
         <!-- All Courses -->
         <a href="{{ route('user.courses.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1
-            {{ request()->routeIs('user.courses.index') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
+            {{ request()->routeIs('user.courses.index') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-black/30 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="library"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300"></i>
@@ -55,7 +55,7 @@
         <!-- My Courses -->
         <a href="{{ route('user.courses.my') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 
-            {{ request()->routeIs('user.courses.my') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
+            {{ request()->routeIs('user.courses.my') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-black/30 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="book-marked"
                 class="w-5 h-5 group-hover:dark:text-[#e6edf7] transition-all duration-300"></i>
@@ -65,7 +65,7 @@
         <!-- Quizzes -->
         <a href="{{ route('user.quizzes.index') }}"
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 
-            {{ request()->routeIs('user.quizzes.index') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
+            {{ request()->routeIs('user.quizzes.index') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-black/30 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
             <i data-lucide="brain"
                 class="w-5 h-5  group-hover:scale-110 transition-all duration-300"></i>
