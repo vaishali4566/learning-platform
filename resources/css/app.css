@@ -21,3 +21,14 @@
 #sidebar a:active svg {
     stroke: inherit !important;
 }
+
+/* When hovering an option, tint the radio button border */
+label.group:hover input[type="radio"] {
+    border-color: #00C2FF !important;
+}
+
+/* Optional: slightly glow the radio on hover */
+label.group:hover input[type="radio"] {
+    box-shadow: 0 0 4px #00C2FF55;
+}
+
