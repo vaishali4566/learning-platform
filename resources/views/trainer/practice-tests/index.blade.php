@@ -8,11 +8,6 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <h3 class="text-3xl font-bold">Practice Tests</h3>
-
-            <a href="{{ route('trainer.practice-tests.create') }}"
-               class="px-5 py-3 rounded-lg bg-[#00C2FF] text-black font-semibold shadow hover:bg-[#3A6EA5] transition">
-                + Add Practice Test
-            </a>
         </div>
 
         <!-- Success Message -->
@@ -65,7 +60,6 @@
                                     Delete
                                 </button>
                             </form>
-
                         </td>
                     </tr>
                     @endforeach

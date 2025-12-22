@@ -7,12 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable; 
-use App\Notifications\CustomResetPassword; 
+use App\Notifications\CustomResetPassword;
 
 
 class User extends Authenticatable
 {
-    use HasFactory, HasApiTokens, Notifiable; // 
+    use HasFactory, HasApiTokens, Notifiable;
 
     protected $fillable = [
         'name',
@@ -27,7 +27,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime',                 
     ];
 
     public function courses(): HasMany
@@ -52,148 +52,289 @@ class User extends Authenticatable
     {
         return $this->hasMany(Certificate::class);
     }
-
 }
 
 
+// 1️⃣ Remove Duplicates & Keep Order
 
+// Input: ArrayList<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: ArrayList + LinkedHashSet
 
+// 2️⃣ Frequency Counter
 
+// Input: int[]
+// Output: Map<Integer, Integer>
+// ➡️ Hint: HashMap + getOrDefault()
 
+// 3️⃣ Unique Words Counter
 
+// Input: String sentence
+// Output: int
+// ➡️ Hint: String.split + HashSet
 
+// 4️⃣ Convert List to Map (Index as Key)
 
+// Input: ArrayList<String>
+// Output: Map<Integer, String>
+// ➡️ Hint: HashMap
 
-// Course Progress Tracking & Certificate System
+// 5️⃣ Common Elements of Two Lists
 
-// (Based on: 1 Lesson = 1 Content)
+// Input: Two ArrayList<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: HashSet + retainAll()
 
-// 🔵 PHASE 0 — FOUNDATION (CLARITY)
+// 6️⃣ Remove All Even Numbers
 
-// Nothing to code, only decisions
+// Input: ArrayList<Integer>
+// Output: ArrayList<Integer> (only odd numbers)
+// ➡️ Hint: Iterator / removeIf()
 
-// Module 0.1 — Content Mapping ✅ DONE
-// Course
-//  └─ Lesson (video | text | quiz | practice-test)
+// 7️⃣ Count Unique Numbers
 
+// Input: ArrayList<Integer>
+// Output: int
+// ➡️ Hint: HashSet
 
-// ✔ Lesson itself is the progress unit
+// 8️⃣ Convert ArrayList to HashSet
 
-// Module 0.2 — Completion Rules
+// Input: ArrayList<String>
+// Output: HashSet<String>
+// ➡️ Hint: Constructor
 
-// Define when a lesson is “completed”
+// 9️⃣ Check If All Elements Are Unique
 
-// Lesson Type	Completion Condition
-// Video	Watched ≥ 90%
-// Text	User clicks “Mark as Completed”
-// Quiz	Quiz submitted
-// Practice Test	Test attempted
+// Input: ArrayList<Integer>
+// Output: boolean
+// ➡️ Hint: ArrayList vs HashSet size
 
-// 📌 Output: One rule per lesson type
+// 🔟 Find First Repeating Element
 
-// 🟢 PHASE 1 — DATABASE (CORE)
-// Module 1.1 — user_lesson_progress Table
+// Input: ArrayList<Integer>
+// Output: Integer
+// ➡️ Hint: HashSet
 
-// Track lesson completion per user
+// 1️⃣1️⃣ Merge Two Lists (Remove Duplicates)
 
-// Output:
+// Input: Two ArrayList<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: LinkedHashSet + addAll()
 
-// One row = one lesson completion
+// 1️⃣2️⃣ Convert Map Keys to List
 
-// Module 1.2 — Completion Events
+// Input: Map<Integer, String>
+// Output: ArrayList<Integer>
+// ➡️ Hint: keySet()
 
-// Automatically mark lessons complete
+// 1️⃣3️⃣ Convert Map Values to List
 
-// Triggers:
+// Input: Map<Integer, String>
+// Output: ArrayList<String>
+// ➡️ Hint: values()
 
-// Video finished
+// 1️⃣4️⃣ Reverse a List
 
-// Text marked done
+// Input: ArrayList<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: Collections.reverse()
 
-// Quiz submitted
+// 1️⃣5️⃣ Sort List of Strings
 
-// Practice test completed
+// Input: ArrayList<String>
+// Output: Sorted ArrayList
+// ➡️ Hint: Collections.sort()
 
-// 🟡 PHASE 2 — COURSE PROGRESS LOGIC
-// Module 2.1 — Total Lessons Count
+// 1️⃣6️⃣ Count Word Frequency
 
-// How many lessons in a course
+// Input: String sentence
+// Output: Map<String, Integer>
+// ➡️ Hint: HashMap + split()
 
-// Module 2.2 — Completed Lessons Count
+// 1️⃣7️⃣ Check Two Lists Are Equal (Order Matters)
 
-// How many lessons user finished
+// Input: Two ArrayList<Integer>
+// Output: boolean
+// ➡️ Hint: equals()
 
-// Module 2.3 — Progress Percentage
-// progress = (completed / total) * 100
+// 1️⃣8️⃣ Check Two Lists Have Same Elements (Order Doesn’t Matter)
 
-// Module 2.4 — Progress API
-// GET /courses/{id}/progress
+// Input: Two ArrayList<Integer>
+// Output: boolean
+// ➡️ Hint: HashSet
 
-// 🟠 PHASE 3 — FRONTEND PROGRESS UI
-// Module 3.1 — Course Progress Bar
+// 1️⃣9️⃣ Remove Duplicates Without Using Set
 
-// Dynamic
+// Input: ArrayList<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: contains()
 
-// Animated
+// 2️⃣0️⃣ Convert List to Queue
 
-// Module 3.2 — Lesson Status UI
+// Input: ArrayList<Integer>
+// Output: Queue<Integer>
+// ➡️ Hint: ArrayDeque
 
-// Completed ✔
+// 2️⃣1️⃣ Find Max Element Using Collections
 
-// Pending ⏳
+// Input: ArrayList<Integer>
+// Output: int
+// ➡️ Hint: Collections.max()
 
-// 🔴 PHASE 4 — COURSE COMPLETION
-// Module 4.1 — Completion Detection
-// If progress == 100%
+// 2️⃣2️⃣ Find Min Element Using Collections
 
-// Module 4.2 — Course Completion Record
+// Input: ArrayList<Integer>
+// Output: int
+// ➡️ Hint: Collections.min()
 
-// Prevent re-completion issues
+// 2️⃣3️⃣ Remove Null Values from List
 
-// 🟣 PHASE 5 — CERTIFICATE SYSTEM
-// Module 5.1 — Certificates Table
+// Input: ArrayList<String>
+// Output: ArrayList<String>
+// ➡️ Hint: removeIf()
 
-// Store issued certificates
+// 2️⃣4️⃣ Convert Set to List
 
-// Module 5.2 — Certificate Number Logic
+// Input: HashSet<Integer>
+// Output: ArrayList<Integer>
+// ➡️ Hint: Constructor
 
-// Unique & verifiable
+// 2️⃣5️⃣ Find Duplicate Elements
 
-// Module 5.3 — Certificate Template
+// Input: ArrayList<Integer>
+// Output: Set<Integer>
+// ➡️ Hint: HashSet
 
-// PDF / HTML
 
-// Module 5.4 — Generate Certificate
+// 🟢 EASY LEVEL (Basics + Confidence Build)
+// 1️⃣ Remove Duplicates & Keep Order
 
-// Auto-generate on completion
+// Input: ArrayList<Integer>
+// Task: Duplicate remove karo but order maintain rahe
 
-// Module 5.5 — Download / View Certificate
+// ➡️ Hint: ArrayList + LinkedHashSet
 
-// User access
+// 2️⃣ Frequency Counter
 
-// 🔵 PHASE 6 — POLISH & SCALE (Optional)
-// Module 6.1 — Edge Cases
+// Input: int[]
+// Output: Map<Integer, Integer>
 
-// Retake quiz
+// ➡️ Hint: HashMap + getOrDefault()
 
-// Reset lesson
+// 3️⃣ Unique Words Counter
 
-// Recalculate progress
+// Input: String sentence
+// Output: Number of unique words
 
-// Module 6.2 — Performance
+// ➡️ Hint: String.split + HashSet
 
-// Cache progress
+// 4️⃣ Convert List to Map (Index as Key) 
 
-// Reduce joins
+// Input: ArrayList<String>
+// Output: Map<Integer, String>
 
-// Module 6.3 — Admin Controls
+// ➡️ Hint: HashMap
 
-// Reset progress
+// 5️⃣ Common Elements
 
-// Revoke certificate
+// Input: Two ArrayLists
+// Output: List of common elements
 
-// 🏁 HOW WE WILL EXECUTE
+// ➡️ Hint: HashSet + retainAll()
 
-// ✔ One module at a time
-// ✔ DB → Backend → Frontend
-// ✔ Move next only when you say “next”
+// 🟡 MEDIUM LEVEL (Real Use-Cases)
+// 6️⃣ Group Elements by Frequency
+
+// Input: int[]
+// Output: Map<Integer, List<Integer>>
+// (Frequency → numbers)
+
+// ➡️ Hint: HashMap + ArrayList
+
+// 7️⃣ Sort Elements by Frequency
+
+// Input: int[]
+// Output: List<Integer> sorted by frequency
+
+// ➡️ Hint:
+// HashMap + ArrayList + Collections.sort
+
+// 8️⃣ First Non-Repeating Character
+
+// Input: String
+// Output: Character
+
+// ➡️ Hint:
+// LinkedHashMap (order important)
+
+// 9️⃣ Merge Two Maps (Sum Values)
+
+// Input: Map<Integer,Integer> m1, m2
+// Output: Combined Map
+
+// ➡️ Hint:
+// HashMap + getOrDefault
+
+// 🔟 Remove Elements Present in Set
+
+// Input: List + Set
+// Output: Filtered List
+
+// ➡️ Hint:
+// Iterator or removeIf()
+
+// 🔴 HARD LEVEL (Interview + DSA Style)
+// 1️⃣ Top K Frequent Elements
+
+// Input: int[] , k
+// Output: List<Integer>
+
+// ➡️ Hint:
+// HashMap + PriorityQueue
+
+// 1️⃣2️⃣ LRU Cache (Basic)
+
+// Operations: get, put
+
+// ➡️ Hint:
+// LinkedHashMap
+
+// 1️⃣3️⃣ Group Anagrams
+
+// Input: List<String>
+// Output: List<List<String>>
+
+// ➡️ Hint:
+// HashMap<String, ArrayList<String>>
+
+// 1️⃣4️⃣ Flatten Nested List
+
+// Input: [1,[2,[3]]]
+// Output: [1,2,3]
+
+// ➡️ Hint:
+// Stack / Recursion + ArrayList
+
+// 1️⃣5️⃣ Sliding Window Maximum
+
+// Input: int[] , k
+// Output: int[]
+
+// ➡️ Hint:
+// Deque (ArrayDeque)
+
+// 1️⃣6️⃣ Word Frequency Sort
+
+// Input: String paragraph
+// Output: Words sorted by frequency
+
+// ➡️ Hint:
+// HashMap + PriorityQueue
+
+// 1️⃣7️⃣ Task Scheduler
+
+// Input: Tasks with priority
+// Output: Execution order
+
+// ➡️ Hint:
+// PriorityQueue + Map

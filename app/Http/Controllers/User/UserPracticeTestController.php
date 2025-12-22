@@ -199,31 +199,34 @@ class UserPracticeTestController extends Controller
      * Route: GET /practice-attempt/{attemptId}/result
      */
     public function result($attemptId)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $attempt = PracticeAttempt::with('answers.question')
-            ->findOrFail($attemptId);
+    $attempt = PracticeAttempt::with('answers.question')
+        ->findOrFail($attemptId);
 
-        // Security check
-        if ($attempt->user_id !== $user->id) {
-            abort(403);
-        }
+    if ($attempt->user_id !== $user->id) {
+        abort(403);
+    }
 
-        // Finalize if still in progress
-        if ($attempt->status !== 'completed') {
-            $this->finalizeAttempt($attempt);
-            $attempt = $attempt->fresh('answers.question');
-        }
+    if ($attempt->status !== 'completed') {
+        $this->finalizeAttempt($attempt);
+        $attempt = $attempt->fresh('answers.question');
+    }
 
-        // ✅ Mark lesson completed (correct way)
+    // ✅ FIX: get lesson_id via practice test
+    $practiceTest = PracticeTest::find($attempt->practice_test_id);
+
+    if ($practiceTest && $practiceTest->lesson_id) {
         LessonProgressService::markCompleted(
             $user->id,
-            $attempt->lesson_id
+            (int) $practiceTest->lesson_id
         );
-
-        return view('user.practice.result', compact('attempt'));
     }
+
+    return view('user.practice.result', compact('attempt'));
+}
+
 
 
     /**
