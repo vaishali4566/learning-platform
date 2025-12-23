@@ -8,18 +8,41 @@
     <title>@yield('title', 'Learning Platform')</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+
+    <script>
+        (function () {
+            const storedTheme = localStorage.getItem('theme');
+
+            if (storedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (storedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                // First visit → follow system preference
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+        })();
+    </script>
+
     <style>
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
         }
 
-        footer {
+        /* footer {
             background: #171717;
             color: #d3d3d3;
             padding: 12px 0;
             font-size: 0.9rem;
-        }
+        } */
 
         /* Animations */
         @keyframes fadeSlideUp {
@@ -33,50 +56,98 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .bg-animated {
-            background: linear-gradient(135deg, #101727, #1e3a8a, #10b981, #3b82f6);
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
+
+        @keyframes slideFadeInLeft {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
         }
 
-        /* Role toggle buttons */
-        .role-toggle {
-            background: #1f2937;
-            color: #cbd5e1;
-            padding: 6px 16px;
+        .left-panel-animate {
+            animation: slideFadeInLeft 0.9s ease-out forwards;
+        }
+
+
+         /* ROLE TABS */
+          .role-tabs {
+            background: #0000000a;
+            padding: 7px;
             border-radius: 8px;
+            display: flex;
+            max-width: fit-content;
+            margin: 0 auto;
+            /* gap: 6px; */
+        }
+        .role-tab {
+            padding: 4px 25px;
+            border-radius: 6px;
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #5f5f5f;
+            transition: all 0.2s ease;
+            background: transparent;
         }
-        .role-toggle.active {
-            background: #374151;
+
+        .role-tab:hover {
+            /* background: #e5e7eb; */
+        }
+
+        .role-tab.active {
+           background: #ffffff;
+            color: #0f172a;
+            font-weight: 500;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .dark .role-tabs {
+            background: #161c33;
+        }
+
+        .dark .role-tab {
+            color: #9ca3af;
+        }
+
+        .dark .role-tab.active {
+            background: #273043;
             color: #fff;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
         }
-        .role-toggle:hover {
-            transform: scale(1.05);
+
+
+        /* FOOTER */
+        footer {
+            font-size: 0.85rem;
         }
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen bg-gray-900">
-    @include('components.loader')
+<body class="flex flex-col min-h-screen  bg-gray-50 dark:bg-[#0B1120]">
+    {{-- @include('components.loader') --}}
     <main class="flex flex-1">
         <!-- Left Branding -->
-        <div class="hidden md:flex md:w-1/2 bg-animated items-center justify-center p-6">
-            <div class="text-center px-8 text-white">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">Learning Platform</h1>
-                <p class="text-white/80 text-lg md:text-xl">Learn anytime, anywhere with our platform.</p>
-            </div>
+         <div class="hidden md:flex md:w-1/2 items-center justify-center bg-[#288be0] left-panel-animate">
+            <img 
+                src="{{ asset('images/login.png') }}" 
+                alt="Login Illustration"
+                class="w-full h-full object-cover"
+            />
         </div>
 
         <!-- Right Login Section -->
-        <div class="flex flex-1 items-center justify-center p-6 bg-gray-900">
-            <div class="w-full max-w-md fade-slide-up text-center">
+        <div class="flex flex-1 items-center justify-center px-6 py-10">
+            <div class="w-full max-w-md 2xl:max-w-lg fade-slide-up text-center">
 
                 <!-- Toggle -->
-                <div class="flex justify-center gap-3 mb-6">
-                    <button id="userBtn" class="role-toggle">User</button>
-                    <button id="trainerBtn" class="role-toggle">Trainer</button>
+                <div class="flex justify-center mb-6 role-tabs">
+                    <button id="userBtn" class="role-tab">User</button>
+                    <button id="trainerBtn" class="role-tab">Trainer</button>
                 </div>
 
                 <!-- Dynamic content -->
@@ -87,9 +158,9 @@
         </div>
     </main>
 
-    <footer class="text-center mt-auto p-5">
+    {{-- <footer class="text-center mt-auto p-5 text-gray-900 dark:text-[#E6EDF7]">
         &copy; {{ date('Y') }} Learning Platform. All rights reserved.
-    </footer>
+    </footer> --}}
 
     <script>
         const userBtn = document.getElementById('userBtn');
