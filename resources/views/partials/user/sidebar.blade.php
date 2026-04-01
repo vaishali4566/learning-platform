@@ -77,7 +77,7 @@
             class="menu-item group relative flex items-center gap-3 px-5 py-3 mb-1 rounded-lg font-medium transition-all duration-300 ease-in-out hover:translate-x-1 
             {{ request()->routeIs('user.practice.history') ? 'bg-[#00c2ff] text-white dark:bg-[#0f6289] dark:text-white' : 'hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-[#101727]/70 dark:hover:text-[#E6EDF7]' }}">
             <div class="absolute left-0 h-0 group-hover:h-full w-[3px] bg-[#00C2FF] rounded transition-all duration-300"></div>
-            <i data-lucide="brain"
+            <i data-lucide="history"
                 class="w-5 h-5  group-hover:scale-110 transition-all duration-300"></i>
             <span class="sidebar-text text-sm 2xl:text-base">Test History</span>
         </a>   
